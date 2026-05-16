@@ -12,7 +12,158 @@ AcaciosWork es un ecosistema de gestión empresarial (ERP/POS) multiplataforma d
 
 ---
 
-## ARQUITECTURA Y UBICACIÓN DE ARCHIVOS
+## 📊 DIAGRAMAS DEL SISTEMA
+
+### 1. Arquitectura General
+```mermaid
+graph TD
+    subgraph Clientes
+        Web["🌐 Dashboard Web (HTML/JS)"]
+        Desk["🖥️ Admin Desktop (Swing)"]
+        Andr["📱 App Móvil (Kotlin)"]
+    end
+
+    subgraph Backend_Core ["Núcleo del Sistema"]
+        API["🧠 Core API (Spring Boot 4)"]
+        Auth["🔐 Seguridad JWT"]
+        Logic["⚙️ Lógica de Negocio"]
+    end
+
+    subgraph Persistencia
+        DB[("🗄️ MySQL (tienda_acacios)")]
+    end
+
+    Web <-->|HTTP/JSON + JWT| API
+    Desk <-->|HTTP/JSON + JWT| API
+    Andr <-->|HTTP/JSON + JWT| API
+
+    API <--> Logic
+    API <--> Auth
+    Logic <--> DB
+```
+
+### 2. Mapa Estructural (Project Structure)
+```mermaid
+graph TD
+    Root["AcaciosWork (Root)"]
+    
+    Root --> BE["acacioswork-backend (Core API)"]
+    Root --> DE["acacioswork-desktop (Admin Swing)"]
+    Root --> FE["acacioswork-frontend (Web Dash)"]
+    Root --> AN["acacioswork-android (Mobile App)"]
+    Root --> DB_S["database (SQL Scripts)"]
+    Root --> CTX["proyect-context (AI/Docs)"]
+
+    BE --> BE_CTRL["Controladores"]
+    BE --> BE_SRV["Servicios (Business)"]
+    BE --> BE_MOD["Modelos (JPA Entities)"]
+
+    DE --> DE_UI["Interfaz (Swing JPanels)"]
+    DE --> DE_MOD["Modelos Locales"]
+
+    FE --> FE_HTML["Vistas (HTML/CSS)"]
+    FE --> FE_JS["Lógica API (JS Fetch)"]
+```
+
+### 3. Flujo de Datos (Data Flow)
+```mermaid
+sequenceDiagram
+    participant User as Usuario
+    participant Client as Cliente (Web/Desk/And)
+    participant API as Core API (Backend)
+    participant DB as MySQL DB
+
+    User->>Client: Realiza acción (Ej: Registrar Venta)
+    Client->>API: Petición HTTP POST (JSON + JWT)
+    API->>API: Valida Token y Reglas de Negocio
+    API->>DB: Ejecuta Transacción SQL
+    DB-->>API: Confirma Persistencia
+    API-->>Client: Responde ApiResponse (Success/Data)
+    Client->>User: Muestra Confirmación en UI
+```
+
+### 4. Diagrama de Módulos (Lógica de Negocio)
+```mermaid
+graph LR
+    subgraph Gestion_Core ["Gestión de Identidad"]
+        USR[Usuarios & Roles]
+        PROV[Proveedores]
+        CLI[Clientes]
+    end
+
+    subgraph Logistica ["Logística e Inventario"]
+        INV[Inventario]
+        PROD[Productos]
+        CAT[Categorías]
+        ALERT[Alertas de Stock]
+    end
+
+    subgraph Operaciones ["Operaciones de Venta"]
+        VENTA[Punto de Venta - POS]
+        DEV[Devoluciones]
+        CAJA[Cierre de Caja]
+    end
+
+    subgraph Inteligencia ["Inteligencia de Negocio"]
+        REP[Reportes & Estadísticas]
+        HIST[Historial de Accesos]
+    end
+
+    Gestion_Core --> Logistica
+    Logistica --> Operaciones
+    Operaciones --> Inteligencia
+```
+
+### 5. Diagrama de Base de Datos (ERD Simplificado)
+```mermaid
+erDiagram
+    ROL ||--o{ USUARIO : "asigna"
+    USUARIO ||--o{ VENTA : "vende"
+    CLIENTE ||--o{ VENTA : "compra"
+    CATEGORIA ||--o{ PRODUCTO : "contiene"
+    PRODUCTO ||--o{ DETALLE_VENTA : "se vende en"
+    VENTA ||--|{ DETALLE_VENTA : "desglosa"
+    PROVEEDOR ||--o{ PRODUCTO : "provee"
+    PRODUCTO ||--|| INVENTARIO : "se almacena"
+    PRODUCTO ||--o{ ALERTA_STOCK : "genera"
+```
+
+### 6. API Map (Integraciones)
+```mermaid
+graph LR
+    subgraph Endpoints_Backend ["Endpoints API (REST)"]
+        AUTH["/api/auth/** (Seguridad)"]
+        USR_API["/api/usuarios (Gestión)"]
+        PROD_API["/api/productos (Catálogo)"]
+        INV_API["/api/inventario (Stock)"]
+        VENT_API["/api/ventas (POS)"]
+        REP_API["/api/reportes (BI)"]
+    end
+
+    subgraph Desktop_App ["Desktop (Admin/POS)"]
+        D_AUTH["Login/JWT"]
+        D_CRUD["CRUD Completo"]
+        D_POS["Ventas POS"]
+    end
+
+    subgraph Web_Dashboard ["Web (Supervisión)"]
+        W_AUTH["Login/JWT"]
+        W_REP["Visualización BI"]
+        W_INV["Consulta Stock"]
+    end
+
+    Desktop_App --> AUTH
+    Desktop_App --> USR_API
+    Desktop_App --> PROD_API
+    Desktop_App --> INV_API
+    Desktop_App --> VENT_API
+
+    Web_Dashboard --> AUTH
+    Web_Dashboard --> REP_API
+    Web_Dashboard --> INV_API
+```
+
+---
 Este mapa ayuda a cualquier Agente de IA a localizar rápidamente dónde realizar cambios:
 
 ### 1. Núcleo API (`acacioswork-backend/`)
