@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 /** Configuración de conexión a la base de datos MySQL. @author RADJ */
 public class DatabaseConfig {
-    
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/acacioswork_bd_big";
+
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/tienda_acacios";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
     private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";

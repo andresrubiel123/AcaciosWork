@@ -1,94 +1,98 @@
 # ARCHIVO DE CONTEXTO: ACACIOSWORK
-** INSTRUCCIÓN PARA LA IA**
+**INSTRUCCIÓN PARA LA IA**
 
-> **ESTADO**: DESARROLLO ACTIVO
+> **ESTADO**: DESARROLLO ACTIVO - FASE DE ESTABILIZACIÓN Y ESCALADO
 > **AUTOR PRINCIPAL**: @author RADJ
-> **ÚLTIMA REVISIÓN**: 02 de Mayo, 2026
+> **ÚLTIMA REVISIÓN**: 16 de Mayo, 2026
 
 ---
 
-## ARQUITECTURA DEL SISTEMA
-Sistema de gestión integral de tiendas bajo un modelo multiplataforma:
-
-1. **BACKEND CENTRALIZADO**: Única capa con acceso directo a la base de datos MySQL (`acacioswork_bd_big`).
-2. **INTERFAZ WEB**: HTML5, CSS3 y JavaScript consume exclusivamente la API.
-3. **CLIENTE ESCRITORIO**: Módulo especializado `acacioswork-desktop`conectado por API.
-4. **INTEGRACIÓN MÓVIL**: Aplicación Android nativa que consume exclusivamente la API REST.
-
-## Diagrama de Árbol de Carpetas:
-
-AcaciosWork/ (Root)
-├── acacioswork-backend/ (Core API - Spring Boot)
-│   ├── src/main/java/com/acacioswork/
-│   │   ├── config/ (Seguridad, CORS, JWT)
-│   │   ├── controller/ (Endpoints REST: Usuarios, Clientes, etc.)
-│   │   ├── model/ (Entidades JPA: Categoria, Cliente, Usuario)
-│   │   ├── repository/ (Interfaces Spring Data JPA)
-│   │   ├── service/ (Lógica de negocio: UsuarioManager)
-│   │   ├── util/ (Clases auxiliares)
-│   │   └── AcaciosWorkApplication.java
-│   ├── src/main/resources/
-│   │   ├── application.properties
-│   │   └── .env.example
-│   └── pom.xml
-├── acacioswork-desktop/ (Cliente Windows - Java Swing)
-│   ├── src/main/java/com/acacioswork/
-│   │   ├── interfaz_usuario/ (Paneles, Formularios, Login)
-│   │   ├── model/ (Modelos de datos locales)
-│   │   ├── util/ (Conectividad API)
-│   │   └── App.java (Clase Principal)
-│   └── pom.xml
-├── acacioswork-android/ (Cliente Móvil)
-│   ├── app/src/main/java/...
-│   └── build.gradle
-├── acacioswork-frontend/ (Cliente Web - HTML/JS/CSS)
-│   ├── css/ (Estilos visuales)
-│   ├── js/ (Lógica de peticiones Fetch/API)
-│   ├── login.html
-│   └── dashboard.html
-├── database/ (Scripts SQL)
-│   ├── acacioswork_bd_big.sql
-│   └── inventario_bodega.sql
-├── ai-context/ (Contexto para IA)
-├── arquitectura_acacioswork.md (Diagramas generados)
-├── pom.xml (Parent POM / Configuración Global)
-├── lombok.config (Configuración de anotaciones)
-└── run_backend.bat (Script de ejecución rápida)
+## 🌍 VISIÓN GENERAL DEL PROYECTO
+AcaciosWork es un ecosistema de gestión empresarial (ERP/POS) multiplataforma diseñado bajo una arquitectura de **Backend Centralizado**. El sistema permite la administración de inventarios, ventas, usuarios y clientes desde aplicaciones de escritorio, web y móviles, garantizando que toda la lógica de negocio y los datos residan en un único punto de verdad.
 
 ---
 
-## REGLAS TÉCNICAS OBLIGATORIAS (PROHIBICIÓN DE SALTOS)
-*   **AISLAMIENTO DE DATOS**: Queda estrictamente PROHIBIDO que el Frontend, Desktop o Android realicen conexiones directas a la base de datos. Toda transacción DEBE pasar por el Backend.
-*   **REGLA DE ORO (ID STANDARD)**: Todos los identificadores (ID) en MySQL deben ser `BIGINT UNSIGNED`. En el código Java, deben mapearse exclusivamente como tipo `Long`.
-*   **ENTORNO**: Desarrollo mandatorio en **Java 25** y **Spring Boot 4.0.6**.
+## ARQUITECTURA Y UBICACIÓN DE ARCHIVOS
+Este mapa ayuda a cualquier Agente de IA a localizar rápidamente dónde realizar cambios:
 
-*   **REFERENCIA DE DATOS (LECTURA OBLIGATORIA)**: Antes de generar entidades JPA, Repositorios o DTOs, DEBES leer el esquema de base de datos actual en la siguiente ruta: `database\acacioswork_bd_big.sql`
+### 1. Núcleo API (`acacioswork-backend/`)
+*   **Configuración (Seguridad/JWT/CORS)**: `src/main/java/com/acacioswork/config/`
+*   **Endpoints (Controladores)**: `src/main/java/com/acacioswork/controller/`
+*   **Lógica de Negocio (Servicios)**: `src/main/java/com/acacioswork/service/`
+*   **Entidades de Datos (JPA)**: `src/main/java/com/acacioswork/model/`
+*   **Acceso a Datos (Repositorios)**: `src/main/java/com/acacioswork/repository/`
+*   **Recursos (Propiedades/Env)**: `src/main/resources/`
+
+### 2. Cliente de Escritorio (`acacioswork-desktop/`)
+*   **Pantallas y UI (Swing)**: `src/main/java/com/acacioswork/interfaz_usuario/`
+*   **Conectividad API (Util)**: `src/main/java/com/acacioswork/util/`
+*   **Modelos Locales**: `src/main/java/com/acacioswork/model/`
+
+### 3. Cliente Web (`acacioswork-frontend/`)
+*   **Vistas (HTML)**: Raíz del módulo (`login.html`, `dashboard.html`).
+*   **Estilos (CSS)**: `css/styles.css`
+*   **Lógica API (JS)**: `js/api.js`
+
+### 4. Cliente Móvil (`acacioswork-android/`)
+*   **UI/ViewModels/Network**: `app/src/main/java/com/acacioswork/`
+
+### 5. Base de Datos (`database/`)
+*   **Esquema Actualizado**: `database/tienda_acacios.sql` (Lectura obligatoria para cambios en modelos).
 
 ---
-
 ## ESTÁNDAR DE DOCUMENTACIÓN Y COMENTARIOS
-Todo bloque de código generado debe incluir la firma del autor y una descripción funcional breve:
+Todo bloque de código generado debe incluir: una descripción funcional breve y la firma del autor:
 
-| Lenguaje / Tecnología | Formato Requerido |
+* Lenguaje Tecnología Formato Requerido
+* 
+* **Java - Spring - JS / Kotlin** `/** Descripción breve. @author RADJ */`
+* **CSS / MySQL** `/* Descripción breve. @author RADJ */`
+* **HTML** `<!-- Descripción breve. @author RADJ -->`
+* **JavaScript** `// Descripción breve. @author RADJ`
+
+
+---
+
+##  REGLAS TÉCNICAS OBLIGATORIAS (PROHIBICIÓN DE SALTOS)
+1.  **AISLAMIENTO DE DATOS**: PROHIBIDO que clientes (Web, Desktop, Android) conecten directo a MySQL. Todo debe pasar por el Backend.
+2.  **REGLA DE ORO (ID STANDARD)**: Identificadores en MySQL: `BIGINT UNSIGNED`. En Java: `Long`.
+3.  **ENTORNO**: Desarrollo mandatorio en **Java 25** y **Spring Boot 4.0.6**.
+4.  **COMUNICACIÓN**: Exclusivamente vía **JSON/REST** con tokens **JWT** para autorización.
+
+---
+
+## 📈 ESTADO DEL AVANCE GLOBAL
+
+### ✅ Finalizado (Producción Ready)
+- **Seguridad**: Autenticación JWT en Backend y Clientes.
+- **Gestión Core**: CRUDs de Usuarios, Clientes, Proveedores y Categorías operativos en Backend y Desktop.
+- **Inventario**: Control de existencias básico y visualización.
+- **Ventas**: Módulo de `Venta` y `DetalleVenta` con persistencia atómica.
+
+### 🔄 En Proceso (Próximos Hitos)
+- **Reportes**: Implementación de reportes visuales y exportación a PDF/Excel.
+- **Alertas**: Sistema de notificaciones en tiempo real para stock crítico.
+- **Android**: Implementación de la UI móvil y sincronización con la API.
+- **Cierre de Caja**: Lógica contable para balance diario.
+
+---
+
+## 📝 REGISTRO DE CAMBIOS (LOG)
+*   **2026-05-02**: Creación inicial del archivo de contexto y migración a `BIGINT`.
+*   **2026-05-05**: Sincronización de CRUD de Usuarios entre Backend y Desktop.
+*   **2026-05-12**: Estabilización de persistencia de Ventas y manejo de errores 409/400.
+*   **2026-05-16**: **Estandarización de Documentación**: Se actualizaron todos los `README.md` del ecosistema para reflejar el stack tecnológico actual (Java 25, Spring Boot 4, FlatLaf, Kotlin 2).
+*   **2026-05-16**: **Actualización de Contexto IA**: Reestructuración de este archivo para facilitar el mapeo de archivos a agentes inteligentes.
+
+---
+
+## 🤖 GUÍA PARA LA IA (MAPEO RÁPIDO)
+Si necesitas trabajar en un módulo específico, estos son los archivos clave:
+
+| Tarea | Archivo/Ruta Principal |
 | :--- | :--- |
-| **Java / Spring / JS / Kotlin** | `/** Descripción breve. @author RADJ */` |
-| **CSS / MySQL** | `/* Descripción breve. @author RADJ */` |
-| **HTML** | `<!-- Descripción breve. @author RADJ -->` |
-
----
-
-## STACK TECNOLÓGICO
-*   **Lenguajes**: Java 25, Kotlin, JavaScript, SQL, HTML5, CSS3.
-*   **Frameworks**: Spring Boot 4.0.6 (Data JPA, Security).
-*   **Base de Datos**: MySQL 8.0+.
-
----
-
-## REGISTRO DE CAMBIOS
-*Instrucción para la IA: Cada vez que realices un cambio estructural o técnico importante, debes añadir una entrada en esta lista.*
-
-*   **2026-05-02**: Creación de este archivo de contexto inicial.
-*   **2026-05-02**: Migración exitosa de base de datos a tipos `BIGINT`.
-*   **2026-05-02**: Configuración de `pom.xml` optimizada para compatibilidad con JDK 25 y Lombok 1.18.46.
-*   **2026-05-05**: Sincronización de API: Se completaron los métodos CRUD en `UsuarioController` y `UsuarioService` para habilitar la gestión de usuarios desde el cliente desktop.
-*   **2026-05-05**: Optimización de conectividad: Cambio de `127.0.0.1` a `localhost` en `ApiClient` del módulo desktop para mejorar la resolución de red local.
+| **Añadir un campo a la BD** | `database/tienda_acacios.sql` -> `backend/.../model/` -> `desktop/.../model/` |
+| **Modificar la Seguridad** | `backend/.../config/SecurityConfig.java` |
+| **Cambiar el diseño Desktop** | `desktop/.../interfaz_usuario/Administrador.java` |
+| **Arreglar peticiones API Web** | `frontend/js/api.js` |
+| **Añadir lógica de negocio** | `backend/.../service/` (Siempre usar servicios, no lógica en controladores) |

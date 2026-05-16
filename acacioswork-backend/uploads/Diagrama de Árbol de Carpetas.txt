@@ -32,7 +32,7 @@ AcaciosWork/ (Root)
 │   ├── login.html
 │   └── dashboard.html
 ├── database/ (Scripts SQL)
-│   ├── acacioswork_bd_big.sql
+│   ├── tienda_acacios.sql
 │   └── inventario_bodega.sql
 ├── ai-context/ (Contexto para IA)
 ├── arquitectura_acacioswork.md (Diagramas generados)
