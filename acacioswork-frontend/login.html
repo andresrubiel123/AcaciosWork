@@ -1,0 +1,89 @@
+<!-- Interfaz de inicio de sesión premium. @author RADJ -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcaciosWork - Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in" style="max-width: 400px;">
+        <div class="card">
+            <h1 style="margin-bottom: 0.5rem; text-align: center; color: var(--primary-color);">AcaciosWork</h1>
+            <p style="margin-bottom: 2rem; text-align: center; color: var(--text-muted);">Acceso al sistema administrativo</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" placeholder="Ingresa tu usuario" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" id="loginBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <p id="errorMsg" style="color: var(--danger); margin-top: 1.5rem; text-align: center; font-size: 0.875rem; display: none; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;"></p>
+        </div>
+        
+        <p style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
+            &copy; 2026 AcaciosWork - Gestión de Inventario Inteligente
+        </p>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        /** Maneja el proceso de autenticación. @author RADJ */
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usuario = document.getElementById('username').value;
+            const clave = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const loginBtn = document.getElementById('loginBtn');
+
+            // Feedback visual
+            loginBtn.innerText = "Verificando...";
+            loginBtn.disabled = true;
+            errorMsg.style.display = "none";
+
+            try {
+                // El backend devuelve { token, usuario } en el campo data
+                const result = await apiRequest("/usuarios/login", "POST", { usuario, clave });
+                
+                // Guardar información real tras la estandarización del backend
+                localStorage.setItem("jwt_token", result.token);
+                localStorage.setItem("usuario", JSON.stringify(result.usuario));
+                localStorage.setItem("user_name", result.usuario.nombre + " " + result.usuario.apellido);
+                localStorage.setItem("user_role", result.usuario.idRol || "2");
+                
+                window.location.href = "dashboard.html";
+            } catch (err) {
+                errorMsg.innerText = "Credenciales incorrectas o error de conexión.";
+                errorMsg.style.display = "block";
+                loginBtn.innerText = "Iniciar Sesión";
+                loginBtn.disabled = false;
+            }
+        });
+
+        // Limpiar errores al escribir
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                document.getElementById('errorMsg').style.display = "none";
+            });
+        });
+    </script>
+</body>
+</html>

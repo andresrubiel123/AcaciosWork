@@ -1,0 +1,54 @@
+# Compilación Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*~
+.qodo/
+
+# Archivos compilados
+*.class
+
+# Archivos generados
+reporte_diario.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Entorno y Secretos
+.env
+.env.*
+!.env.example
+token.json
+*.pem
+secrets/
+mcp_config.json
+
+# Node
+node_modules/
+dist/
+build/
+
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Graphifyy
+graphify-out/

@@ -1,0 +1,41 @@
+Diagrama de Árbol de Carpetas:
+
+
+
+AcaciosWork/ (Root)
+├── acacioswork-backend/ (Core API - Spring Boot)
+│   ├── src/main/java/com/acacioswork/
+│   │   ├── config/ (Seguridad, CORS, JWT)
+│   │   ├── controller/ (Endpoints REST: Usuarios, Clientes, etc.)
+│   │   ├── model/ (Entidades JPA: Categoria, Cliente, Usuario)
+│   │   ├── repository/ (Interfaces Spring Data JPA)
+│   │   ├── service/ (Lógica de negocio: UsuarioManager)
+│   │   ├── util/ (Clases auxiliares)
+│   │   └── AcaciosWorkApplication.java
+│   ├── src/main/resources/
+│   │   ├── application.properties
+│   │   └── .env.example
+│   └── pom.xml
+├── acacioswork-desktop/ (Cliente Windows - Java Swing)
+│   ├── src/main/java/com/acacioswork/
+│   │   ├── interfaz_usuario/ (Paneles, Formularios, Login)
+│   │   ├── model/ (Modelos de datos locales)
+│   │   ├── util/ (Conectividad API)
+│   │   └── App.java (Clase Principal)
+│   └── pom.xml
+├── acacioswork-android/ (Cliente Móvil)
+│   ├── app/src/main/java/...
+│   └── build.gradle
+├── acacioswork-frontend/ (Cliente Web - HTML/JS/CSS)
+│   ├── css/ (Estilos visuales)
+│   ├── js/ (Lógica de peticiones Fetch/API)
+│   ├── login.html
+│   └── dashboard.html
+├── database/ (Scripts SQL)
+│   ├── acacioswork_bd_big.sql
+│   └── inventario_bodega.sql
+├── ai-context/ (Contexto para IA)
+├── arquitectura_acacioswork.md (Diagramas generados)
+├── pom.xml (Parent POM / Configuración Global)
+├── lombok.config (Configuración de anotaciones)
+└── run_backend.bat (Script de ejecución rápida)

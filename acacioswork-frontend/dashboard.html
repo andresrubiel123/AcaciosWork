@@ -1,0 +1,419 @@
+<!-- Dashboard administrador AcaciosWork. @author RADJ -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcaciosWork - Administrador</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Nav toolbar superior estilo desktop */
+        .top-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-sidebar);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-wrap: wrap;
+        }
+        .toolbar-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-right: 1rem;
+        }
+        .toolbar-btn {
+            padding: 0.45rem 1.1rem;
+            border-radius: 2rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(239,68,68,0.25);
+        }
+        .toolbar-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .toolbar-btn.active { background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+        .toolbar-btn.btn-exit {
+            background: linear-gradient(135deg, #475569, #334155);
+            margin-right: 0.5rem;
+        }
+        .toolbar-btn.btn-alert {
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+        }
+        .user-info {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Layout */
+        .app-body { display: flex; flex-direction: column; min-height: 100vh; }
+        .content-area { flex: 1; padding: 2rem; max-width: 1300px; width: 100%; margin: 0 auto; }
+
+        /* Section titles */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .section-header h1 { font-size: 1.6rem; }
+        .section-header p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--bg-card); padding: 1.25rem 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-card .label { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.4rem; }
+        .stat-card .value { font-size: 1.6rem; font-weight: 700; color: white; }
+
+        /* Tables */
+        .card { background: var(--bg-card); border-radius: 0.75rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        td { padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.9rem; }
+        .badge { padding: 0.2rem 0.55rem; border-radius: 0.25rem; font-size: 0.72rem; font-weight: 600; }
+        .badge-success { background: rgba(16,185,129,0.12); color: #10b981; }
+        .badge-danger  { background: rgba(239,68,68,0.12);  color: #ef4444; }
+        .badge-warn    { background: rgba(245,158,11,0.12); color: #f59e0b; }
+
+        /* Buttons inside content */
+        .btn { padding: 0.6rem 1.2rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.75rem; background: #334155; color: white; border-radius: 0.4rem; border: none; cursor: pointer; }
+        .btn-del { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--bg-card); border-radius: 1rem; padding: 2rem; width: 100%; max-width: 480px; border: 1px solid rgba(255,255,255,0.08); }
+        .modal-content h2 { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.4rem; font-size: 0.82rem; color: var(--text-muted); }
+        input, select { width: 100%; padding: 0.65rem 0.9rem; margin-bottom: 0.9rem; border-radius: 0.5rem; border: 1px solid rgba(148,163,184,0.2); background: rgba(15,23,42,0.6); color: white; outline: none; font-size: 0.9rem; }
+        input:focus, select:focus { border-color: var(--primary-color); }
+
+        /* Alerts section */
+        .alert-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: 0.6rem; border: 1px solid rgba(245,158,11,0.2); background: rgba(245,158,11,0.06); margin-bottom: 0.75rem; }
+        .alert-dot { width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; }
+        .alert-dot.red { background: #ef4444; }
+
+        /* Report cards */
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+        .report-card { background: var(--bg-card); border-radius: 0.75rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s; }
+        .report-card:hover { border-color: var(--primary-color); transform: translateY(-2px); }
+        .report-card h3 { margin-bottom: 0.5rem; font-size: 1rem; }
+        .report-card p { color: var(--text-muted); font-size: 0.82rem; }
+
+        /* Fade animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .section { animation: fadeIn 0.25s ease-out; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body style="background: var(--bg-dark); color: var(--text-main);">
+<div class="app-body">
+
+    <!-- ═══ TOOLBAR SUPERIOR (igual que escritorio) ═══ -->
+    <div class="top-toolbar">
+        <span class="toolbar-brand">AcaciosWork</span>
+        <button class="toolbar-btn btn-exit" onclick="logout()">← Salir</button>
+        <button class="toolbar-btn active" id="btn-inventario" onclick="showSection('inventario', this)">Inventario</button>
+        <button class="toolbar-btn" id="btn-proveedores" onclick="showSection('proveedores', this)">Proveedores</button>
+        <button class="toolbar-btn" id="btn-clientes" onclick="showSection('clientes', this)">Clientes</button>
+        <button class="toolbar-btn" id="btn-usuarios" onclick="showSection('usuarios', this)">Usuarios</button>
+        <button class="toolbar-btn" id="btn-reportes" onclick="showSection('reportes', this)">Reportes</button>
+        <button class="toolbar-btn btn-alert" id="btn-alertas" onclick="showSection('alertas', this)">⚠ Alertas Stock</button>
+        <span class="user-info" id="userInfo"></span>
+    </div>
+
+    <!-- ═══ CONTENIDO PRINCIPAL ═══ -->
+    <div class="content-area">
+
+        <!-- ─── INVENTARIO ─── -->
+        <div id="sec-inventario" class="section">
+            <div class="section-header">
+                <div><h1>Inventario de Productos</h1><p>Control total de existencias y precios</p></div>
+                <button class="btn btn-primary" onclick="openModal('inventario')">+ Nuevo Producto</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="label">Total Productos</div><div class="value" id="inv-total">—</div></div>
+                <div class="stat-card"><div class="label">Stock Bajo</div><div class="value" id="inv-bajo" style="color:#ef4444">—</div></div>
+                <div class="stat-card"><div class="label">Valor Inventario</div><div class="value" id="inv-valor" style="color:#10b981">—</div></div>
+            </div>
+            <div class="card">
+                <table><thead><tr><th>Código</th><th>Nombre</th><th>Stock</th><th>P. Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="inv-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando...</td></tr></tbody></table>
+            </div>
+        </div>
+
+        <!-- ─── PROVEEDORES ─── -->
+        <div id="sec-proveedores" class="section" style="display:none">
+            <div class="section-header">
+                <div><h1>Proveedores</h1><p>Gestión de contactos y suministradores</p></div>
+                <button class="btn btn-primary" onclick="openModal('proveedor')">+ Nuevo Proveedor</button>
+            </div>
+            <div class="card">
+                <table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Ciudad</th><th>Acciones</th></tr></thead>
+                <tbody id="prov-tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando...</td></tr></tbody></table>
+            </div>
+        </div>
+
+        <!-- ─── CLIENTES ─── -->
+        <div id="sec-clientes" class="section" style="display:none">
+            <div class="section-header">
+                <div><h1>Clientes</h1><p>Base de datos de clientes registrados</p></div>
+                <button class="btn btn-primary" onclick="openModal('cliente')">+ Nuevo Cliente</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="label">Total Clientes</div><div class="value" id="cli-total">—</div></div>
+                <div class="stat-card"><div class="label">Activos</div><div class="value" id="cli-activos" style="color:#10b981">—</div></div>
+            </div>
+            <div class="card">
+                <table><thead><tr><th>Nombre</th><th>Documento</th><th>Teléfono</th><th>Email</th><th>Acciones</th></tr></thead>
+                <tbody id="cli-tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando...</td></tr></tbody></table>
+            </div>
+        </div>
+
+        <!-- ─── USUARIOS ─── -->
+        <div id="sec-usuarios" class="section" style="display:none">
+            <div class="section-header">
+                <div><h1>Usuarios del Sistema</h1><p>Administración de accesos y roles</p></div>
+                <button class="btn btn-primary" onclick="openModal('usuario')">+ Nuevo Usuario</button>
+            </div>
+            <div class="card">
+                <table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="usr-tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando...</td></tr></tbody></table>
+            </div>
+        </div>
+
+        <!-- ─── REPORTES ─── -->
+        <div id="sec-reportes" class="section" style="display:none">
+            <div class="section-header">
+                <div><h1>Reportes</h1><p>Generación y exportación de informes</p></div>
+            </div>
+            <div class="report-grid">
+                <div class="report-card"><h3>📦 Inventario General</h3><p>Lista completa de productos con stock y precios actuales.</p><br><button class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem">Generar PDF</button></div>
+                <div class="report-card"><h3>⚠️ Productos con Stock Bajo</h3><p>Listado de artículos por debajo del stock mínimo definido.</p><br><button class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem">Generar PDF</button></div>
+                <div class="report-card"><h3>👥 Reporte de Clientes</h3><p>Base de clientes registrados con su información de contacto.</p><br><button class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem">Generar PDF</button></div>
+                <div class="report-card"><h3>🏭 Reporte de Proveedores</h3><p>Directorio de proveedores con datos de contacto y productos.</p><br><button class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem">Generar PDF</button></div>
+                <div class="report-card"><h3>👤 Usuarios del Sistema</h3><p>Listado de usuarios activos, roles y permisos asignados.</p><br><button class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem">Generar PDF</button></div>
+            </div>
+        </div>
+
+        <!-- ─── ALERTAS STOCK ─── -->
+        <div id="sec-alertas" class="section" style="display:none">
+            <div class="section-header">
+                <div><h1>⚠ Alertas de Stock</h1><p>Productos que requieren reabastecimiento urgente</p></div>
+                <button class="btn btn-primary" onclick="loadAlertas()">↻ Actualizar</button>
+            </div>
+            <div id="alertas-container">
+                <p style="color:var(--text-muted)">Cargando alertas...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL GENÉRICO ═══ -->
+<div id="mainModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 id="modal-title">Nuevo Registro</h2>
+        <form id="modal-form">
+            <div id="modal-fields"></div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+                <button type="button" class="btn" style="flex:1;background:#334155;color:white" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+/** Dashboard Administrador AcaciosWork. @author RADJ */
+
+// ─── AUTH CHECK ───
+document.addEventListener('DOMContentLoaded', () => {
+    if (!localStorage.getItem('jwt_token')) { window.location.href = 'login.html'; return; }
+    document.getElementById('userInfo').textContent = '👤 ' + (localStorage.getItem('user_name') || 'Admin');
+    loadInventario();
+});
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+// ─── NAVEGACIÓN ───
+function showSection(name, btn) {
+    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + name).style.display = 'block';
+    if (btn) btn.classList.add('active');
+    if (name === 'inventario') loadInventario();
+    if (name === 'proveedores') loadProveedores();
+    if (name === 'clientes') loadClientes();
+    if (name === 'usuarios') loadUsuarios();
+    if (name === 'alertas') loadAlertas();
+}
+
+// ─── INVENTARIO ───
+async function loadInventario() {
+    const tbody = document.getElementById('inv-tbody');
+    try {
+        const products = await apiRequest('/productos');
+        const total = products.length;
+        const bajo  = products.filter(p => p.cantidad <= (p.stockMinimo || 5)).length;
+        const valor = products.reduce((a, p) => a + (p.cantidad * p.precioVenta), 0);
+        document.getElementById('inv-total').textContent = total;
+        document.getElementById('inv-bajo').textContent = bajo;
+        document.getElementById('inv-valor').textContent = '$' + valor.toLocaleString();
+        tbody.innerHTML = products.length ? products.map(p => `
+            <tr>
+                <td style="font-family:monospace;font-size:0.8rem">${p.codigoBarras||'N/A'}</td>
+                <td style="font-weight:500">${p.nombre}</td>
+                <td><span class="badge ${p.cantidad<=(p.stockMinimo||5)?'badge-danger':'badge-success'}">${p.cantidad} uds</span></td>
+                <td>$${p.precioVenta?.toLocaleString()}</td>
+                <td><span style="color:var(--accent);font-size:0.82rem">${p.estado||'Activo'}</span></td>
+                <td style="display:flex;gap:0.4rem">
+                    <button class="btn-sm" onclick="editProducto(${p.id})">Editar</button>
+                    <button class="btn-sm btn-del" onclick="deleteProducto(${p.id})">Borrar</button>
+                </td>
+            </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function deleteProducto(id) {
+    if (!confirm('¿Eliminar este producto?')) return;
+    try { await apiRequest(`/productos/${id}`, 'DELETE'); loadInventario(); }
+    catch(e) { alert('Error: ' + e.message); }
+}
+
+// ─── PROVEEDORES ───
+async function loadProveedores() {
+    const tbody = document.getElementById('prov-tbody');
+    try {
+        const data = await apiRequest('/proveedores');
+        tbody.innerHTML = data.length ? data.map(p => `
+            <tr>
+                <td style="font-weight:500">${p.nombre}</td>
+                <td>${p.telefono||'—'}</td>
+                <td>${p.email||'—'}</td>
+                <td>${p.ciudad||'—'}</td>
+                <td style="display:flex;gap:0.4rem">
+                    <button class="btn-sm" onclick="">Editar</button>
+                    <button class="btn-sm btn-del">Borrar</button>
+                </td>
+            </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin proveedores registrados.</td></tr>';
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+    }
+}
+
+// ─── CLIENTES ───
+async function loadClientes() {
+    const tbody = document.getElementById('cli-tbody');
+    try {
+        const data = await apiRequest('/clientes');
+        document.getElementById('cli-total').textContent = data.length;
+        document.getElementById('cli-activos').textContent = data.length;
+        tbody.innerHTML = data.length ? data.map(c => `
+            <tr>
+                <td style="font-weight:500">${c.nombre}</td>
+                <td style="font-family:monospace;font-size:0.82rem">${c.documento||'—'}</td>
+                <td>${c.telefono||'—'}</td>
+                <td>${c.email||'—'}</td>
+                <td style="display:flex;gap:0.4rem">
+                    <button class="btn-sm">Editar</button>
+                    <button class="btn-sm btn-del">Borrar</button>
+                </td>
+            </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin clientes registrados.</td></tr>';
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+    }
+}
+
+// ─── USUARIOS ───
+async function loadUsuarios() {
+    const tbody = document.getElementById('usr-tbody');
+    try {
+        const data = await apiRequest('/usuarios');
+        tbody.innerHTML = data.length ? data.map(u => `
+            <tr>
+                <td style="font-weight:500">${u.nombre}</td>
+                <td>${u.username||u.usuario||'—'}</td>
+                <td><span class="badge ${u.rol==='ADMIN'?'badge-warn':'badge-success'}">${u.rol}</span></td>
+                <td><span class="badge badge-success">Activo</span></td>
+                <td style="display:flex;gap:0.4rem">
+                    <button class="btn-sm">Editar</button>
+                    <button class="btn-sm btn-del">Borrar</button>
+                </td>
+            </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin usuarios registrados.</td></tr>';
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+    }
+}
+
+// ─── ALERTAS STOCK ───
+async function loadAlertas() {
+    const container = document.getElementById('alertas-container');
+    try {
+        const products = await apiRequest('/productos');
+        const bajos  = products.filter(p => p.cantidad <= (p.stockMinimo||5) && p.cantidad > 0);
+        const agotados = products.filter(p => p.cantidad === 0);
+        let html = '';
+        agotados.forEach(p => {
+            html += `<div class="alert-item"><div class="alert-dot red"></div><div><strong>${p.nombre}</strong> — <span style="color:#ef4444">AGOTADO</span></div></div>`;
+        });
+        bajos.forEach(p => {
+            html += `<div class="alert-item"><div class="alert-dot"></div><div><strong>${p.nombre}</strong> — Stock: <span style="color:#f59e0b">${p.cantidad} unidades</span> (mín. ${p.stockMinimo||5})</div></div>`;
+        });
+        container.innerHTML = html || '<p style="color:var(--accent)">✓ Todos los productos tienen stock suficiente.</p>';
+    } catch(e) {
+        container.innerHTML = `<p style="color:#ef4444">Error al cargar alertas: ${e.message}</p>`;
+    }
+}
+
+// ─── MODAL ───
+const MODAL_FIELDS = {
+    inventario: `
+        <label>Código de Barras</label><input id="f1" placeholder="Ej: 7701234" required>
+        <label>Nombre</label><input id="f2" placeholder="Nombre del producto" required>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+            <div><label>Stock</label><input id="f3" type="number" value="0" min="0"></div>
+            <div><label>Stock Mínimo</label><input id="f4" type="number" value="5" min="0"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+            <div><label>Precio Compra</label><input id="f5" type="number" step="0.01"></div>
+            <div><label>Precio Venta</label><input id="f6" type="number" step="0.01"></div>
+        </div>`,
+    proveedor: `
+        <label>Nombre / Empresa</label><input id="f1" placeholder="Nombre del proveedor" required>
+        <label>Teléfono</label><input id="f2" placeholder="Teléfono de contacto">
+        <label>Email</label><input id="f3" type="email" placeholder="correo@ejemplo.com">
+        <label>Ciudad</label><input id="f4" placeholder="Ciudad">`,
+    cliente: `
+        <label>Nombre Completo</label><input id="f1" placeholder="Nombre del cliente" required>
+        <label>Documento</label><input id="f2" placeholder="Cédula / NIT">
+        <label>Teléfono</label><input id="f3" placeholder="Teléfono">
+        <label>Email</label><input id="f4" type="email" placeholder="correo@ejemplo.com">`,
+    usuario: `
+        <label>Nombre</label><input id="f1" placeholder="Nombre completo" required>
+        <label>Usuario</label><input id="f2" placeholder="Nombre de usuario" required>
+        <label>Contraseña</label><input id="f3" type="password" placeholder="Contraseña" required>
+        <label>Rol</label>
+        <select id="f4"><option value="ADMIN">Administrador</option><option value="AUXILIAR">Auxiliar</option></select>`
+};
+
+const MODAL_TITLES = { inventario:'Nuevo Producto', proveedor:'Nuevo Proveedor', cliente:'Nuevo Cliente', usuario:'Nuevo Usuario' };
+
+function openModal(type) {
+    document.getElementById('modal-title').textContent = MODAL_TITLES[type] || 'Nuevo Registro';
+    document.getElementById('modal-fields').innerHTML = MODAL_FIELDS[type] || '';
+    document.getElementById('mainModal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
+document.getElementById('modal-form').addEventListener('submit', e => { e.preventDefault(); closeModal(); });
+</script>
+</body>
+</html>
