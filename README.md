@@ -59,6 +59,6 @@ AcaciosWork/
 
 ---
 
-##  Información para Agentes Inteligentes
-Si eres una IA trabajando en este proyecto, por favor consulta **[proyect-context/project-context.md](file:///c:/AcaciosWork/proyect-context/project-context.md)** antes de realizar cualquier cambio estructural. Contiene un mapeo detallado de archivos y reglas específicas de implementación.
+##  Información para Desarrolladores y Agentes Inteligentes
+Si eres un Desarrollador o IA trabajando en este proyecto, por favor consulta **[proyect-context/project-context.md](file:///c:/AcaciosWork/proyect-context/project-context.md)** antes de realizar cualquier cambio estructural. Contiene un mapeo detallado de archivos y reglas específicas de implementación.
 

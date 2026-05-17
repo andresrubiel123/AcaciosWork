@@ -1,9 +1,9 @@
 # ARCHIVO DE CONTEXTO: ACACIOSWORK
-**INSTRUCCIÓN PARA LA IA**
+**INSTRUCCIÓN PARA DESARROLLADORES Y AGENTES INTELIGENTES**
 
 > **ESTADO**: DESARROLLO ACTIVO - FASE DE ESTABILIZACIÓN Y ESCALADO
-> **AUTOR PRINCIPAL**: @author RADJ
-> **ÚLTIMA REVISIÓN**: 16 de Mayo, 2026
+> **AUTOR PRINCIPAL**: RADJ - andresrubiel@hotmail.com
+> **ÚLTIMA REVISIÓN**: 17 de Mayo, 2026
 
 ---
 
@@ -164,7 +164,6 @@ graph LR
 ```
 
 ---
-Este mapa ayuda a cualquier Agente de IA a localizar rápidamente dónde realizar cambios:
 
 ### 1. Núcleo API (`acacioswork-backend/`)
 *   **Configuración (Seguridad/JWT/CORS)**: `src/main/java/com/acacioswork/config/`
@@ -195,18 +194,16 @@ Este mapa ayuda a cualquier Agente de IA a localizar rápidamente dónde realiza
 Todo bloque de código generado debe incluir: una descripción funcional breve y la firma del autor:
 
 * Lenguaje Tecnología Formato Requerido
-* 
 * **Java - Spring - JS / Kotlin** `/** Descripción breve. @author RADJ */`
 * **CSS / MySQL** `/* Descripción breve. @author RADJ */`
 * **HTML** `<!-- Descripción breve. @author RADJ -->`
 * **JavaScript** `// Descripción breve. @author RADJ`
 
-
 ---
 
 ##  REGLAS TÉCNICAS OBLIGATORIAS (PROHIBICIÓN DE SALTOS)
 1.  **AISLAMIENTO DE DATOS**: PROHIBIDO que clientes (Web, Desktop, Android) conecten directo a MySQL. Todo debe pasar por el Backend.
-2.  **REGLA DE ORO (ID STANDARD)**: Identificadores en MySQL: `BIGINT UNSIGNED`. En Java: `Long`.
+2.  **REGLA ID STANDARD**: Identificadores en MySQL: `BIGINT UNSIGNED`. En Java: `Long`.
 3.  **ENTORNO**: Desarrollo mandatorio en **Java 25** y **Spring Boot 4.0.6**.
 4.  **COMUNICACIÓN**: Exclusivamente vía **JSON/REST** con tokens **JWT** para autorización.
 
