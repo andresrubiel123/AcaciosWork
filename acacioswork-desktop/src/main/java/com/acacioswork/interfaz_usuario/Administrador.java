@@ -5,7 +5,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
@@ -13,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.awt.Dimension;
 import java.io.File;
 
 import javax.swing.BorderFactory;
@@ -37,6 +37,7 @@ import com.acacioswork.model.Usuario;
 import com.acacioswork.util.ApiClient;
 import com.acacioswork.util.SessionManager;
 
+@SuppressWarnings("unchecked")
 public class Administrador extends JPanel {
 
     private static final Color BG_DARK = new Color(15, 23, 42);
@@ -50,7 +51,6 @@ public class Administrador extends JPanel {
 
     private JPanel contentPanel;
     private CardLayout cardLayout;
-    private JPanel alertasContentPanel;
     private JTable tableAlertas;
 
     public Administrador() {
@@ -411,7 +411,6 @@ public class Administrador extends JPanel {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void populateInventarioTable(JTable table, Object[] rows, JPanel stats) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
@@ -448,14 +447,45 @@ public class Administrador extends JPanel {
     }
 
     private void agregarProductoDash(JTable table, JPanel stats) {
+        javax.swing.JDialog dialog = new javax.swing.JDialog((java.awt.Frame) SwingUtilities.getWindowAncestor(this), "Registrar Nuevo Producto", true);
+        dialog.setResizable(false);
+
         JTextField txtCodigo = new JTextField();
+        txtCodigo.putClientProperty("JTextField.placeholderText", "Ej: 7701234");
+        txtCodigo.putClientProperty("JComponent.roundRect", true);
+
         JTextField txtNombre = new JTextField();
-        JTextField txtCant = new JTextField();
-        JTextField txtPCompra = new JTextField();
-        JTextField txtPVenta = new JTextField();
+        txtNombre.putClientProperty("JTextField.placeholderText", "Nombre del producto");
+        txtNombre.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtCant = new JTextField("0");
+        txtCant.putClientProperty("JTextField.placeholderText", "0");
+        txtCant.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtMin = new JTextField("5");
+        txtMin.putClientProperty("JTextField.placeholderText", "5");
+        txtMin.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtPCompra = new JTextField("0");
+        txtPCompra.putClientProperty("JTextField.placeholderText", "0");
+        txtPCompra.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtPVenta = new JTextField("0");
+        txtPVenta.putClientProperty("JTextField.placeholderText", "0");
+        txtPVenta.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtIva = new JTextField("19");
+        txtIva.putClientProperty("JTextField.placeholderText", "19");
+        txtIva.putClientProperty("JComponent.roundRect", true);
 
         java.util.Vector<com.acacioswork.model.Categoria> categorias = new java.util.Vector<>();
+        categorias.add(new com.acacioswork.model.Categoria(-1L, "Seleccione una categoría"));
+
         java.util.Vector<com.acacioswork.model.Proveedor> proveedores = new java.util.Vector<>();
+        com.acacioswork.model.Proveedor placeholderProv = new com.acacioswork.model.Proveedor();
+        placeholderProv.setId(-1L);
+        placeholderProv.setNombre("Seleccione un proveedor");
+        proveedores.add(placeholderProv);
 
         try {
             categorias.addAll(
@@ -466,47 +496,137 @@ public class Administrador extends JPanel {
         }
 
         JComboBox<com.acacioswork.model.Categoria> cbCat = new JComboBox<>(categorias);
+        cbCat.putClientProperty("JComponent.roundRect", true);
         JComboBox<com.acacioswork.model.Proveedor> cbProv = new JComboBox<>(proveedores);
+        cbProv.putClientProperty("JComponent.roundRect", true);
 
-        Object[] message = {
-                "Código de Barras:", txtCodigo,
-                "Nombre:", txtNombre,
-                "Stock Inicial:", txtCant,
-                "Precio Compra:", txtPCompra,
-                "Precio Venta:", txtPVenta,
-                "Categoría:", cbCat,
-                "Proveedor:", cbProv
+        JComboBox<String> cbEstado = new JComboBox<>(new String[] { "Activo", "Inactivo" });
+        cbEstado.putClientProperty("JComponent.roundRect", true);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.Y_AXIS));
+        mainPanel.setBackground(BG_DARK);
+        mainPanel.setBorder(new EmptyBorder(24, 28, 24, 28));
+
+        JLabel lblTitle = new JLabel("Nuevo Producto");
+        lblTitle.setForeground(TEXT_MAIN);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(lblTitle);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(20));
+
+        java.util.function.BiConsumer<String, javax.swing.JComponent> addField = (label, comp) -> {
+            JPanel fPanel = createFieldPanel(label, comp);
+            fPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(fPanel);
+            mainPanel.add(javax.swing.Box.createVerticalStrut(14));
         };
 
-        if (JOptionPane.showConfirmDialog(this, message, "Registrar Nuevo Producto",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        addField.accept("Código de Barras", txtCodigo);
+        addField.accept("Nombre del Producto", txtNombre);
+
+        JPanel stockRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        stockRow.setBackground(BG_DARK);
+        stockRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        stockRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        stockRow.add(createFieldPanel("Stock / Cantidad", txtCant));
+        stockRow.add(createFieldPanel("Stock Mínimo", txtMin));
+        mainPanel.add(stockRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(14));
+
+        JPanel priceRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        priceRow.setBackground(BG_DARK);
+        priceRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        priceRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        priceRow.add(createFieldPanel("Precio Compra", txtPCompra));
+        priceRow.add(createFieldPanel("Precio Venta", txtPVenta));
+        mainPanel.add(priceRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(14));
+
+        addField.accept("Categoría", cbCat);
+        addField.accept("Proveedor", cbProv);
+        addField.accept("IVA (%)", txtIva);
+        addField.accept("Estado", cbEstado);
+
+        mainPanel.add(javax.swing.Box.createVerticalStrut(10));
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(new Color(46, 53, 79));
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCancel.setFocusPainted(false);
+        btnCancel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCancel.putClientProperty("JButton.buttonType", "roundRect");
+
+        JButton btnSave = new JButton("Guardar");
+        btnSave.setBackground(PRIMARY);
+        btnSave.setForeground(Color.WHITE);
+        btnSave.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSave.setFocusPainted(false);
+        btnSave.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSave.putClientProperty("JButton.buttonType", "roundRect");
+
+        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        btnPanel.setBackground(BG_DARK);
+        btnPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        btnPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnPanel.add(btnCancel);
+        btnPanel.add(btnSave);
+        mainPanel.add(btnPanel);
+
+        btnCancel.addActionListener(e -> dialog.dispose());
+        btnSave.addActionListener(e -> {
             try {
+                if (txtNombre.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "El nombre del producto es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 Producto p = new Producto();
                 p.setCodigoBarras(txtCodigo.getText());
                 p.setNombre(txtNombre.getText());
-                p.setCantidad(Integer.parseInt(txtCant.getText()));
-                p.setPrecioCompra(Double.parseDouble(txtPCompra.getText()));
-                p.setPrecioVenta(Double.parseDouble(txtPVenta.getText()));
-                p.setIva(19.0);
-                p.setEstado(1);
-                p.setStockMinimo(5);
+                p.setCantidad(Integer.parseInt(txtCant.getText().trim()));
+                p.setPrecioCompra(Double.parseDouble(txtPCompra.getText().trim()));
+                p.setPrecioVenta(Double.parseDouble(txtPVenta.getText().trim()));
+
+                double ivaVal = 19.0;
+                try {
+                    ivaVal = Double.parseDouble(txtIva.getText().trim());
+                } catch (Exception ex) {}
+                p.setIva(ivaVal);
+
+                p.setEstado("Activo".equals(cbEstado.getSelectedItem()) ? 1 : 0);
+
+                int minVal = 5;
+                try {
+                    minVal = Integer.parseInt(txtMin.getText().trim());
+                } catch (Exception ex) {}
+                p.setStockMinimo(minVal);
 
                 com.acacioswork.model.Categoria c = (com.acacioswork.model.Categoria) cbCat.getSelectedItem();
-                if (c != null)
+                if (c != null && c.getId() != -1L)
                     p.setIdCategoria(c.getId());
 
                 com.acacioswork.model.Proveedor pr = (com.acacioswork.model.Proveedor) cbProv.getSelectedItem();
-                if (pr != null)
+                if (pr != null && pr.getId() != -1L)
                     p.setIdProveedor(pr.getId());
 
                 ApiClient.post("/productos", p, Producto.class);
-                JOptionPane.showMessageDialog(this, "Producto agregado.");
+                JOptionPane.showMessageDialog(this, "Producto agregado con éxito.");
+                dialog.dispose();
                 refreshInventario(table, stats);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, "Error al guardar el producto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setSize(480, 770);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
+
 
     private void editarProductoInv(JTable t, JPanel s) {
         int r = t.getSelectedRow();
@@ -598,16 +718,41 @@ public class Administrador extends JPanel {
     }
 
     private void agregarUsuarioDash(JTable table) {
-        JTextField txtIden = new JTextField();
+        javax.swing.JDialog dialog = new javax.swing.JDialog((java.awt.Frame) SwingUtilities.getWindowAncestor(this), "Nuevo Usuario", true);
+        dialog.setResizable(false);
+
         JTextField txtNom = new JTextField();
+        txtNom.putClientProperty("JTextField.placeholderText", "Nombre");
+        txtNom.putClientProperty("JComponent.roundRect", true);
+
         JTextField txtApe = new JTextField();
-        JTextField txtTel = new JTextField();
-        JTextField txtMail = new JTextField();
-        JTextField txtUser = new JTextField();
-        JPasswordField txtPass = new JPasswordField();
+        txtApe.putClientProperty("JTextField.placeholderText", "Apellido");
+        txtApe.putClientProperty("JComponent.roundRect", true);
 
         String[] tipos = { "Cédula", "NIT", "Pasaporte" };
         JComboBox<String> cbTipo = new JComboBox<>(tipos);
+        cbTipo.setSelectedIndex(0); // Default Cedula
+        cbTipo.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtDoc = new JTextField();
+        txtDoc.putClientProperty("JTextField.placeholderText", "Número de Documento");
+        txtDoc.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtTel = new JTextField();
+        txtTel.putClientProperty("JTextField.placeholderText", "Teléfono");
+        txtTel.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtMail = new JTextField();
+        txtMail.putClientProperty("JTextField.placeholderText", "correo@ejemplo.com");
+        txtMail.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtUser = new JTextField();
+        txtUser.putClientProperty("JTextField.placeholderText", "Nombre de usuario");
+        txtUser.putClientProperty("JComponent.roundRect", true);
+
+        JPasswordField txtPass = new JPasswordField();
+        txtPass.putClientProperty("JTextField.placeholderText", "Contraseña");
+        txtPass.putClientProperty("JComponent.roundRect", true);
 
         java.util.Vector<Rol> roles = new java.util.Vector<>();
         try {
@@ -619,45 +764,121 @@ public class Administrador extends JPanel {
             roles.add(new Rol(2L, "Vendedor"));
         }
         JComboBox<Rol> cbRol = new JComboBox<>(roles);
-        JCheckBox chkAct = new JCheckBox("Usuario activo", true);
+        cbRol.putClientProperty("JComponent.roundRect", true);
 
-        Object[] msg = {
-                "Tipo Documento:", cbTipo,
-                "Doc/Identificación:", txtIden,
-                "Nombre:", txtNom,
-                "Apellido:", txtApe,
-                "Teléfono:", txtTel,
-                "Email:", txtMail,
-                "Usuario (Login):", txtUser,
-                "Contraseña:", txtPass,
-                "Rol:", cbRol,
-                chkAct
+        JComboBox<String> cbEstado = new JComboBox<>(new String[] { "Activo", "Inactivo" });
+        cbEstado.putClientProperty("JComponent.roundRect", true);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.Y_AXIS));
+        mainPanel.setBackground(BG_DARK);
+        mainPanel.setBorder(new EmptyBorder(24, 28, 24, 28));
+
+        JLabel lblTitle = new JLabel("Nuevo Usuario");
+        lblTitle.setForeground(TEXT_MAIN);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(lblTitle);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(20));
+
+        java.util.function.BiConsumer<String, javax.swing.JComponent> addField = (label, comp) -> {
+            JPanel fPanel = createFieldPanel(label, comp);
+            fPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(fPanel);
+            mainPanel.add(javax.swing.Box.createVerticalStrut(14));
         };
 
-        if (JOptionPane.showConfirmDialog(this, msg, "Registrar Nuevo Usuario",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        JPanel nameRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        nameRow.setBackground(BG_DARK);
+        nameRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        nameRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        nameRow.add(createFieldPanel("Nombre", txtNom));
+        nameRow.add(createFieldPanel("Apellido", txtApe));
+        mainPanel.add(nameRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(14));
+
+        JPanel docRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        docRow.setBackground(BG_DARK);
+        docRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        docRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        docRow.add(createFieldPanel("Tipo Doc.", cbTipo));
+        docRow.add(createFieldPanel("Número de Documento", txtDoc));
+        mainPanel.add(docRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(14));
+
+        addField.accept("Teléfono", txtTel);
+        addField.accept("Email", txtMail);
+        addField.accept("Nombre de Usuario", txtUser);
+        addField.accept("Contraseña", txtPass);
+
+        JPanel roleRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        roleRow.setBackground(BG_DARK);
+        roleRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        roleRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        roleRow.add(createFieldPanel("Rol", cbRol));
+        roleRow.add(createFieldPanel("Estado", cbEstado));
+        mainPanel.add(roleRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(20));
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(new Color(46, 53, 79));
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCancel.setFocusPainted(false);
+        btnCancel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCancel.putClientProperty("JButton.buttonType", "roundRect");
+
+        JButton btnSave = new JButton("Guardar");
+        btnSave.setBackground(PRIMARY);
+        btnSave.setForeground(Color.WHITE);
+        btnSave.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSave.setFocusPainted(false);
+        btnSave.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSave.putClientProperty("JButton.buttonType", "roundRect");
+
+        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        btnPanel.setBackground(BG_DARK);
+        btnPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        btnPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnPanel.add(btnCancel);
+        btnPanel.add(btnSave);
+        mainPanel.add(btnPanel);
+
+        btnCancel.addActionListener(e -> dialog.dispose());
+        btnSave.addActionListener(e -> {
             try {
+                if (txtNom.getText().trim().isEmpty() || txtUser.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "El nombre y el usuario son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 Usuario u = new Usuario();
                 u.setIdTipoDocumento((long) (cbTipo.getSelectedIndex() + 1));
-                u.setIdentificacion(txtIden.getText());
+                u.setIdentificacion(txtDoc.getText());
                 u.setNombre(txtNom.getText());
                 u.setApellido(txtApe.getText());
-                // Nota: Si el modelo Usuario de escritorio no tiene 'telefono', lo ignorará.
-                // Pero lo incluimos para que la lógica sea robusta.
+                u.setTelefono(txtTel.getText());
                 u.setEmail(txtMail.getText());
                 u.setUsuario(txtUser.getText());
                 u.setClave(new String(txtPass.getPassword()));
                 Rol r = (Rol) cbRol.getSelectedItem();
                 u.setIdRol(r != null ? r.getId() : 2L);
-                u.setActivo(chkAct.isSelected() ? 1 : 0);
+                u.setActivo("Activo".equals(cbEstado.getSelectedItem()) ? 1 : 0);
 
                 ApiClient.post("/usuarios", u, Usuario.class);
                 JOptionPane.showMessageDialog(this, "Usuario creado exitosamente.");
+                dialog.dispose();
                 refreshUsuarios(table);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al crear: " + e.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, "Error al guardar el usuario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setSize(480, 780);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void editarUsuarioDash(JTable table) {
@@ -822,7 +1043,18 @@ public class Administrador extends JPanel {
         return s;
     }
 
-    @SuppressWarnings("unchecked")
+    private JPanel createFieldPanel(String labelText, javax.swing.JComponent component) {
+        JPanel panel = new JPanel(new BorderLayout(0, 4));
+        panel.setBackground(BG_DARK);
+        JLabel label = new JLabel(labelText);
+        label.setForeground(TEXT_MUTED);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        panel.add(label, BorderLayout.NORTH);
+        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 36));
+        panel.add(component, BorderLayout.CENTER);
+        return panel;
+    }
+
     private void loadTable(JTable t, String ep,
             java.util.function.Function<java.util.Map<String, Object>, Object[]> m) {
         new SwingWorker<Void, Void>() {
@@ -848,19 +1080,6 @@ public class Administrador extends JPanel {
         if (tableAlertas != null) {
             refreshAlertas(tableAlertas);
         }
-    }
-
-    private JPanel buildAlertRow(String msg, Color c) {
-        JPanel r = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 8));
-        r.setBackground(new Color(245, 158, 11, 15));
-        r.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
-        JLabel d = new JLabel("●");
-        d.setForeground(c);
-        JLabel t = new JLabel(msg);
-        t.setForeground(TEXT_MAIN);
-        r.add(d);
-        r.add(t);
-        return r;
     }
 
     private JPanel buildReportCard(String t) {
@@ -1367,29 +1586,110 @@ public class Administrador extends JPanel {
     }
 
     private void agregarProveedorDash(JTable table) {
+        javax.swing.JDialog dialog = new javax.swing.JDialog((java.awt.Frame) SwingUtilities.getWindowAncestor(this), "Nuevo Proveedor", true);
+        dialog.setResizable(false);
+
         JTextField txtNom = new JTextField();
-        JTextField txtDoc = new JTextField();
-        JTextField txtTel = new JTextField();
-        JTextField txtDir = new JTextField();
-        JTextField txtMail = new JTextField();
-        JTextField txtCuenta = new JTextField();
+        txtNom.putClientProperty("JTextField.placeholderText", "Nombre de la empresa");
+        txtNom.putClientProperty("JComponent.roundRect", true);
+
         JComboBox<String> cbTipo = new JComboBox<>(new String[] { "Cédula", "NIT", "Pasaporte" });
         cbTipo.setSelectedIndex(1);
-        JCheckBox chkAct = new JCheckBox("Proveedor activo", true);
+        cbTipo.putClientProperty("JComponent.roundRect", true);
 
-        Object[] msg = {
-                "Tipo Documento:", cbTipo,
-                "NIT/Documento:", txtDoc,
-                "Nombre Empresa/Persona:", txtNom,
-                "Teléfono:", txtTel,
-                "Dirección:", txtDir,
-                "Email:", txtMail,
-                "Cuenta Bancaria:", txtCuenta,
-                chkAct
+        JTextField txtDoc = new JTextField();
+        txtDoc.putClientProperty("JTextField.placeholderText", "NIT / Cédula");
+        txtDoc.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtTel = new JTextField();
+        txtTel.putClientProperty("JTextField.placeholderText", "Teléfono de contacto");
+        txtTel.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtMail = new JTextField();
+        txtMail.putClientProperty("JTextField.placeholderText", "correo@empresa.com");
+        txtMail.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtDir = new JTextField();
+        txtDir.putClientProperty("JTextField.placeholderText", "Dirección física");
+        txtDir.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtCuenta = new JTextField();
+        txtCuenta.putClientProperty("JTextField.placeholderText", "Ej: Ahorros Bancolombia No. 123...");
+        txtCuenta.putClientProperty("JComponent.roundRect", true);
+
+        JComboBox<String> cbEstado = new JComboBox<>(new String[] { "Activo", "Inactivo" });
+        cbEstado.putClientProperty("JComponent.roundRect", true);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.Y_AXIS));
+        mainPanel.setBackground(BG_DARK);
+        mainPanel.setBorder(new EmptyBorder(24, 28, 24, 28));
+
+        JLabel lblTitle = new JLabel("Nuevo Proveedor");
+        lblTitle.setForeground(TEXT_MAIN);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(lblTitle);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(20));
+
+        java.util.function.BiConsumer<String, javax.swing.JComponent> addField = (label, comp) -> {
+            JPanel fPanel = createFieldPanel(label, comp);
+            fPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(fPanel);
+            mainPanel.add(javax.swing.Box.createVerticalStrut(14));
         };
-        if (JOptionPane.showConfirmDialog(this, msg, "Nuevo Proveedor",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+
+        addField.accept("Nombre / Razón Social", txtNom);
+
+        JPanel docRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        docRow.setBackground(BG_DARK);
+        docRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        docRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        docRow.add(createFieldPanel("Tipo Doc.", cbTipo));
+        docRow.add(createFieldPanel("Número de Documento", txtDoc));
+        mainPanel.add(docRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(14));
+
+        addField.accept("Teléfono", txtTel);
+        addField.accept("Email", txtMail);
+        addField.accept("Dirección (Ciudad/Dirección)", txtDir);
+        addField.accept("Cuenta Bancaria", txtCuenta);
+        addField.accept("Estado", cbEstado);
+
+        mainPanel.add(javax.swing.Box.createVerticalStrut(10));
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(new Color(46, 53, 79));
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCancel.setFocusPainted(false);
+        btnCancel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCancel.putClientProperty("JButton.buttonType", "roundRect");
+
+        JButton btnSave = new JButton("Guardar");
+        btnSave.setBackground(PRIMARY);
+        btnSave.setForeground(Color.WHITE);
+        btnSave.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSave.setFocusPainted(false);
+        btnSave.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSave.putClientProperty("JButton.buttonType", "roundRect");
+
+        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        btnPanel.setBackground(BG_DARK);
+        btnPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        btnPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnPanel.add(btnCancel);
+        btnPanel.add(btnSave);
+        mainPanel.add(btnPanel);
+
+        btnCancel.addActionListener(e -> dialog.dispose());
+        btnSave.addActionListener(e -> {
             try {
+                if (txtNom.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "El nombre/razón social es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 com.acacioswork.model.Proveedor p = new com.acacioswork.model.Proveedor();
                 p.setIdTipoDocumento((long) (cbTipo.getSelectedIndex() + 1));
                 p.setNumeroDocumento(txtDoc.getText());
@@ -1398,14 +1698,22 @@ public class Administrador extends JPanel {
                 p.setDireccion(txtDir.getText());
                 p.setEmail(txtMail.getText());
                 p.setCuentaBancaria(txtCuenta.getText());
-                p.setActivo(chkAct.isSelected() ? 1 : 0);
+                p.setActivo("Activo".equals(cbEstado.getSelectedItem()) ? 1 : 0);
+
                 ApiClient.post("/proveedores", p, com.acacioswork.model.Proveedor.class);
-                JOptionPane.showMessageDialog(this, "Proveedor guardado.");
+                JOptionPane.showMessageDialog(this, "Proveedor guardado con éxito.");
+                dialog.dispose();
                 refreshProveedores(table);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, "Error al guardar el proveedor: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setSize(480, 750);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void editarProveedorDash(JTable table) {
@@ -1460,41 +1768,133 @@ public class Administrador extends JPanel {
     }
 
     private void agregarClienteDash(JTable table) {
-        JTextField txtNom = new JTextField();
-        JTextField txtDoc = new JTextField();
-        JTextField txtTel = new JTextField();
-        JTextField txtMail = new JTextField();
-        JCheckBox chkFreq = new JCheckBox("Cliente frecuente", false);
-        JCheckBox chkAct = new JCheckBox("Cliente activo", true);
+        javax.swing.JDialog dialog = new javax.swing.JDialog((java.awt.Frame) SwingUtilities.getWindowAncestor(this), "Nuevo Cliente", true);
+        dialog.setResizable(false);
 
-        Object[] msg = {
-                "Identificación/NIT:", txtDoc,
-                "Nombre Completo:", txtNom,
-                "Teléfono:", txtTel,
-                "Email:", txtMail,
-                chkFreq,
-                chkAct
+        JTextField txtNom = new JTextField();
+        txtNom.putClientProperty("JTextField.placeholderText", "Nombre del cliente");
+        txtNom.putClientProperty("JComponent.roundRect", true);
+
+        JComboBox<String> cbTipo = new JComboBox<>(new String[] { "Cédula", "NIT", "Pasaporte" });
+        cbTipo.setSelectedIndex(0); // Default Cedula
+        cbTipo.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtDoc = new JTextField();
+        txtDoc.putClientProperty("JTextField.placeholderText", "Cédula / NIT");
+        txtDoc.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtTel = new JTextField();
+        txtTel.putClientProperty("JTextField.placeholderText", "Teléfono");
+        txtTel.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtMail = new JTextField();
+        txtMail.putClientProperty("JTextField.placeholderText", "correo@ejemplo.com");
+        txtMail.putClientProperty("JComponent.roundRect", true);
+
+        JTextField txtDir = new JTextField();
+        txtDir.putClientProperty("JTextField.placeholderText", "Dirección física");
+        txtDir.putClientProperty("JComponent.roundRect", true);
+
+        JComboBox<String> cbFreq = new JComboBox<>(new String[] { "No", "Sí" });
+        cbFreq.putClientProperty("JComponent.roundRect", true);
+
+        JComboBox<String> cbEstado = new JComboBox<>(new String[] { "Activo", "Inactivo" });
+        cbEstado.putClientProperty("JComponent.roundRect", true);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.Y_AXIS));
+        mainPanel.setBackground(BG_DARK);
+        mainPanel.setBorder(new EmptyBorder(24, 28, 24, 28));
+
+        JLabel lblTitle = new JLabel("Nuevo Cliente");
+        lblTitle.setForeground(TEXT_MAIN);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(lblTitle);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(20));
+
+        java.util.function.BiConsumer<String, javax.swing.JComponent> addField = (label, comp) -> {
+            JPanel fPanel = createFieldPanel(label, comp);
+            fPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(fPanel);
+            mainPanel.add(javax.swing.Box.createVerticalStrut(14));
         };
 
-        if (JOptionPane.showConfirmDialog(this, msg, "Nuevo Cliente",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        addField.accept("Nombre Completo", txtNom);
+
+        JPanel docRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        docRow.setBackground(BG_DARK);
+        docRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        docRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        docRow.add(createFieldPanel("Tipo Doc.", cbTipo));
+        docRow.add(createFieldPanel("Número de Documento", txtDoc));
+        mainPanel.add(docRow);
+        mainPanel.add(javax.swing.Box.createVerticalStrut(14));
+
+        addField.accept("Teléfono", txtTel);
+        addField.accept("Email", txtMail);
+        addField.accept("Dirección", txtDir);
+        addField.accept("Cliente Frecuente", cbFreq);
+        addField.accept("Estado", cbEstado);
+
+        mainPanel.add(javax.swing.Box.createVerticalStrut(10));
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(new Color(46, 53, 79));
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCancel.setFocusPainted(false);
+        btnCancel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCancel.putClientProperty("JButton.buttonType", "roundRect");
+
+        JButton btnSave = new JButton("Guardar");
+        btnSave.setBackground(PRIMARY);
+        btnSave.setForeground(Color.WHITE);
+        btnSave.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSave.setFocusPainted(false);
+        btnSave.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSave.putClientProperty("JButton.buttonType", "roundRect");
+
+        JPanel btnPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        btnPanel.setBackground(BG_DARK);
+        btnPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        btnPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnPanel.add(btnCancel);
+        btnPanel.add(btnSave);
+        mainPanel.add(btnPanel);
+
+        btnCancel.addActionListener(e -> dialog.dispose());
+        btnSave.addActionListener(e -> {
             try {
+                if (txtNom.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "El nombre completo es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 com.acacioswork.model.Cliente c = new com.acacioswork.model.Cliente();
+                c.setIdTipoDocumento((long) (cbTipo.getSelectedIndex() + 1));
                 c.setNumeroDocumento(txtDoc.getText());
                 c.setNombre(txtNom.getText());
                 c.setTelefono(txtTel.getText());
                 c.setEmail(txtMail.getText());
-                c.setFrecuente(chkFreq.isSelected());
-                c.setActivo(chkAct.isSelected() ? 1 : 0);
-                c.setIdTipoDocumento(1L); // Default Cedula
+                c.setDireccion(txtDir.getText());
+                c.setFrecuente("Sí".equals(cbFreq.getSelectedItem()));
+                c.setActivo("Activo".equals(cbEstado.getSelectedItem()) ? 1 : 0);
 
                 ApiClient.post("/clientes", c, com.acacioswork.model.Cliente.class);
-                JOptionPane.showMessageDialog(this, "Cliente registrado.");
+                JOptionPane.showMessageDialog(this, "Cliente guardado con éxito.");
+                dialog.dispose();
                 refreshClientes(table);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, "Error al guardar el cliente: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setSize(480, 750);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void editarClienteDash(JTable table) {
