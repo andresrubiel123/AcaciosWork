@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -30,11 +31,11 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import com.acacioswork.model.AlertaStockMinimo;
 import com.acacioswork.model.Producto;
 import com.acacioswork.model.Rol;
 import com.acacioswork.model.Usuario;
 import com.acacioswork.util.ApiClient;
+import com.acacioswork.util.SessionManager;
 
 public class Administrador extends JPanel {
 
@@ -50,6 +51,7 @@ public class Administrador extends JPanel {
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private JPanel alertasContentPanel;
+    private JTable tableAlertas;
 
     public Administrador() {
         try {
@@ -261,56 +263,83 @@ public class Administrador extends JPanel {
     private JPanel buildAlertasPanel() {
         JPanel panel = createContentPanel();
 
-        JPanel headerActions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        headerActions.setOpaque(false);
-
         JButton bPdf = createActionButton("Descargar lista PDF", new Color(40, 167, 69));
         JButton bPrint = createActionButton("Imprimir lista", new Color(34, 139, 34));
 
-        headerActions.add(bPdf);
-        headerActions.add(bPrint);
+        panel.add(buildSectionHeader("Alertas de Stock Crítico", "Productos con existencias en nivel mínimo de reabastecimiento", bPdf, bPrint), BorderLayout.NORTH);
 
-        panel.add(headerActions, BorderLayout.NORTH);
-
-        JTable table = buildStyledTable(
+        tableAlertas = buildStyledTable(
                 new String[] { "ID", "Producto", "Stock Actual", "Mínimo", "Proveedor", "Acción" });
-        hideColumn(table, 0);
+        hideColumn(tableAlertas, 0);
 
-        // Renderizador para colores
-        table.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+        // Centrar y colorear columna Stock Actual
+        tableAlertas.getColumnModel().getColumn(2).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            { setHorizontalAlignment(javax.swing.SwingConstants.CENTER); }
             @Override
             public Component getTableCellRendererComponent(JTable t, Object v, boolean s, boolean f, int r, int c) {
                 Component comp = super.getTableCellRendererComponent(t, v, s, f, r, c);
-                int stock = Integer.parseInt(t.getValueAt(r, 2).toString());
-                if (!s) {
-                    if (stock == 0)
-                        comp.setBackground(new Color(150, 40, 40)); // Rojo oscuro
-                    else if (stock <= 5)
-                        comp.setBackground(new Color(150, 100, 40)); // Naranja/Marrón
-                    else
-                        comp.setBackground(t.getBackground());
-                }
+                comp.setForeground(TEXT_MAIN);
+                try {
+                    Object val = t.getValueAt(r, 2);
+                    if (val != null) {
+                        int stock = Integer.parseInt(val.toString().replaceAll("[^0-9]", ""));
+                        if (stock == 0) {
+                            comp.setBackground(new Color(239, 68, 68, 40)); // Rojo suave
+                            comp.setForeground(DANGER);
+                            setFont(getFont().deriveFont(Font.BOLD));
+                        } else {
+                            comp.setBackground(new Color(245, 158, 11, 40)); // Naranja suave
+                            comp.setForeground(new Color(245, 158, 11));
+                            setFont(getFont().deriveFont(Font.BOLD));
+                        }
+                    }
+                } catch (Exception ex) {}
                 return comp;
             }
         });
 
-        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        // Centrar columna Mínimo
+        tableAlertas.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            { setHorizontalAlignment(javax.swing.SwingConstants.CENTER); }
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object v, boolean s, boolean f, int r, int c) {
+                Component comp = super.getTableCellRendererComponent(t, v, s, f, r, c);
+                comp.setBackground(t.getBackground());
+                comp.setForeground(TEXT_MUTED);
+                return comp;
+            }
+        });
 
-        bPdf.addActionListener(e -> JOptionPane.showMessageDialog(this, "Generando reporte PDF de stock bajo..."));
-        bPrint.addActionListener(e -> JOptionPane.showMessageDialog(this, "Enviando lista a la impresora..."));
+        // Diseñar botón Ver Proveedor en columna Acción
+        tableAlertas.getColumnModel().getColumn(5).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            { setHorizontalAlignment(javax.swing.SwingConstants.CENTER); }
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object v, boolean s, boolean f, int r, int c) {
+                Component comp = super.getTableCellRendererComponent(t, v, s, f, r, c);
+                comp.setBackground(new Color(99, 102, 241, 30)); // Indigo translúcido
+                comp.setForeground(PRIMARY);
+                setFont(getFont().deriveFont(Font.BOLD));
+                return comp;
+            }
+        });
+
+        panel.add(wrapTable(tableAlertas), BorderLayout.CENTER);
+
+        bPdf.addActionListener(e -> generarReporte("stock-bajo"));
+        bPrint.addActionListener(e -> generarReporte("stock-bajo"));
 
         // Botón Ver Proveedor
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
+        tableAlertas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                int row = table.getSelectedRow();
-                int col = table.getSelectedColumn();
+                int row = tableAlertas.getSelectedRow();
+                int col = tableAlertas.getSelectedColumn();
                 if (col == 5 && row != -1) { // Columna Acción
-                    Administrador.this.mostrarInfoProveedor(table.getValueAt(row, 0));
+                    Administrador.this.mostrarInfoProveedor(tableAlertas.getValueAt(row, 0));
                 }
             }
         });
 
-        refreshAlertas(table);
+        refreshAlertas(tableAlertas);
         return panel;
     }
 
@@ -459,7 +488,7 @@ public class Administrador extends JPanel {
                 p.setPrecioCompra(Double.parseDouble(txtPCompra.getText()));
                 p.setPrecioVenta(Double.parseDouble(txtPVenta.getText()));
                 p.setIva(19.0);
-                p.setEstado("1");
+                p.setEstado(1);
                 p.setStockMinimo(5);
 
                 com.acacioswork.model.Categoria c = (com.acacioswork.model.Categoria) cbCat.getSelectedItem();
@@ -481,8 +510,10 @@ public class Administrador extends JPanel {
 
     private void editarProductoInv(JTable t, JPanel s) {
         int r = t.getSelectedRow();
-        if (r == -1)
+        if (r == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto de la tabla.");
             return;
+        }
         Long id = (Long) t.getValueAt(r, 0);
         try {
             Producto p = ApiClient.get("/productos/" + id, Producto.class);
@@ -491,11 +522,48 @@ public class Administrador extends JPanel {
             JTextField txtPC = new JTextField(String.valueOf(p.getPrecioCompra()));
             JTextField txtPV = new JTextField(String.valueOf(p.getPrecioVenta()));
 
+            java.util.Vector<com.acacioswork.model.Categoria> categorias = new java.util.Vector<>();
+            java.util.Vector<com.acacioswork.model.Proveedor> proveedores = new java.util.Vector<>();
+
+            try {
+                categorias.addAll(
+                        java.util.Arrays.asList(ApiClient.get("/categorias", com.acacioswork.model.Categoria[].class)));
+                proveedores.addAll(
+                        java.util.Arrays.asList(ApiClient.get("/proveedores", com.acacioswork.model.Proveedor[].class)));
+            } catch (Exception e) {
+            }
+
+            JComboBox<com.acacioswork.model.Categoria> cbCat = new JComboBox<>(categorias);
+            if (p.getIdCategoria() != null) {
+                for (com.acacioswork.model.Categoria cat : categorias) {
+                    if (cat.getId().equals(p.getIdCategoria())) {
+                        cbCat.setSelectedItem(cat);
+                        break;
+                    }
+                }
+            }
+
+            JComboBox<com.acacioswork.model.Proveedor> cbProv = new JComboBox<>(proveedores);
+            if (p.getIdProveedor() != null) {
+                for (com.acacioswork.model.Proveedor prov : proveedores) {
+                    if (prov.getId().equals(p.getIdProveedor())) {
+                        cbProv.setSelectedItem(prov);
+                        break;
+                    }
+                }
+            }
+
+            JComboBox<String> cbEstado = new JComboBox<>(new String[] { "Activo", "Inactivo" });
+            cbEstado.setSelectedItem(p.getEstado() != null && p.getEstado() == 1 ? "Activo" : "Inactivo");
+
             Object[] msg = {
                     "Nombre del Producto:", txtN,
                     "Stock (Existencias):", txtC,
                     "Precio de Compra:", txtPC,
-                    "Precio de Venta:", txtPV
+                    "Precio de Venta:", txtPV,
+                    "Categoría:", cbCat,
+                    "Proveedor:", cbProv,
+                    "Estado:", cbEstado
             };
 
             if (JOptionPane.showConfirmDialog(this, msg, "Editar Producto", JOptionPane.OK_CANCEL_OPTION,
@@ -504,6 +572,16 @@ public class Administrador extends JPanel {
                 p.setCantidad(Integer.parseInt(txtC.getText()));
                 p.setPrecioCompra(Double.parseDouble(txtPC.getText()));
                 p.setPrecioVenta(Double.parseDouble(txtPV.getText()));
+
+                com.acacioswork.model.Categoria c = (com.acacioswork.model.Categoria) cbCat.getSelectedItem();
+                if (c != null)
+                    p.setIdCategoria(c.getId());
+
+                com.acacioswork.model.Proveedor pr = (com.acacioswork.model.Proveedor) cbProv.getSelectedItem();
+                if (pr != null)
+                    p.setIdProveedor(pr.getId());
+
+                p.setEstado(cbEstado.getSelectedItem().equals("Activo") ? 1 : 0);
 
                 ApiClient.put("/productos/" + id, p, Producto.class);
                 JOptionPane.showMessageDialog(this, "Producto actualizado con éxito.");
@@ -767,26 +845,9 @@ public class Administrador extends JPanel {
     }
 
     private void refreshAlertas() {
-        if (alertasContentPanel == null)
-            return;
-        new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                try {
-                    AlertaStockMinimo[] a = ApiClient.get("/inventario/alertas", AlertaStockMinimo[].class);
-                    SwingUtilities.invokeLater(() -> {
-                        alertasContentPanel.removeAll();
-                        if (a != null)
-                            for (AlertaStockMinimo alerta : a)
-                                alertasContentPanel.add(buildAlertRow(alerta.getMensaje(), DANGER));
-                        alertasContentPanel.revalidate();
-                        alertasContentPanel.repaint();
-                    });
-                } catch (Exception ex) {
-                }
-                return null;
-            }
-        }.execute();
+        if (tableAlertas != null) {
+            refreshAlertas(tableAlertas);
+        }
     }
 
     private JPanel buildAlertRow(String msg, Color c) {
@@ -812,9 +873,465 @@ public class Administrador extends JPanel {
         JButton b = new JButton("Generar PDF");
         b.setBackground(PRIMARY);
         b.setForeground(Color.WHITE);
+        b.setFocusPainted(false);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        String tipo = "";
+        if (t.contains("Inventario"))
+            tipo = "inventario";
+        else if (t.contains("Stock Bajo"))
+            tipo = "stock-bajo";
+        else if (t.contains("Clientes"))
+            tipo = "clientes";
+        else if (t.contains("Proveedores"))
+            tipo = "proveedores";
+        else if (t.contains("Usuarios"))
+            tipo = "usuarios";
+        else if (t.contains("Resumen"))
+            tipo = "resumen";
+
+        final String finalTipo = tipo;
+        b.addActionListener(e -> generarReporte(finalTipo));
+
         c.add(lt, BorderLayout.NORTH);
         c.add(b, BorderLayout.SOUTH);
         return c;
+    }
+
+    private void generarReporte(String tipo) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        new SwingWorker<File, Void>() {
+            private String errorMsg = null;
+
+            @Override
+            protected File doInBackground() {
+                try {
+                    String titulo = "";
+                    StringBuilder headersHtml = new StringBuilder();
+                    StringBuilder rowsHtml = new StringBuilder();
+                    StringBuilder resumenHtml = new StringBuilder();
+                    String nowStr = java.time.LocalDateTime.now()
+                            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a"));
+                    String userName = SessionManager.getUsuario() != null
+                            ? SessionManager.getUsuario().getNombre() + " "
+                                    + (SessionManager.getUsuario().getApellido() != null
+                                            ? SessionManager.getUsuario().getApellido()
+                                            : "")
+                            : "Administrador";
+
+                    if ("inventario".equals(tipo)) {
+                        titulo = "Inventario General de Productos";
+                        String[] headers = { "Código de Barras", "Nombre del Producto", "Stock", "P. Compra",
+                                "P. Venta", "Estado" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] data = ApiClient.get("/productos", Object[].class);
+                        int totalStock = 0;
+                        double totalValor = 0;
+
+                        if (data != null) {
+                            for (Object raw : data) {
+                                java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                                int qty = num(p, "cantidad");
+                                double precioCompra = dbl(p, "precioCompra");
+                                double precioVenta = dbl(p, "precioVenta");
+                                String estado = num(p, "estado") == 1 ? "Activo" : "Inactivo";
+
+                                totalStock += qty;
+                                totalValor += qty * precioVenta;
+
+                                rowsHtml.append("<tr>")
+                                        .append("<td>").append(str(p, "codigoBarras")).append("</td>")
+                                        .append("<td>").append(str(p, "nombre")).append("</td>")
+                                        .append("<td>").append(qty).append(" uds</td>")
+                                        .append("<td>$").append(String.format("%,.0f", precioCompra)).append("</td>")
+                                        .append("<td>$").append(String.format("%,.0f", precioVenta)).append("</td>")
+                                        .append("<td>").append(estado).append("</td>")
+                                        .append("</tr>");
+                            }
+                        }
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total Productos:</strong> ").append(data != null ? data.length : 0)
+                                .append("</p>")
+                                .append("<p><strong>Stock Total en Almacén:</strong> ").append(totalStock)
+                                .append(" unidades</p>")
+                                .append("<p><strong>Valoración Comercial (a P. Venta):</strong> $")
+                                .append(String.format("%,.0f", totalValor)).append("</p>")
+                                .append("</div>");
+
+                    } else if ("stock-bajo".equals(tipo)) {
+                        titulo = "Reporte de Productos con Stock Bajo";
+                        String[] headers = { "Código de Barras", "Nombre", "Stock Actual", "Stock Mínimo", "P. Venta",
+                                "Proveedor" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] data = ApiClient.get("/productos", Object[].class);
+                        Object[] provs = ApiClient.get("/proveedores", Object[].class);
+                        int stockCriticoCount = 0;
+
+                        if (data != null) {
+                            for (Object raw : data) {
+                                java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                                int qty = num(p, "cantidad");
+                                int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
+                                if (qty <= min) {
+                                    stockCriticoCount++;
+                                    double precioVenta = dbl(p, "precioVenta");
+
+                                    String provName = "Sin asignar";
+                                    Object idProv = p.get("idProveedor");
+                                    if (idProv != null && provs != null) {
+                                        for (Object prRaw : provs) {
+                                            java.util.Map<String, Object> pr = (java.util.Map<String, Object>) prRaw;
+                                            if (idProv.toString().equals(id(pr).toString())) {
+                                                provName = str(pr, "nombre");
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    rowsHtml.append("<tr>")
+                                            .append("<td>").append(str(p, "codigoBarras")).append("</td>")
+                                            .append("<td>").append(str(p, "nombre")).append("</td>")
+                                            .append("<td><span style='color:#ef4444; font-weight:bold'>").append(qty)
+                                            .append(" uds</span></td>")
+                                            .append("<td>").append(min).append(" uds</td>")
+                                            .append("<td>$").append(String.format("%,.0f", precioVenta)).append("</td>")
+                                            .append("<td>").append(provName).append("</td>")
+                                            .append("</tr>");
+                                }
+                            }
+                        }
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total en Stock Crítico:</strong> ").append(stockCriticoCount)
+                                .append(" productos</p>")
+                                .append("</div>");
+
+                    } else if ("clientes".equals(tipo)) {
+                        titulo = "Reporte General de Clientes";
+                        String[] headers = { "Nombre Completo", "Identificación", "Teléfono", "Email", "Dirección",
+                                "Frecuente", "Estado" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] data = ApiClient.get("/clientes", Object[].class);
+                        if (data != null) {
+                            for (Object raw : data) {
+                                java.util.Map<String, Object> c = (java.util.Map<String, Object>) raw;
+                                String frecuente = "true".equals(str(c, "frecuente")) ? "Sí" : "No";
+                                String estado = "1".equals(str(c, "activo")) ? "Activo" : "Inactivo";
+
+                                rowsHtml.append("<tr>")
+                                        .append("<td>").append(str(c, "nombre")).append("</td>")
+                                        .append("<td>").append(str(c, "numeroDocumento")).append("</td>")
+                                        .append("<td>").append(str(c, "telefono")).append("</td>")
+                                        .append("<td>").append(str(c, "email")).append("</td>")
+                                        .append("<td>").append(str(c, "direccion")).append("</td>")
+                                        .append("<td>").append(frecuente).append("</td>")
+                                        .append("<td>").append(estado).append("</td>")
+                                        .append("</tr>");
+                            }
+                        }
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total Clientes Registrados:</strong> ")
+                                .append(data != null ? data.length : 0).append("</p>")
+                                .append("</div>");
+
+                    } else if ("proveedores".equals(tipo)) {
+                        titulo = "Directorio General de Proveedores";
+                        String[] headers = { "Nombre / Empresa", "NIT / Identificación", "Teléfono", "Email",
+                                "Dirección", "Cuenta Bancaria", "Estado" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] data = ApiClient.get("/proveedores", Object[].class);
+                        if (data != null) {
+                            for (Object raw : data) {
+                                java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                                String estado = "1".equals(str(p, "activo")) ? "Activo" : "Inactivo";
+
+                                rowsHtml.append("<tr>")
+                                        .append("<td>").append(str(p, "nombre")).append("</td>")
+                                        .append("<td>").append(str(p, "numeroDocumento")).append("</td>")
+                                        .append("<td>").append(str(p, "telefono")).append("</td>")
+                                        .append("<td>").append(str(p, "email")).append("</td>")
+                                        .append("<td>").append(str(p, "direccion")).append("</td>")
+                                        .append("<td>").append(str(p, "cuentaBancaria")).append("</td>")
+                                        .append("<td>").append(estado).append("</td>")
+                                        .append("</tr>");
+                            }
+                        }
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total Proveedores Registrados:</strong> ")
+                                .append(data != null ? data.length : 0).append("</p>")
+                                .append("</div>");
+
+                    } else if ("usuarios".equals(tipo)) {
+                        titulo = "Reporte de Usuarios del Sistema";
+                        String[] headers = { "Nombre Completo", "Identificación", "Usuario", "Email", "Rol", "Estado" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] data = ApiClient.get("/usuarios", Object[].class);
+                        if (data != null) {
+                            for (Object raw : data) {
+                                java.util.Map<String, Object> u = (java.util.Map<String, Object>) raw;
+                                String rol = "1".equals(str(u, "idRol")) ? "Administrador" : "Auxiliar";
+                                String estado = "1".equals(str(u, "activo")) ? "Activo" : "Inactivo";
+
+                                rowsHtml.append("<tr>")
+                                        .append("<td>").append(str(u, "nombre")).append(" ")
+                                        .append(str(u, "apellido").equals("—") ? "" : str(u, "apellido"))
+                                        .append("</td>")
+                                        .append("<td>").append(str(u, "numeroDocumento")).append("</td>")
+                                        .append("<td>").append(str(u, "usuario")).append("</td>")
+                                        .append("<td>").append(str(u, "email")).append("</td>")
+                                        .append("<td>").append(rol).append("</td>")
+                                        .append("<td>").append(estado).append("</td>")
+                                        .append("</tr>");
+                            }
+                        }
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total Usuarios Registrados:</strong> ")
+                                .append(data != null ? data.length : 0).append("</p>")
+                                .append("</div>");
+
+                    } else if ("resumen".equals(tipo)) {
+                        titulo = "Resumen Ejecutivo de la Empresa";
+                        String[] headers = { "Indicador", "Valor / Métrica", "Estado / Detalle" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] productos = ApiClient.get("/productos", Object[].class);
+                        Object[] clientes = ApiClient.get("/clientes", Object[].class);
+                        Object[] proveedores = ApiClient.get("/proveedores", Object[].class);
+                        Object[] usuarios = ApiClient.get("/usuarios", Object[].class);
+
+                        int totalProd = productos != null ? productos.length : 0;
+                        int totalStock = 0;
+                        int stockBajo = 0;
+                        double valorInventario = 0;
+                        if (productos != null) {
+                            for (Object raw : productos) {
+                                java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                                int qty = num(p, "cantidad");
+                                int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
+                                valorInventario += qty * dbl(p, "precioVenta");
+                                totalStock += qty;
+                                if (qty <= min)
+                                    stockBajo++;
+                            }
+                        }
+
+                        rowsHtml.append("<tr><td>Total de Productos en Catálogo</td><td>").append(totalProd)
+                                .append("</td><td>Productos registrados</td></tr>")
+                                .append("<tr><td>Unidades de Stock Físico</td><td>").append(totalStock)
+                                .append(" uds</td><td>Total unidades en inventario</td></tr>")
+                                .append("<tr><td>Productos con Stock Bajo</td><td><span style='color:#ef4444; font-weight:bold'>")
+                                .append(stockBajo)
+                                .append("</span></td><td>Requieren reabastecimiento urgente</td></tr>")
+                                .append("<tr><td>Valoración de Inventario</td><td>$")
+                                .append(String.format("%,.2f", valorInventario))
+                                .append("</td><td>En base a precios de venta comerciales</td></tr>")
+                                .append("<tr><td>Clientes Registrados</td><td>")
+                                .append(clientes != null ? clientes.length : 0)
+                                .append("</td><td>Base de datos de clientes</td></tr>")
+                                .append("<tr><td>Proveedores Registrados</td><td>")
+                                .append(proveedores != null ? proveedores.length : 0)
+                                .append("</td><td>Suministradores comerciales</td></tr>")
+                                .append("<tr><td>Usuarios en el Sistema</td><td>")
+                                .append(usuarios != null ? usuarios.length : 0)
+                                .append("</td><td>Cuentas con acceso administrativo</td></tr>");
+
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Fecha del Resumen:</strong> ").append(nowStr).append("</p>")
+                                .append("<p><strong>Estado de Operación:</strong> Operando normalmente</p>")
+                                .append("</div>");
+                    }
+
+                    String html = "<!DOCTYPE html>\n" +
+                            "<html lang=\"es\">\n" +
+                            "<head>\n" +
+                            "    <meta charset=\"UTF-8\">\n" +
+                            "    <title>Reporte - " + titulo + "</title>\n" +
+                            "    <style>\n" +
+                            "        body {\n" +
+                            "            font-family: 'Segoe UI', system-ui, sans-serif;\n" +
+                            "            color: #1e293b;\n" +
+                            "            background: #ffffff;\n" +
+                            "            margin: 0;\n" +
+                            "            padding: 2rem;\n" +
+                            "        }\n" +
+                            "        .header {\n" +
+                            "            border-bottom: 2px solid #0f172a;\n" +
+                            "            padding-bottom: 1rem;\n" +
+                            "            margin-bottom: 2rem;\n" +
+                            "            display: flex;\n" +
+                            "            justify-content: space-between;\n" +
+                            "            align-items: flex-end;\n" +
+                            "        }\n" +
+                            "        .header h1 {\n" +
+                            "            margin: 0 0 0.5rem 0;\n" +
+                            "            font-size: 1.8rem;\n" +
+                            "            color: #0f172a;\n" +
+                            "        }\n" +
+                            "        .header p {\n" +
+                            "            margin: 0;\n" +
+                            "            color: #64748b;\n" +
+                            "            font-size: 0.9rem;\n" +
+                            "        }\n" +
+                            "        .meta-info {\n" +
+                            "            text-align: right;\n" +
+                            "            font-size: 0.85rem;\n" +
+                            "            color: #64748b;\n" +
+                            "        }\n" +
+                            "        table {\n" +
+                            "            width: 100%;\n" +
+                            "            border-collapse: collapse;\n" +
+                            "            margin-bottom: 2rem;\n" +
+                            "        }\n" +
+                            "        th {\n" +
+                            "            background: #0f172a;\n" +
+                            "            color: #ffffff;\n" +
+                            "            text-align: left;\n" +
+                            "            padding: 0.75rem 1rem;\n" +
+                            "            font-size: 0.85rem;\n" +
+                            "            text-transform: uppercase;\n" +
+                            "            letter-spacing: 0.05em;\n" +
+                            "        }\n" +
+                            "        td {\n" +
+                            "            padding: 0.75rem 1rem;\n" +
+                            "            border-bottom: 1px solid #e2e8f0;\n" +
+                            "            font-size: 0.9rem;\n" +
+                            "        }\n" +
+                            "        tr:nth-child(even) td {\n" +
+                            "            background: #f8fafc;\n" +
+                            "        }\n" +
+                            "        .summary-box {\n" +
+                            "            background: #f1f5f9;\n" +
+                            "            border: 1px solid #e2e8f0;\n" +
+                            "            border-radius: 0.5rem;\n" +
+                            "            padding: 1.25rem;\n" +
+                            "            margin-top: 2rem;\n" +
+                            "            display: inline-block;\n" +
+                            "            min-width: 320px;\n" +
+                            "        }\n" +
+                            "        .summary-box p {\n" +
+                            "            margin: 0.35rem 0;\n" +
+                            "            font-size: 0.95rem;\n" +
+                            "        }\n" +
+                            "        .no-print {\n" +
+                            "            margin-bottom: 1.5rem;\n" +
+                            "            display: flex;\n" +
+                            "            gap: 0.75rem;\n" +
+                            "        }\n" +
+                            "        .btn-print {\n" +
+                            "            padding: 0.6rem 1.2rem;\n" +
+                            "            background: #0f172a;\n" +
+                            "            color: white;\n" +
+                            "            border: none;\n" +
+                            "            border-radius: 0.375rem;\n" +
+                            "            cursor: pointer;\n" +
+                            "            font-weight: 600;\n" +
+                            "            font-size: 0.9rem;\n" +
+                            "        }\n" +
+                            "        .btn-close {\n" +
+                            "            padding: 0.6rem 1.2rem;\n" +
+                            "            background: #e2e8f0;\n" +
+                            "            color: #1e293b;\n" +
+                            "            border: none;\n" +
+                            "            border-radius: 0.375rem;\n" +
+                            "            cursor: pointer;\n" +
+                            "            font-weight: 600;\n" +
+                            "            font-size: 0.9rem;\n" +
+                            "        }\n" +
+                            "        @media print {\n" +
+                            "            body { padding: 0; }\n" +
+                            "            .no-print { display: none; }\n" +
+                            "        }\n" +
+                            "    </style>\n" +
+                            "</head>\n" +
+                            "<body>\n" +
+                            "    <div class=\"no-print\">\n" +
+                            "        <button class=\"btn-print\" onclick=\"window.print()\">Imprimir / Guardar PDF</button>\n"
+                            +
+                            "        <button class=\"btn-close\" onclick=\"window.close()\">Cerrar</button>\n" +
+                            "    </div>\n" +
+                            "    <div class=\"header\">\n" +
+                            "        <div>\n" +
+                            "            <h1>" + titulo + "</h1>\n" +
+                            "            <p>AcaciosWork — Sistema de Control Administrativo</p>\n" +
+                            "        </div>\n" +
+                            "        <div class=\"meta-info\">\n" +
+                            "            <p><strong>Fecha de Generación:</strong> " + nowStr + "</p>\n" +
+                            "            <p><strong>Generado por:</strong> " + userName + "</p>\n" +
+                            "        </div>\n" +
+                            "    </div>\n" +
+                            "    \n" +
+                            "    <table>\n" +
+                            "        <thead>\n" +
+                            "            <tr>\n" +
+                            "                " + headersHtml.toString() + "\n" +
+                            "            </tr>\n" +
+                            "        </thead>\n" +
+                            "        <tbody>\n" +
+                            "            " + rowsHtml.toString() + "\n" +
+                            "        </tbody>\n" +
+                            "    </table>\n" +
+                            "    \n" +
+                            "    " + resumenHtml.toString() + "\n" +
+                            "    \n" +
+                            "    <script>\n" +
+                            "        window.onload = function() {\n" +
+                            "            setTimeout(function() {\n" +
+                            "                window.print();\n" +
+                            "            }, 500);\n" +
+                            "        };\n" +
+                            "    </script>\n" +
+                            "</body>\n" +
+                            "</html>";
+
+                    File tempFile = File.createTempFile("reporte-" + tipo + "-", ".html");
+                    tempFile.deleteOnExit();
+                    try (java.io.BufferedWriter writer = new java.io.BufferedWriter(
+                            new java.io.FileWriter(tempFile, java.nio.charset.StandardCharsets.UTF_8))) {
+                        writer.write(html);
+                    }
+                    return tempFile;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    errorMsg = e.getMessage();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void done() {
+                setCursor(Cursor.getDefaultCursor());
+                try {
+                    File file = get();
+                    if (file != null) {
+                        java.awt.Desktop.getDesktop().browse(file.toURI());
+                    } else {
+                        JOptionPane.showMessageDialog(Administrador.this,
+                                "Error al generar reporte: " + (errorMsg != null ? errorMsg : "Error desconocido"),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(Administrador.this,
+                            "Error al abrir reporte: " + e.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }.execute();
     }
 
     private JPanel createContentPanel() {
@@ -1028,22 +1545,62 @@ public class Administrador extends JPanel {
     }
 
     private void refreshAlertas(JTable table) {
-        loadTable(table, "/productos", row -> {
-            int stock = num(row, "cantidad");
-            int min = row.get("stockMinimo") != null ? num(row, "stockMinimo") : 5;
+        new SwingWorker<Object[][], Void>() {
+            @Override
+            protected Object[][] doInBackground() throws Exception {
+                try {
+                    Object[] products = ApiClient.get("/productos", Object[].class);
+                    Object[] providers = ApiClient.get("/proveedores", Object[].class);
 
-            if (stock <= min) {
-                return new Object[] {
-                        id(row),
-                        str(row, "nombre"),
-                        stock,
-                        min,
-                        "Ver detalles...",
-                        "🔍 Ver Proveedor"
-                };
+                    java.util.Map<String, String> provMap = new java.util.HashMap<>();
+                    if (providers != null) {
+                        for (Object pr : providers) {
+                            java.util.Map<String, Object> pm = (java.util.Map<String, Object>) pr;
+                            provMap.put(id(pm).toString(), str(pm, "nombre"));
+                        }
+                    }
+
+                    java.util.List<Object[]> rows = new java.util.ArrayList<>();
+                    if (products != null) {
+                        for (Object raw : products) {
+                            java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                            int stock = num(p, "cantidad");
+                            int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
+                            if (stock <= min) {
+                                Object idProv = p.get("idProveedor");
+                                String provName = (idProv != null) ? provMap.getOrDefault(idProv.toString(), "Sin asignar") : "Sin asignar";
+                                rows.add(new Object[] {
+                                        id(p),
+                                        str(p, "nombre"),
+                                        stock + " uds",
+                                        min + " uds",
+                                        provName,
+                                        "🔍 Ver Proveedor"
+                                });
+                            }
+                        }
+                    }
+                    return rows.toArray(new Object[0][]);
+                } catch (Exception e) {
+                    return null;
+                }
             }
-            return null;
-        });
+
+            @Override
+            protected void done() {
+                try {
+                    Object[][] rows = get();
+                    DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+                    dtm.setRowCount(0);
+                    if (rows != null) {
+                        for (Object[] r : rows) {
+                            dtm.addRow(r);
+                        }
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }.execute();
     }
 
     private void mostrarInfoProveedor(Object idProd) {
