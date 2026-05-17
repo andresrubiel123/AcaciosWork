@@ -230,11 +230,11 @@ Todo bloque de código generado debe incluir: una descripción funcional breve y
 *   **2026-05-05**: Sincronización de CRUD de Usuarios entre Backend y Desktop.
 *   **2026-05-12**: Estabilización de persistencia de Ventas y manejo de errores 409/400.
 *   **2026-05-16**: **Estandarización de Documentación**: Se actualizaron todos los `README.md` del ecosistema para reflejar el stack tecnológico actual (Java 25, Spring Boot 4, FlatLaf, Kotlin 2).
-*   **2026-05-16**: **Actualización de Contexto IA**: Reestructuración de este archivo para facilitar el mapeo de archivos a agentes inteligentes.
+*   **2026-05-16**: **Actualización de Contexto**: Reestructuración de este archivo para facilitar el mapeo de archivos a desarrolladores y agentes inteligentes.
 
 ---
 
-## 🤖 GUÍA PARA LA IA (MAPEO RÁPIDO)
+## MAPEO RÁPIDO PARA DESARROLLADORES Y AGENTES INTELIGENTES
 Si necesitas trabajar en un módulo específico, estos son los archivos clave:
 
 | Tarea | Archivo/Ruta Principal |
