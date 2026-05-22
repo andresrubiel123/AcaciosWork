@@ -17,15 +17,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acacioswork.ui.theme.*
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    var usuario by remember { mutableStateFlowOf("") }
-    var clave by remember { mutableStateFlowOf("") }
+    var usuario by remember { mutableStateOf("") }
+    var clave by remember { mutableStateOf("") }
 
     val loginState by viewModel.loginState.collectAsState()
 

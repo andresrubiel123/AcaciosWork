@@ -28,7 +28,7 @@ sealed class Pantalla(val ruta: String, val titulo: String, val icon: ImageVecto
     object Proveedores : Pantalla("proveedores", "Proveedores", Icons.Default.Build)
 }
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     onLogout: () -> Unit

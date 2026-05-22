@@ -23,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acacioswork.model.Cliente
 import com.acacioswork.ui.theme.*
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClientesTab(
     viewModel: ClientesViewModel = viewModel()
@@ -215,7 +215,7 @@ fun ClienteCard(
     }
 }
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClienteFormDialog(
     cliente: Cliente?,

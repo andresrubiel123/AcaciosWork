@@ -25,7 +25,7 @@ import com.acacioswork.ui.theme.*
 import java.text.NumberFormat
 import java.util.Locale
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventarioTab(
     viewModel: InventarioViewModel = viewModel()
@@ -324,7 +324,7 @@ fun ProductoCard(
     }
 }
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductoFormDialog(
     producto: Producto?,

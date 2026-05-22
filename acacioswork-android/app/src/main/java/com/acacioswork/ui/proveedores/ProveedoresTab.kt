@@ -22,7 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acacioswork.model.Proveedor
 import com.acacioswork.ui.theme.*
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProveedoresTab(
     viewModel: ProveedoresViewModel = viewModel()
@@ -200,7 +200,7 @@ fun ProveedorCard(
     }
 }
 
-@OptIn(Material3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProveedorFormDialog(
     proveedor: Proveedor?,
