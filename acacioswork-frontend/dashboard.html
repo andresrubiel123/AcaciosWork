@@ -143,8 +143,8 @@
                 <div class="stat-card"><div class="label">Valor Inventario</div><div class="value" id="inv-valor" style="color:#10b981">—</div></div>
             </div>
             <div class="card">
-                <table><thead><tr><th>Código</th><th>Nombre</th><th>Stock</th><th>P. Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
-                <tbody id="inv-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando...</td></tr></tbody></table>
+                <table><thead><tr><th>Código</th><th>Nombre</th><th>Stock</th><th>P. Compra</th><th>P. Venta</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="inv-tbody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Cargando...</td></tr></tbody></table>
             </div>
         </div>
 
@@ -294,15 +294,16 @@ async function loadInventario() {
                 <td style="font-family:monospace;font-size:0.8rem">${p.codigoBarras||'N/A'}</td>
                 <td style="font-weight:500">${p.nombre}</td>
                 <td><span class="badge ${p.cantidad<=(p.stockMinimo||5)?'badge-danger':'badge-success'}">${p.cantidad} uds</span></td>
+                <td>$${p.precioCompra?.toLocaleString() || '0'}</td>
                 <td>$${p.precioVenta?.toLocaleString()}</td>
                 <td><span class="badge ${p.estado===1?'badge-success':'badge-danger'}">${p.estado===1?'Activo':'Inactivo'}</span></td>
                 <td style="display:flex;gap:0.4rem">
                     <button class="btn-sm" onclick="editProducto(${p.id})">Editar</button>
                     <button class="btn-sm btn-del" onclick="deleteProducto(${p.id})">Borrar</button>
                 </td>
-            </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
+            </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
     } catch(e) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 

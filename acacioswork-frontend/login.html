@@ -1,6 +1,7 @@
 <!-- Interfaz de inicio de sesión premium. @author RADJ -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,31 +15,36 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container fade-in" style="max-width: 400px;">
         <div class="card">
             <h1 style="margin-bottom: 0.5rem; text-align: center; color: var(--primary-color);">AcaciosWork</h1>
-            <p style="margin-bottom: 2rem; text-align: center; color: var(--text-muted);">Acceso al sistema administrativo</p>
-            
+            <p style="margin-bottom: 2rem; text-align: center; color: var(--text-muted);">Acceso al sistema
+                administrativo</p>
+
             <form id="loginForm">
                 <div class="form-group">
                     <label for="username">Usuario</label>
                     <input type="text" id="username" placeholder="Ingresa tu usuario" required autocomplete="username">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="password">Contraseña</label>
-                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                    <input type="password" id="password" placeholder="••••••••" required
+                        autocomplete="current-password">
                 </div>
-                
+
                 <button type="submit" id="loginBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                     Iniciar Sesión
                 </button>
             </form>
-            
-            <p id="errorMsg" style="color: var(--danger); margin-top: 1.5rem; text-align: center; font-size: 0.875rem; display: none; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;"></p>
+
+            <p id="errorMsg"
+                style="color: var(--danger); margin-top: 1.5rem; text-align: center; font-size: 0.875rem; display: none; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
+            </p>
         </div>
-        
+
         <p style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
             &copy; 2026 AcaciosWork - Gestión de Inventario Inteligente
         </p>
@@ -62,13 +68,13 @@
             try {
                 // El backend devuelve { token, usuario } en el campo data
                 const result = await apiRequest("/usuarios/login", "POST", { usuario, clave });
-                
+
                 // Guardar información real tras la estandarización del backend
                 localStorage.setItem("jwt_token", result.token);
                 localStorage.setItem("usuario", JSON.stringify(result.usuario));
                 localStorage.setItem("user_name", result.usuario.nombre + " " + result.usuario.apellido);
                 localStorage.setItem("user_role", result.usuario.idRol || "2");
-                
+
                 window.location.href = "dashboard.html";
             } catch (err) {
                 errorMsg.innerText = "Credenciales incorrectas o error de conexión.";
@@ -86,4 +92,5 @@
         });
     </script>
 </body>
+
 </html>

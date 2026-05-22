@@ -28,7 +28,7 @@ import com.acacioswork.model.Producto;
 import com.acacioswork.model.Proveedor;
 import com.acacioswork.util.ApiClient;
 
-/** Interfaz mejorada para gestión de inventario con CRUD completo. @author RADJ */
+/** Interfaz de gestión de inventario con CRUD completo. @author RADJ */
 public class GestionInventario extends JPanel {
 
     private DefaultTableModel modeloTabla;
@@ -65,6 +65,7 @@ public class GestionInventario extends JPanel {
         modeloTabla.addColumn("Código");
         modeloTabla.addColumn("Nombre");
         modeloTabla.addColumn("Stock");
+        modeloTabla.addColumn("Precio Compra");
         modeloTabla.addColumn("Precio Venta");
         modeloTabla.addColumn("Estado");
 
@@ -113,6 +114,7 @@ public class GestionInventario extends JPanel {
                         p.getCodigoBarras(), 
                         p.getNombre(), 
                         p.getCantidad(), 
+                        "$" + p.getPrecioCompra(),
                         "$" + p.getPrecioVenta(),
                         p.getEstado() != null && p.getEstado() == 1 ? "Activo" : "Inactivo"
                 });

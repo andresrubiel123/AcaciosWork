@@ -1,0 +1,4 @@
+Coloque en esta carpeta las imágenes y recursos visuales para la aplicación de escritorio (Formatos recomendados: .png, .jpg, .svg).
+
+Para cargar una imagen desde el código Java:
+ImageIcon icon = new ImageIcon(getClass().getResource("/images/nombre_imagen.png"));
