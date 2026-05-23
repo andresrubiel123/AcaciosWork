@@ -55,8 +55,8 @@ class InventarioViewModel : ViewModel() {
 
     private fun calcularMetricas(lista: List<Producto>) {
         _totalProductos.value = lista.size
-        _stockBajoCount.value = lista.count { it.cantidad <= it.stockMinimo }
-        _valorTotalInventario.value = lista.sumOf { it.cantidad * it.precioCompra }
+        _stockBajoCount.value = lista.count { it.stockActual <= it.stockMinimo }
+        _valorTotalInventario.value = lista.sumOf { it.stockActual * it.precioCompra }
     }
 
     fun agregarProducto(producto: Producto) {

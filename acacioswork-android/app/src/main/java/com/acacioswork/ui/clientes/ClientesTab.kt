@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ fun ClientesTab(
 
     var showDialog by remember { mutableStateOf(false) }
     var editingCliente by remember { mutableStateOf<Cliente?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -53,6 +55,26 @@ fun ClientesTab(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Buscador de Clientes
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Buscar cliente...", color = TextMuted) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = TextMuted) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Primary,
+                    unfocusedBorderColor = BgCard,
+                    containerColor = BgCard,
+                    focusedTextColor = TextLight,
+                    unfocusedTextColor = TextLight
+                ),
+                singleLine = true,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Primary)
@@ -62,16 +84,26 @@ fun ClientesTab(
                     Text(text = error ?: "", color = AlertRed)
                 }
             } else {
-                if (clientes.isEmpty()) {
+                val filteredClientes = clientes.filter {
+                    it.nombre.contains(searchQuery, ignoreCase = true) ||
+                            it.numeroDocumento.contains(searchQuery) ||
+                            (it.telefono?.contains(searchQuery) ?: false) ||
+                            (it.email?.contains(searchQuery, ignoreCase = true) ?: false)
+                }
+
+                if (filteredClientes.isEmpty()) {
                     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                        Text(text = "No hay clientes registrados.", color = TextMuted)
+                        Text(
+                            text = if (searchQuery.isBlank()) "No hay clientes registrados." else "No hay clientes que coincidan con la búsqueda.",
+                            color = TextMuted
+                        )
                     }
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(clientes) { cliente ->
+                        items(filteredClientes) { cliente ->
                             ClienteCard(
                                 cliente = cliente,
                                 onEdit = {
@@ -93,7 +125,7 @@ fun ClientesTab(
                 editingCliente = null
                 showDialog = true
             },
-            containerColor = Primary,
+            containerColor = AccentGreen,
             contentColor = TextLight,
             modifier = Modifier
                 .align(Alignment.BottomEnd)

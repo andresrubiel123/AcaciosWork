@@ -36,12 +36,14 @@ public class ProductoDialog extends JDialog {
     private JTextField txtNombre;
     private JTextField txtCant;
     private JTextField txtMin;
+    private JTextField txtOptimo;
     private JTextField txtPCompra;
     private JTextField txtPVenta;
     private JTextField txtIva;
     private JComboBox<Categoria> cbCat;
     private JComboBox<Proveedor> cbProv;
     private JComboBox<String> cbEstado;
+    private JTextField txtUnidadMedida;
 
     public ProductoDialog(Frame owner, Producto producto, Runnable onSuccess) {
         super(owner, producto == null ? "Registrar Nuevo Producto" : "Editar Producto", true);
@@ -70,6 +72,10 @@ public class ProductoDialog extends JDialog {
         txtMin = new JTextField("5");
         txtMin.putClientProperty("JTextField.placeholderText", "5");
         txtMin.putClientProperty("JComponent.roundRect", true);
+
+        txtOptimo = new JTextField("200");
+        txtOptimo.putClientProperty("JTextField.placeholderText", "200");
+        txtOptimo.putClientProperty("JComponent.roundRect", true);
 
         txtPCompra = new JTextField("0");
         txtPCompra.putClientProperty("JTextField.placeholderText", "0");
@@ -108,12 +114,18 @@ public class ProductoDialog extends JDialog {
         cbEstado = new JComboBox<>(new String[] { "Activo", "Inactivo" });
         cbEstado.putClientProperty("JComponent.roundRect", true);
 
+        txtUnidadMedida = new JTextField("");
+        txtUnidadMedida.putClientProperty("JTextField.placeholderText", "Ej: Kilo, Litro, Unidad");
+        txtUnidadMedida.putClientProperty("JComponent.roundRect", true);
+
         // Populate fields if editing
         if (producto != null) {
             txtCodigo.setText(producto.getCodigoBarras());
             txtNombre.setText(producto.getNombre());
-            txtCant.setText(String.valueOf(producto.getCantidad()));
+            txtCant.setText(String.valueOf(producto.getStockActual()));
             txtMin.setText(producto.getStockMinimo() != null ? String.valueOf(producto.getStockMinimo()) : "5");
+            txtOptimo.setText(producto.getStockOptimo() != null ? String.valueOf(producto.getStockOptimo()) : "200");
+            txtUnidadMedida.setText(producto.getUnidadMedida() != null ? producto.getUnidadMedida() : "");
             txtPCompra.setText(String.valueOf(producto.getPrecioCompra()));
             txtPVenta.setText(String.valueOf(producto.getPrecioVenta()));
             txtIva.setText(String.valueOf(producto.getIva()));
@@ -159,6 +171,7 @@ public class ProductoDialog extends JDialog {
         };
 
         addField.accept("Nombre del Producto", txtNombre);
+        addField.accept("Unidad de Medida", txtUnidadMedida);
 
         JPanel codeIvaRow = new JPanel(new GridLayout(1, 2, 16, 0));
         codeIvaRow.setBackground(Administrador.BG_DARK);
@@ -169,12 +182,13 @@ public class ProductoDialog extends JDialog {
         mainPanel.add(codeIvaRow);
         mainPanel.add(Box.createVerticalStrut(14));
 
-        JPanel stockRow = new JPanel(new GridLayout(1, 2, 16, 0));
+        JPanel stockRow = new JPanel(new GridLayout(1, 3, 16, 0));
         stockRow.setBackground(Administrador.BG_DARK);
         stockRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
         stockRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        stockRow.add(createFieldPanel("Stock / Cantidad", txtCant));
+        stockRow.add(createFieldPanel("Stock / Actual", txtCant));
         stockRow.add(createFieldPanel("Stock Mínimo", txtMin));
+        stockRow.add(createFieldPanel("Stock Óptimo", txtOptimo));
         mainPanel.add(stockRow);
         mainPanel.add(Box.createVerticalStrut(14));
 
@@ -236,7 +250,7 @@ public class ProductoDialog extends JDialog {
                 Producto p = producto != null ? producto : new Producto();
                 p.setCodigoBarras(txtCodigo.getText());
                 p.setNombre(txtNombre.getText());
-                p.setCantidad(Integer.parseInt(txtCant.getText().trim()));
+                p.setStockActual(Integer.parseInt(txtCant.getText().trim()));
                 p.setPrecioCompra(Double.parseDouble(txtPCompra.getText().trim()));
                 p.setPrecioVenta(Double.parseDouble(txtPVenta.getText().trim()));
 
@@ -255,6 +269,14 @@ public class ProductoDialog extends JDialog {
                 } catch (Exception ex) {
                 }
                 p.setStockMinimo(minVal);
+
+                int optimoVal = 200;
+                try {
+                    optimoVal = Integer.parseInt(txtOptimo.getText().trim());
+                } catch (Exception ex) {
+                }
+                p.setStockOptimo(optimoVal);
+                p.setUnidadMedida(txtUnidadMedida.getText().trim().isEmpty() ? "Unidad" : txtUnidadMedida.getText().trim());
 
                 Categoria c = (Categoria) cbCat.getSelectedItem();
                 if (c != null && c.getId() != -1L) {
@@ -291,7 +313,7 @@ public class ProductoDialog extends JDialog {
 
         setContentPane(mainPanel);
         pack();
-        setSize(460, 580);
+        setSize(460, 680);
         setLocationRelativeTo(owner);
     }
 

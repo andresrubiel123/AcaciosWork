@@ -155,7 +155,7 @@ fun InventarioTab(
                 editingProducto = null
                 showDialog = true
             },
-            containerColor = Primary,
+            containerColor = AccentGreen,
             contentColor = TextLight,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -224,7 +224,7 @@ fun ProductoCard(
     onDelete: () -> Unit
 ) {
     val formatCurrency = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
-    val esStockBajo = producto.cantidad <= producto.stockMinimo
+    val esStockBajo = producto.stockActual <= producto.stockMinimo
 
     Card(
         colors = CardDefaults.cardColors(containerColor = BgCard),
@@ -247,7 +247,7 @@ fun ProductoCard(
                         color = TextLight
                     )
                     Text(
-                        text = "Cód: ${producto.codigoBarras ?: "Sin código"}",
+                        text = "Cód: ${producto.codigoBarras ?: "Sin código"} | ${producto.unidadMedida ?: "Unidad"}",
                         fontSize = 12.sp,
                         color = TextMuted
                     )
@@ -262,7 +262,7 @@ fun ProductoCard(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "${producto.cantidad} unidades",
+                        text = "${producto.stockActual} unidades",
                         color = if (esStockBajo) AlertRed else AccentGreen,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -333,11 +333,13 @@ fun ProductoFormDialog(
 ) {
     var nombre by remember { mutableStateOf(producto?.nombre ?: "") }
     var codigoBarras by remember { mutableStateOf(producto?.codigoBarras ?: "") }
-    var cantidad by remember { mutableStateOf(producto?.cantidad?.toString() ?: "") }
+    var cantidad by remember { mutableStateOf(producto?.stockActual?.toString() ?: "") }
     var stockMinimo by remember { mutableStateOf(producto?.stockMinimo?.toString() ?: "5") }
+    var stockOptimo by remember { mutableStateOf(producto?.stockOptimo?.toString() ?: "200") }
     var precioCompra by remember { mutableStateOf(producto?.precioCompra?.toString() ?: "") }
     var precioVenta by remember { mutableStateOf(producto?.precioVenta?.toString() ?: "") }
     var iva by remember { mutableStateOf(producto?.iva?.toString() ?: "19") }
+    var unidadMedida by remember { mutableStateOf(producto?.unidadMedida ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -359,6 +361,21 @@ fun ProductoFormDialog(
                         value = nombre,
                         onValueChange = { nombre = it },
                         label = { Text("Nombre del Producto", color = TextMuted) },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Primary,
+                            unfocusedBorderColor = BgDark,
+                            containerColor = BgDark,
+                            focusedTextColor = TextLight,
+                            unfocusedTextColor = TextLight
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = unidadMedida,
+                        onValueChange = { unidadMedida = it },
+                        label = { Text("Unidad de Medida", color = TextMuted) },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = BgDark,
@@ -404,6 +421,20 @@ fun ProductoFormDialog(
                             value = stockMinimo,
                             onValueChange = { stockMinimo = it },
                             label = { Text("Stock Mínimo", color = TextMuted) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Primary,
+                                unfocusedBorderColor = BgDark,
+                                containerColor = BgDark,
+                                focusedTextColor = TextLight,
+                                unfocusedTextColor = TextLight
+                            ),
+                            modifier = Modifier.weight(1f)
+                        )
+                        OutlinedTextField(
+                            value = stockOptimo,
+                            onValueChange = { stockOptimo = it },
+                            label = { Text("Stock Óptimo", color = TextMuted) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 focusedBorderColor = Primary,
@@ -464,6 +495,7 @@ fun ProductoFormDialog(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+
             }
         },
         confirmButton = {
@@ -473,12 +505,14 @@ fun ProductoFormDialog(
                         id = producto?.id,
                         nombre = nombre,
                         codigoBarras = if (codigoBarras.isBlank()) null else codigoBarras,
-                        cantidad = cantidad.toIntOrNull() ?: 0,
+                        stockActual = cantidad.toIntOrNull() ?: 0,
                         precioCompra = precioCompra.toDoubleOrNull() ?: 0.0,
                         precioVenta = precioVenta.toDoubleOrNull() ?: 0.0,
                         iva = iva.toDoubleOrNull() ?: 19.0,
                         estado = producto?.estado ?: 1,
-                        stockMinimo = stockMinimo.toIntOrNull() ?: 5
+                        stockMinimo = stockMinimo.toIntOrNull() ?: 5,
+                        stockOptimo = stockOptimo.toIntOrNull() ?: 200,
+                        unidadMedida = if (unidadMedida.isBlank()) "Unidad" else unidadMedida
                     )
                     onSave(p)
                 },

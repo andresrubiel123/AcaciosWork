@@ -56,7 +56,7 @@ public class ReporteManager {
     public List<Producto> productosBajosEnStock() {
         List<Producto> bajos = new ArrayList<>();
         for (Producto p : inventarioManager.leerTodosProductos()) {
-            if (p.getStockMinimo() > 0 && p.getCantidad() <= p.getStockMinimo()) {
+            if (p.getStockMinimo() > 0 && p.getStockActual() <= p.getStockMinimo()) {
                 bajos.add(p);
             }
         }

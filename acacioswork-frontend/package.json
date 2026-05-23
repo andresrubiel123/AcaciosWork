@@ -1,0 +1,14 @@
+{
+  "name": "acacioswork-frontend",
+  "version": "1.0.0",
+  "description": "Modulo frontend de AcaciosWork con soporte para pruebas automatizadas",
+  "main": "js/api.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "private": true
+}

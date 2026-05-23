@@ -206,9 +206,16 @@ CREATE TABLE productos (
 
     nombre VARCHAR(150) NOT NULL,
 
+    unidad_medida VARCHAR(150) NOT NULL,
+
     descripcion TEXT,
 
-    stock_minimo INT NOT NULL DEFAULT 5,
+    stock_actual INT NOT NULL DEFAULT 0,
+
+
+    stock_minimo INT NOT NULL DEFAULT 30,
+
+    stock_optimo INT NOT NULL DEFAULT 200,
 
     precio_compra DECIMAL(12,2) NOT NULL DEFAULT 0.00,
 

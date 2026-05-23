@@ -46,7 +46,7 @@ public class ReporteService {
     public List<Producto> productosBajosEnStock() {
         List<Producto> bajos = new ArrayList<>();
         for (Producto p : inventarioService.findAll()) {
-            if (p.getStockMinimo() > 0 && p.getCantidad() <= p.getStockMinimo()) {
+            if (p.getStockMinimo() > 0 && p.getStockActual() <= p.getStockMinimo()) {
                 bajos.add(p);
             }
         }

@@ -7,6 +7,7 @@ val BgCard = Color(0xFF1E293B)
 val Primary = Color(0xFF6366F1)
 val AccentGreen = Color(0xFF10B981)
 val AlertRed = Color(0xFFEF4444)
+val AccentOrange = Color(0xFFF59E0B)
 val TextMuted = Color(0xFF94A3B8)
 val TextLight = Color(0xFFF8FAFC)
 

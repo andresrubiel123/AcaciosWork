@@ -75,7 +75,12 @@
                 localStorage.setItem("user_name", result.usuario.nombre + " " + result.usuario.apellido);
                 localStorage.setItem("user_role", result.usuario.idRol || "2");
 
-                window.location.href = "dashboard.html";
+                // Redirigir según rol: 1=Administrador, 2=Auxiliar
+                if (result.usuario.idRol === 1) {
+                    window.location.href = "dashboard.html";
+                } else {
+                    window.location.href = "auxiliar-dashboard.html";
+                }
             } catch (err) {
                 errorMsg.innerText = "Credenciales incorrectas o error de conexión.";
                 errorMsg.style.display = "block";

@@ -79,12 +79,12 @@ public class InventarioManager {
     }
 
     private void verificarAlerta(Producto producto) {
-        if (producto.getStockMinimo() > 0 && producto.getCantidad() <= producto.getStockMinimo()) {
+        if (producto.getStockMinimo() > 0 && producto.getStockActual() <= producto.getStockMinimo()) {
             AlertaStockMinimo alerta = new AlertaStockMinimo();
             alerta.setIdAlerta((long) (alertas.size() + 1));
             alerta.setIdProducto(producto.getId());
             alerta.setMensaje("Producto ID " + producto.getId() + ": Stock mínimo alcanzado. Stock actual: "
-                    + producto.getCantidad());
+                    + producto.getStockActual());
             alertas.add(alerta);
         }
     }

@@ -5,7 +5,7 @@ public class Producto {
     private Long id;
     private String codigoBarras;
     private String nombre;
-    private Integer cantidad;
+    private Integer stockActual;
     private double precioCompra;
     private double precioVenta;
     private double iva;
@@ -13,6 +13,8 @@ public class Producto {
     private Long idProveedor;
     private Integer estado;
     private Integer stockMinimo;
+    private Integer stockOptimo;
+    private String unidadMedida = "Unidad";
 
     public Producto() {}
 
@@ -25,8 +27,8 @@ public class Producto {
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public Integer getCantidad() { return cantidad; }
-    public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public Integer getStockActual() { return stockActual; }
+    public void setStockActual(Integer stockActual) { this.stockActual = stockActual; }
 
     public double getPrecioCompra() { return precioCompra; }
     public void setPrecioCompra(double precioCompra) { this.precioCompra = precioCompra; }
@@ -48,6 +50,12 @@ public class Producto {
 
     public Integer getStockMinimo() { return stockMinimo; }
     public void setStockMinimo(Integer stockMinimo) { this.stockMinimo = stockMinimo; }
+
+    public Integer getStockOptimo() { return stockOptimo; }
+    public void setStockOptimo(Integer stockOptimo) { this.stockOptimo = stockOptimo; }
+
+    public String getUnidadMedida() { return unidadMedida; }
+    public void setUnidadMedida(String unidadMedida) { this.unidadMedida = unidadMedida; }
 
     @Override
     public String toString() {

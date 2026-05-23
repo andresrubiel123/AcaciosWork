@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -98,6 +96,19 @@ fun ReportesTab() {
                     onButtonClick = {}
                 )
             }
+
+            // Tarjeta de Reporte Ejecutivo
+            item {
+                ReporteSimpleCard(
+                    title = "Reporte Ejecutivo",
+                    description = "Métricas principales de inventario y estado general de la empresa.",
+                    icon = Icons.Default.List,
+                    iconColor = AccentOrange,
+                    buttonText = "Generar Reporte Ejecutivo",
+                    buttonColor = AccentOrange,
+                    onButtonClick = {}
+                )
+            }
         }
     }
 }
@@ -177,6 +188,7 @@ fun ReporteSimpleCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     iconColor: androidx.compose.ui.graphics.Color,
     buttonText: String,
+    buttonColor: androidx.compose.ui.graphics.Color = BgDark,
     onButtonClick: () -> Unit
 ) {
     Card(
@@ -226,7 +238,7 @@ fun ReporteSimpleCard(
 
             Button(
                 onClick = onButtonClick,
-                colors = ButtonDefaults.buttonColors(containerColor = BgDark),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()

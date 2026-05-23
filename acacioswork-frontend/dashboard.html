@@ -13,7 +13,8 @@
         .top-toolbar {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: space-between;
+            gap: 1rem;
             padding: 0.75rem 1.5rem;
             background: var(--bg-sidebar);
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -22,9 +23,24 @@
 
         .toolbar-brand {
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 3.6rem;
             color: var(--primary-color);
-            margin-right: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .toolbar-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .toolbar-btn {
@@ -51,18 +67,64 @@
         }
 
         .toolbar-btn.btn-exit {
-            background: linear-gradient(135deg, #475569, #334155);
-            margin-right: 0.5rem;
+            background: linear-gradient(135deg, #ff3b30, #ff2d55);
+            border: 1px solid #ff6b6b;
+            box-shadow: 0 2px 8px rgba(255, 45, 85, 0.35);
+        }
+
+        .toolbar-btn.btn-exit:hover {
+            background: linear-gradient(135deg, #ff6b6b, #ff3b30);
+            box-shadow: 0 4px 12px rgba(255, 45, 85, 0.5);
+            transform: translateY(-1px);
         }
 
         .toolbar-btn.btn-alert {
-            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            background: linear-gradient(135deg, #475569, #334155);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .toolbar-btn.btn-alert:hover {
+            background: linear-gradient(135deg, #64748b, #475569);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .toolbar-btn.btn-alert.pulsing {
+            background: linear-gradient(135deg, #ff3b30, #ff2d55);
+            border: 1px solid #ff6b6b;
+            box-shadow: 0 4px 14px rgba(255, 45, 85, 0.5);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        .toolbar-btn.btn-alert.pulsing:hover {
+            background: linear-gradient(135deg, #ff6b6b, #ff3b30);
+            box-shadow: 0 6px 20px rgba(255, 45, 85, 0.7);
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.6);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 45, 85, 0);
+                transform: scale(1.02);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 45, 85, 0);
+                transform: scale(1);
+            }
         }
 
         .user-info {
-            margin-left: auto;
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            font-size: 1.95rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
 
         /* Layout */
@@ -70,21 +132,33 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            width: 100%;
         }
 
         .content-area {
             flex: 1;
             padding: 2rem;
-            max-width: 1300px;
+            max-width: 100%;
             width: 100%;
-            margin: 0 auto;
+            margin: 0;
+        }
+
+        /* Hover animation on rows */
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03) !important;
+            transform: translateX(4px);
         }
 
         /* Section titles */
         .section-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
+            gap: 2rem;
             margin-bottom: 1.5rem;
         }
 
@@ -110,6 +184,34 @@
             padding: 1.25rem 1.5rem;
             border-radius: 0.75rem;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 12px 20px -8px rgba(99, 102, 241, 0.25);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.03) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: 0.75s;
+        }
+
+        .stat-card:hover::after {
+            left: 120%;
         }
 
         .stat-card .label {
@@ -130,6 +232,12 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.15);
+            box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.3);
         }
 
         table {
@@ -175,6 +283,122 @@
             color: #f59e0b;
         }
 
+        /* Estilos específicos para la tabla de productos para controlar el layout de columnas */
+        .products-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        /* Columna de Stock Dinámica y Flexible (ocupa el espacio restante) */
+        .col-stock {
+            width: auto;
+            min-width: 280px;
+        }
+
+        .col-codigo {
+            width: 100px;
+            min-width: 90px;
+        }
+
+        /* Ancho fijo para la columna de nombre */
+        .col-nombre {
+            width: 160px;
+            min-width: 130px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .col-unidad {
+            width: 100px;
+            min-width: 90px;
+        }
+
+        .col-precio {
+            width: 110px;
+            min-width: 100px;
+        }
+
+        .col-iva {
+            width: 80px;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .col-estado {
+            width: 100px;
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .col-acciones {
+            width: 140px;
+            min-width: 130px;
+        }
+
+        /* Contenedor principal de la barra de stock */
+        .stock-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0.2rem 0;
+        }
+
+        /* Barra de progreso de fondo con efecto glassmorphism */
+        .stock-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Relleno dinámico de la barra */
+        .stock-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Estados de color premium */
+        .stock-bar-fill.red {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .stock-bar-fill.orange {
+            background: linear-gradient(90deg, #fb923c, #f97316);
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+        }
+
+        .stock-bar-fill.green {
+            background: linear-gradient(90deg, #34d399, #10b981);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Información textual del stock */
+        .stock-bar-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .stock-bar-qty {
+            color: #e2e8f0;
+        }
+
+        .stock-bar-pct {
+            font-weight: 600;
+        }
+
+        .stock-bar-pct.red { color: #f87171; }
+        .stock-bar-pct.orange { color: #fb923c; }
+        .stock-bar-pct.green { color: #34d399; }
+
         /* Buttons inside content */
         .btn {
             padding: 0.6rem 1.2rem;
@@ -193,6 +417,28 @@
 
         .btn-primary:hover {
             background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-pdf:hover {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5);
             transform: translateY(-1px);
         }
 
@@ -354,17 +600,21 @@
         <!-- ═══ TOOLBAR SUPERIOR (igual que escritorio) ═══ -->
         <div class="top-toolbar">
             <span class="toolbar-brand">AcaciosWork</span>
-            <button class="toolbar-btn btn-exit" onclick="logout()">← Salir</button>
-            <button class="toolbar-btn active" id="btn-inventario"
-                onclick="showSection('inventario', this)">Inventario</button>
-            <button class="toolbar-btn" id="btn-proveedores"
-                onclick="showSection('proveedores', this)">Proveedores</button>
-            <button class="toolbar-btn" id="btn-clientes" onclick="showSection('clientes', this)">Clientes</button>
-            <button class="toolbar-btn" id="btn-usuarios" onclick="showSection('usuarios', this)">Usuarios</button>
-            <button class="toolbar-btn" id="btn-reportes" onclick="showSection('reportes', this)">Reportes</button>
-            <button class="toolbar-btn btn-alert" id="btn-alertas" onclick="showSection('alertas', this)">⚠ Alertas
-                Stock</button>
-            <span class="user-info" id="userInfo"></span>
+            <div class="toolbar-center">
+                <button class="toolbar-btn active" id="btn-inventario"
+                    onclick="showSection('inventario', this)">Inventario</button>
+                <button class="toolbar-btn" id="btn-proveedores"
+                    onclick="showSection('proveedores', this)">Proveedores</button>
+                <button class="toolbar-btn" id="btn-clientes" onclick="showSection('clientes', this)">Clientes</button>
+                <button class="toolbar-btn" id="btn-usuarios" onclick="showSection('usuarios', this)">Usuarios</button>
+                <button class="toolbar-btn" id="btn-reportes" onclick="showSection('reportes', this)">Reportes</button>
+                <button class="toolbar-btn btn-alert" id="btn-alertas" onclick="showSection('alertas', this)">⚠ Alertas
+                    Stock</button>
+            </div>
+            <div class="toolbar-right">
+                <span class="user-info" id="userInfo"></span>
+                <button class="toolbar-btn btn-exit" onclick="logout()">✕ Salir</button>
+            </div>
         </div>
 
         <!-- ═══ CONTENIDO PRINCIPAL ═══ -->
@@ -377,7 +627,7 @@
                         <h1>Inventario de Productos</h1>
                         <p>Control total de existencias y precios</p>
                     </div>
-                    <button class="btn btn-primary" onclick="openModal('inventario')">+ Nuevo Producto</button>
+                    <button class="btn btn-success" onclick="openModal('inventario')">+ Nuevo Producto</button>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -401,22 +651,29 @@
                         <div class="value" id="inv-utilidad" style="color:#10b981">—</div>
                     </div>
                 </div>
+                <!-- Buscador de Inventario -->
+                <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+                    <input type="text" id="inv-search-input" oninput="filterTable(this, 'inv-tbody')" placeholder="🔍 Buscar en la tabla..." 
+                           style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
+                </div>
                 <div class="card">
-                    <table>
+                    <table class="products-table">
                         <thead>
                             <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th>Stock</th>
-                                <th>P. Compra</th>
-                                <th>P. Venta</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
+                                <th class="col-codigo">Código</th>
+                                <th class="col-nombre">Nombre</th>
+                                <th class="col-unidad">Unidad</th>
+                                <th class="col-stock">Stock</th>
+                                <th class="col-precio">P. Compra</th>
+                                <th class="col-precio">P. Venta</th>
+                                <th class="col-iva">IVA</th>
+                                <th class="col-estado">Estado</th>
+                                <th class="col-acciones">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="inv-tbody">
                             <tr>
-                                <td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                                <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">
                                     Cargando...</td>
                             </tr>
                         </tbody>
@@ -431,7 +688,12 @@
                         <h1>Proveedores</h1>
                         <p>Gestión de contactos y suministradores</p>
                     </div>
-                    <button class="btn btn-primary" onclick="openModal('proveedor')">+ Nuevo Proveedor</button>
+                    <button class="btn btn-success" onclick="openModal('proveedor')">+ Nuevo Proveedor</button>
+                </div>
+                <!-- Buscador de Proveedores -->
+                <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+                    <input type="text" id="prov-search-input" oninput="filterTable(this, 'prov-tbody')" placeholder="🔍 Buscar en la tabla..." 
+                           style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
                 </div>
                 <div class="card">
                     <table>
@@ -461,7 +723,7 @@
                         <h1>Clientes</h1>
                         <p>Base de datos de clientes registrados</p>
                     </div>
-                    <button class="btn btn-primary" onclick="openModal('cliente')">+ Nuevo Cliente</button>
+                    <button class="btn btn-success" onclick="openModal('cliente')">+ Nuevo Cliente</button>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -472,6 +734,11 @@
                         <div class="label">Activos</div>
                         <div class="value" id="cli-activos" style="color:#10b981">—</div>
                     </div>
+                </div>
+                <!-- Buscador de Clientes -->
+                <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+                    <input type="text" id="cli-search-input" oninput="filterTable(this, 'cli-tbody')" placeholder="🔍 Buscar en la tabla..." 
+                           style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
                 </div>
                 <div class="card">
                     <table>
@@ -501,7 +768,12 @@
                         <h1>Usuarios del Sistema</h1>
                         <p>Administración de accesos y roles</p>
                     </div>
-                    <button class="btn btn-primary" onclick="openModal('usuario')">+ Nuevo Usuario</button>
+                    <button class="btn btn-success" onclick="openModal('usuario')">+ Nuevo Usuario</button>
+                </div>
+                <!-- Buscador de Usuarios -->
+                <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+                    <input type="text" id="usr-search-input" oninput="filterTable(this, 'usr-tbody')" placeholder="🔍 Buscar en la tabla..." 
+                           style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
                 </div>
                 <div class="card">
                     <table>
@@ -535,33 +807,39 @@
                 <div class="report-grid">
                     <div class="report-card">
                         <h3>📦 Inventario General</h3>
-                        <p>Lista completa de productos con stock y precios actuales.</p><br><button
-                            class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem"
-                            onclick="generarReporte('inventario')">Generar PDF</button>
+                        <p>Lista completa de productos con stock y precios actuales.</p><br><button class="btn btn-pdf"
+                            style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('inventario')">Generar
+                            PDF</button>
                     </div>
                     <div class="report-card">
                         <h3>⚠️ Productos con Stock Bajo</h3>
-                        <p>Listado de artículos por debajo del stock mínimo definido.</p><br><button
-                            class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem"
-                            onclick="generarReporte('stock-bajo')">Generar PDF</button>
+                        <p>Listado de artículos por debajo del stock mínimo definido.</p><br><button class="btn btn-pdf"
+                            style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('stock-bajo')">Generar
+                            PDF</button>
                     </div>
                     <div class="report-card">
                         <h3>👥 Reporte de Clientes</h3>
                         <p>Base de clientes registrados con su información de contacto.</p><br><button
-                            class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem"
+                            class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
                             onclick="generarReporte('clientes')">Generar PDF</button>
                     </div>
                     <div class="report-card">
                         <h3>🏭 Reporte de Proveedores</h3>
                         <p>Directorio de proveedores con datos de contacto y productos.</p><br><button
-                            class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem"
+                            class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
                             onclick="generarReporte('proveedores')">Generar PDF</button>
                     </div>
                     <div class="report-card">
                         <h3>👤 Usuarios del Sistema</h3>
-                        <p>Listado de usuarios activos, roles y permisos asignados.</p><br><button
-                            class="btn btn-primary btn-sm" style="padding:0.5rem 1rem;font-size:0.82rem"
-                            onclick="generarReporte('usuarios')">Generar PDF</button>
+                        <p>Listado de usuarios activos, roles y permisos asignados.</p><br><button class="btn btn-pdf"
+                            style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('usuarios')">Generar
+                            PDF</button>
+                    </div>
+                    <div class="report-card">
+                        <h3>📊 Reporte Ejecutivo</h3>
+                        <p>Métricas principales de inventario y estado general de la empresa.</p><br><button class="btn btn-pdf"
+                            style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('resumen')">Generar
+                            PDF</button>
                     </div>
                 </div>
             </div>
@@ -573,7 +851,15 @@
                         <h1>⚠ Alertas de Stock</h1>
                         <p>Productos que requieren reabastecimiento urgente</p>
                     </div>
-                    <button class="btn btn-primary" onclick="loadAlertas()">↻ Actualizar</button>
+                    <div style="display:flex; gap:0.75rem;">
+                        <button class="btn btn-pdf" onclick="generarReporte('stock-bajo')">📄 Descargar lista
+                            PDF</button>
+                    </div>
+                </div>
+                <!-- Buscador de Alertas -->
+                <div class="search-container" id="alertas-search-container" style="position: relative; margin-bottom: 1rem; display: none;">
+                    <input type="text" id="alertas-search-input" oninput="filterTable(this, 'alertas-tbody')" placeholder="🔍 Buscar en la tabla..." 
+                           style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
                 </div>
                 <div id="alertas-container">
                     <p style="color:var(--text-muted)">Cargando alertas...</p>
@@ -597,9 +883,45 @@
         </div>
     </div>
 
+    <!-- ═══ MODAL DETALLES PROVEEDOR ═══ -->
+    <div id="proveedorModal" class="modal-overlay">
+        <div class="modal-content"
+            style="max-width: 500px; background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1rem; padding: 2rem;">
+            <h2 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: white;">🏢
+                Detalles del Proveedor</h2>
+            <div id="prov-details-content"
+                style="display: grid; gap: 0.85rem; font-size: 0.95rem; margin-bottom: 1.5rem; color: var(--text-muted);">
+                <!-- Se poblará dinámicamente -->
+            </div>
+            <button type="button" class="btn btn-primary"
+                style="width: 100%; padding: 0.6rem 1.2rem; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer;"
+                onclick="closeProveedorModal()">Cerrar</button>
+        </div>
+    </div>
+
     <script src="js/api.js"></script>
     <script>
         /** Dashboard Administrador AcaciosWork - CRUD completo y Reportes PDF. @author RADJ */
+
+        // Función de filtrado en tiempo real para las tablas
+        function filterTable(inputElement, tbodyId) {
+            const filter = inputElement.value.toLowerCase().trim();
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            const rows = tbody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.cells.length === 1 && row.cells[0].colSpan > 1) {
+                    continue; // Saltar filas de cargando/error
+                }
+                const text = row.textContent || row.innerText;
+                if (text.toLowerCase().includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
 
         // Variables globales para el manejo de estado
         let editId = null;
@@ -635,6 +957,13 @@
 
         // ─── NAVEGACIÓN ───
         function showSection(name, btn) {
+            // Limpiar inputs de búsqueda al cambiar de sección
+            const searchInputs = ['inv-search-input', 'prov-search-input', 'cli-search-input', 'usr-search-input', 'alertas-search-input'];
+            searchInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
             document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
             document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sec-' + name).style.display = 'block';
@@ -648,20 +977,33 @@
 
         // ─── INVENTARIO ───
         async function loadInventario() {
+            const searchInput = document.getElementById('inv-search-input');
+            if (searchInput) searchInput.value = '';
             const tbody = document.getElementById('inv-tbody');
             try {
                 const products = await apiRequest('/productos') || [];
                 const total = products.length;
-                const bajo = products.filter(p => p.cantidad <= (p.stockMinimo || 5)).length;
-                const valor = products.reduce((a, p) => a + (p.cantidad * p.precioVenta), 0);
-                const valorCosto = products.reduce((a, p) => a + (p.cantidad * (p.precioCompra || 0)), 0);
+                const bajo = products.filter(p => p.stockActual <= (p.stockMinimo || 5)).length;
+                const valor = products.reduce((a, p) => a + (p.stockActual * p.precioVenta), 0);
+                const valorCosto = products.reduce((a, p) => a + (p.stockActual * (p.precioCompra || 0)), 0);
                 const utilidad = valor - valorCosto;
 
                 document.getElementById('inv-total').textContent = total;
                 document.getElementById('inv-bajo').textContent = bajo;
+
+                // Dynamically toggle pulsing style on stock alert button
+                const btnAlertas = document.getElementById('btn-alertas');
+                if (btnAlertas) {
+                    if (bajo > 0) {
+                        btnAlertas.classList.add('pulsing');
+                    } else {
+                        btnAlertas.classList.remove('pulsing');
+                    }
+                }
+
                 document.getElementById('inv-valor').textContent = '$' + valor.toLocaleString();
                 document.getElementById('inv-costo').textContent = '$' + valorCosto.toLocaleString();
-                
+
                 const utilidadEl = document.getElementById('inv-utilidad');
                 utilidadEl.textContent = '$' + utilidad.toLocaleString();
                 if (utilidad >= 0) {
@@ -670,21 +1012,48 @@
                     utilidadEl.style.color = '#ef4444';
                 }
 
-                tbody.innerHTML = products.length ? products.map(p => `
+                tbody.innerHTML = products.length ? products.map(p => {
+                    const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
+                    const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
+                    const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
+                    
+                    const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
+                    let colorClass = 'green';
+                    if (pct <= 30) {
+                        colorClass = 'red';
+                    } else if (pct <= 69) {
+                        colorClass = 'orange';
+                    }
+                    const barWidth = Math.min(pct, 100);
+
+                    return `
             <tr>
-                <td style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
-                <td style="font-weight:500">${p.nombre}</td>
-                <td><span class="badge ${p.cantidad <= (p.stockMinimo || 5) ? 'badge-danger' : 'badge-success'}">${p.cantidad} uds</span></td>
-                <td>$${p.precioCompra?.toLocaleString() || '0'}</td>
-                <td>$${p.precioVenta?.toLocaleString()}</td>
-                <td><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
-                <td style="display:flex;gap:0.4rem">
+                <td class="col-codigo" style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
+                <td class="col-nombre" style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
+                <td class="col-unidad">${p.unidadMedida || 'Unidad'}</td>
+                <td class="col-stock">
+                    <div class="stock-bar-wrapper">
+                        <div class="stock-bar-info">
+                            <span class="stock-bar-qty">${stockActual} / ${stockOptimo} uds</span>
+                            <span class="stock-bar-pct ${colorClass}">${pct}%</span>
+                        </div>
+                        <div class="stock-bar-container">
+                            <div class="stock-bar-fill ${colorClass}" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="col-precio">$${p.precioCompra !== undefined ? Math.round(p.precioCompra) : '0'}</td>
+                <td class="col-precio">$${p.precioVenta !== undefined ? Math.round(p.precioVenta) : '0'}</td>
+                <td class="col-iva">${p.iva !== undefined ? Number(p.iva).toFixed(1) : '0.0'}%</td>
+                <td class="col-estado"><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
+                <td class="col-acciones" style="display:flex;gap:0.4rem">
                     <button class="btn-sm" onclick="editProducto(${p.id})">Editar</button>
                     <button class="btn-sm btn-del" onclick="deleteProducto(${p.id})">Borrar</button>
                 </td>
-            </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
+            </tr>`;
+                }).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
             }
         }
 
@@ -705,6 +1074,8 @@
 
         // ─── PROVEEDORES ───
         async function loadProveedores() {
+            const searchInput = document.getElementById('prov-search-input');
+            if (searchInput) searchInput.value = '';
             const tbody = document.getElementById('prov-tbody');
             try {
                 const data = await apiRequest('/proveedores') || [];
@@ -737,6 +1108,8 @@
 
         // ─── CLIENTES ───
         async function loadClientes() {
+            const searchInput = document.getElementById('cli-search-input');
+            if (searchInput) searchInput.value = '';
             const tbody = document.getElementById('cli-tbody');
             try {
                 const data = await apiRequest('/clientes') || [];
@@ -771,6 +1144,8 @@
 
         // ─── USUARIOS ───
         async function loadUsuarios() {
+            const searchInput = document.getElementById('usr-search-input');
+            if (searchInput) searchInput.value = '';
             const tbody = document.getElementById('usr-tbody');
             try {
                 const data = await apiRequest('/usuarios') || [];
@@ -803,22 +1178,109 @@
 
         // ─── ALERTAS STOCK ───
         async function loadAlertas() {
+            const searchInput = document.getElementById('alertas-search-input');
+            if (searchInput) searchInput.value = '';
             const container = document.getElementById('alertas-container');
             try {
+                if (!cacheProveedores.length) {
+                    await loadReferences();
+                }
                 const products = await apiRequest('/productos') || [];
-                const bajos = products.filter(p => p.cantidad <= (p.stockMinimo || 5) && p.cantidad > 0);
-                const agotados = products.filter(p => p.cantidad === 0);
-                let html = '';
-                agotados.forEach(p => {
-                    html += `<div class="alert-item"><div class="alert-dot red"></div><div><strong>${p.nombre}</strong> — <span style="color:#ef4444">AGOTADO</span></div></div>`;
-                });
+                const bajos = products.filter(p => p.stockActual <= (p.stockMinimo || 5));
+
+                if (bajos.length === 0) {
+                    container.innerHTML = '<p style="color:#10b981; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">✓ Todos los productos tienen stock suficiente.</p>';
+                    const btnAlertas = document.getElementById('btn-alertas');
+                    if (btnAlertas) btnAlertas.classList.remove('pulsing');
+                    const searchCont = document.getElementById('alertas-search-container');
+                    if (searchCont) searchCont.style.display = 'none';
+                    return;
+                }
+
+                const btnAlertas = document.getElementById('btn-alertas');
+                if (btnAlertas) btnAlertas.classList.add('pulsing');
+                const searchCont = document.getElementById('alertas-search-container');
+                if (searchCont) searchCont.style.display = 'block';
+
+                let tableHtml = `
+                    <div class="card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th style="text-align:center">Stock Actual</th>
+                                    <th style="text-align:center">Mínimo</th>
+                                    <th>Proveedor</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alertas-tbody">
+                `;
+
                 bajos.forEach(p => {
-                    html += `<div class="alert-item"><div class="alert-dot"></div><div><strong>${p.nombre}</strong> — Stock: <span style="color:#f59e0b">${p.cantidad} unidades</span> (mín. ${p.stockMinimo || 5})</div></div>`;
+                    const prov = cacheProveedores.find(pr => pr.id === p.idProveedor);
+                    const provNombre = prov ? prov.nombre : 'Sin asignar';
+                    const isAgotado = p.stockActual === 0;
+
+                    const actionHtml = p.idProveedor
+                        ? `<a href="javascript:void(0)" onclick="verProveedor(${p.idProveedor})" style="color: #a5b4fc; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#a5b4fc'">🔍 Ver Proveedor</a>`
+                        : `<span style="color: var(--text-muted);">—</span>`;
+
+                    tableHtml += `
+                                <tr>
+                                    <td style="font-weight:500">${p.nombre}</td>
+                                    <td style="text-align:center; font-weight:600; ${isAgotado ? 'color:#ef4444; background:rgba(239, 68, 68, 0.1);' : 'color:#f59e0b; background:rgba(245, 158, 11, 0.1);'}">${p.stockActual} uds</td>
+                                    <td style="text-align:center; color:var(--text-muted)">${p.stockMinimo || 5} uds</td>
+                                    <td>${provNombre}</td>
+                                    <td>${actionHtml}</td>
+                                </tr>
+                    `;
                 });
-                container.innerHTML = html || '<p style="color:var(--accent)">✓ Todos los productos tienen stock suficiente.</p>';
+
+                tableHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                container.innerHTML = tableHtml;
             } catch (e) {
                 container.innerHTML = `<p style="color:#ef4444">Error al cargar alertas: ${e.message}</p>`;
+                const searchCont = document.getElementById('alertas-search-container');
+                if (searchCont) searchCont.style.display = 'none';
             }
+        }
+
+        async function verProveedor(id) {
+            try {
+                if (!cacheProveedores.length) {
+                    await loadReferences();
+                }
+                const prov = cacheProveedores.find(p => p.id === id) || await apiRequest(`/proveedores/${id}`);
+                if (!prov) {
+                    alert("No se encontró la información del proveedor.");
+                    return;
+                }
+
+                const content = document.getElementById('prov-details-content');
+                content.innerHTML = `
+                    <div><strong>Nombre / Razón Social:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.nombre}</span></div>
+                    <div><strong>NIT / Identificación:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.numeroDocumento || '—'}</span></div>
+                    <div><strong>Teléfono:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.telefono || '—'}</span></div>
+                    <div><strong>Email:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.email || '—'}</span></div>
+                    <div><strong>Dirección:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.direccion || '—'}</span></div>
+                    <div><strong>Cuenta Bancaria:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.cuentaBancaria || '—'}</span></div>
+                    <div><strong>Estado:</strong> <span class="badge ${prov.activo === 1 ? 'badge-success' : 'badge-danger'}" style="margin-left: 0.5rem;">${prov.activo === 1 ? 'Activo' : 'Inactivo'}</span></div>
+                `;
+                document.getElementById('proveedorModal').style.display = 'flex';
+            } catch (e) {
+                console.error(e);
+                alert("Error al cargar detalles del proveedor: " + e.message);
+            }
+        }
+
+        function closeProveedorModal() {
+            document.getElementById('proveedorModal').style.display = 'none';
         }
 
         // ─── GENERACIÓN DE REPORTES PDF (IMPRESIÓN ELEGANTE) ───
@@ -840,13 +1302,13 @@
                     let totalCosto = 0;
 
                     rows = data.map(p => {
-                        totalStock += p.cantidad || 0;
-                        totalValor += (p.cantidad || 0) * (p.precioVenta || 0);
-                        totalCosto += (p.cantidad || 0) * (p.precioCompra || 0);
+                        totalStock += p.stockActual || 0;
+                        totalValor += (p.stockActual || 0) * (p.precioVenta || 0);
+                        totalCosto += (p.stockActual || 0) * (p.precioCompra || 0);
                         return [
                             p.codigoBarras || 'N/A',
                             p.nombre,
-                            `${p.cantidad} uds`,
+                            `${p.stockActual} uds`,
                             `$${p.precioCompra?.toLocaleString('es-CO')}`,
                             `$${p.precioVenta?.toLocaleString('es-CO')}`,
                             p.estado === 1 ? 'Activo' : 'Inactivo'
@@ -866,14 +1328,14 @@
                     titulo = 'Reporte de Productos con Stock Bajo';
                     headers = ['Código de Barras', 'Nombre', 'Stock Actual', 'Stock Mínimo', 'P. Venta', 'Proveedor'];
                     const data = await apiRequest('/productos') || [];
-                    const stockBajoData = data.filter(p => p.cantidad <= (p.stockMinimo || 5));
+                    const stockBajoData = data.filter(p => p.stockActual <= (p.stockMinimo || 5));
 
                     rows = stockBajoData.map(p => {
                         const prov = cacheProveedores.find(pr => pr.id === p.idProveedor);
                         return [
                             p.codigoBarras || 'N/A',
                             p.nombre,
-                            `<span style="color:#ef4444; font-weight:bold">${p.cantidad} uds</span>`,
+                            `<span style="color:#ef4444; font-weight:bold">${p.stockActual} uds</span>`,
                             `${p.stockMinimo || 5} uds`,
                             `$${p.precioVenta?.toLocaleString('es-CO')}`,
                             prov ? prov.nombre : 'Sin asignar'
@@ -950,6 +1412,44 @@
                     <p><strong>Total Usuarios Registrados:</strong> ${data.length}</p>
                 </div>
             `;
+                } else if (tipo === 'resumen') {
+                    titulo = 'Resumen Ejecutivo de la Empresa';
+                    headers = ['Indicador', 'Valor / Métrica', 'Estado / Detalle'];
+                    
+                    const productos = await apiRequest('/productos') || [];
+                    const clientes = await apiRequest('/clientes') || [];
+                    const proveedores = await apiRequest('/proveedores') || [];
+                    const usuarios = await apiRequest('/usuarios') || [];
+
+                    let totalProd = productos.length;
+                    let totalStock = 0;
+                    let stockBajo = 0;
+                    let valorInventario = 0;
+                    
+                    productos.forEach(p => {
+                        let qty = p.stockActual || 0;
+                        let min = p.stockMinimo || 5;
+                        valorInventario += qty * (p.precioVenta || 0);
+                        totalStock += qty;
+                        if (qty <= min) stockBajo++;
+                    });
+
+                    rows = [
+                        ['Total de Productos en Catálogo', `${totalProd}`, 'Productos registrados'],
+                        ['Unidades de Stock Físico', `${totalStock} uds`, 'Total unidades en inventario'],
+                        ['Productos con Stock Bajo', `<span style="color:#ef4444; font-weight:bold">${stockBajo}</span>`, 'Requieren reabastecimiento urgente'],
+                        ['Valoración de Inventario', `$${valorInventario.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'En base a precios de venta comerciales'],
+                        ['Clientes Registrados', `${clientes.length}`, 'Base de datos de clientes'],
+                        ['Proveedores Registrados', `${proveedores.length}`, 'Suministradores comerciales'],
+                        ['Usuarios en el Sistema', `${usuarios.length}`, 'Cuentas con acceso administrativo']
+                    ];
+
+                    resumenHtml = `
+                        <div class="summary-box">
+                            <p><strong>Fecha del Resumen:</strong> ${nowStr}</p>
+                            <p><strong>Estado de Operación:</strong> Operando normalmente</p>
+                        </div>
+                    `;
                 }
 
                 // Crear nueva ventana de impresión
@@ -1102,14 +1602,21 @@
             <label>Nombre del Producto</label>
             <input id="prod-nombre" placeholder="Nombre del producto" required>
             
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+            <label>Unidad de Medida</label>
+            <input id="prod-unidadMedida" placeholder="Ej: Unidad, Kilo, Litro" required>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem">
                 <div>
-                    <label>Stock / Cantidad</label>
-                    <input id="prod-cantidad" type="number" value="0" min="0" required>
+                    <label>Stock / Actual</label>
+                    <input id="prod-stockActual" type="number" value="0" min="0" required>
                 </div>
                 <div>
                     <label>Stock Mínimo</label>
                     <input id="prod-stockMinimo" type="number" value="5" min="0" required>
+                </div>
+                <div>
+                    <label>Stock Óptimo</label>
+                    <input id="prod-stockOptimo" type="number" value="200" min="0" required>
                 </div>
             </div>
             
@@ -1346,14 +1853,16 @@
             if (type === 'inventario') {
                 document.getElementById('prod-codigoBarras').value = data.codigoBarras || '';
                 document.getElementById('prod-nombre').value = data.nombre || '';
-                document.getElementById('prod-cantidad').value = data.cantidad !== undefined ? data.cantidad : 0;
+                document.getElementById('prod-stockActual').value = data.stockActual !== undefined ? data.stockActual : 0;
                 document.getElementById('prod-stockMinimo').value = data.stockMinimo !== undefined ? data.stockMinimo : 5;
+                document.getElementById('prod-stockOptimo').value = data.stockOptimo !== undefined ? data.stockOptimo : 200;
                 document.getElementById('prod-precioCompra').value = data.precioCompra || 0;
                 document.getElementById('prod-precioVenta').value = data.precioVenta || 0;
                 document.getElementById('prod-idCategoria').value = data.idCategoria || '';
                 document.getElementById('prod-idProveedor').value = data.idProveedor || '';
                 document.getElementById('prod-estado').value = data.estado !== undefined ? data.estado : 1;
                 document.getElementById('prod-iva').value = data.iva !== undefined ? data.iva : 19;
+                document.getElementById('prod-unidadMedida').value = data.unidadMedida || '';
             } else if (type === 'proveedor') {
                 document.getElementById('prov-nombre').value = data.nombre || '';
                 document.getElementById('prov-idTipoDocumento').value = data.idTipoDocumento || '';
@@ -1400,14 +1909,16 @@
                 return {
                     codigoBarras: document.getElementById('prod-codigoBarras').value,
                     nombre: document.getElementById('prod-nombre').value,
-                    cantidad: parseInt(document.getElementById('prod-cantidad').value) || 0,
+                    stockActual: parseInt(document.getElementById('prod-stockActual').value) || 0,
                     stockMinimo: parseInt(document.getElementById('prod-stockMinimo').value) || 5,
+                    stockOptimo: parseInt(document.getElementById('prod-stockOptimo').value) || 200,
                     precioCompra: parseFloat(document.getElementById('prod-precioCompra').value) || 0,
                     precioVenta: parseFloat(document.getElementById('prod-precioVenta').value) || 0,
                     idCategoria: parseInt(document.getElementById('prod-idCategoria').value) || null,
                     idProveedor: parseInt(document.getElementById('prod-idProveedor').value) || null,
                     estado: parseInt(document.getElementById('prod-estado').value),
-                    iva: parseFloat(document.getElementById('prod-iva').value) || 19
+                    iva: parseFloat(document.getElementById('prod-iva').value) || 19,
+                    unidadMedida: document.getElementById('prod-unidadMedida').value || 'Unidad'
                 };
             }
 

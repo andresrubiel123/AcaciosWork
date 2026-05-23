@@ -8,7 +8,10 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -33,6 +36,9 @@ public class GestionInventario extends JPanel {
 
     private DefaultTableModel modeloTabla;
     private JTable tablaProductos;
+    private JLabel statTotal;
+    private JLabel statBajo;
+    private JLabel statValor;
 
     public GestionInventario() {
         setLayout(new BorderLayout());
@@ -52,7 +58,41 @@ public class GestionInventario extends JPanel {
         lblTitle.setForeground(Color.WHITE);
         panelSuperior.add(lblTitle);
 
-        add(panelSuperior, BorderLayout.NORTH);
+        // Contenedor superior: título + estadísticas
+        JPanel topContainer = new JPanel(new BorderLayout());
+        topContainer.setOpaque(false);
+        topContainer.add(panelSuperior, BorderLayout.NORTH);
+
+        // Stats panel
+        JPanel statsPanel = new JPanel(new GridLayout(1, 3, 12, 0));
+        statsPanel.setOpaque(false);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+
+        JPanel card1 = new JPanel(new BorderLayout());
+        card1.setBackground(new Color(30, 41, 59));
+        card1.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+        JLabel lbl1 = new JLabel("Total Productos"); lbl1.setForeground(new Color(148,163,184));
+        statTotal = new JLabel("—"); statTotal.setForeground(new Color(248,250,252)); statTotal.setFont(new Font("Dialog", Font.BOLD, 18));
+        card1.add(lbl1, BorderLayout.NORTH); card1.add(statTotal, BorderLayout.CENTER);
+
+        JPanel card2 = new JPanel(new BorderLayout());
+        card2.setBackground(new Color(30, 41, 59));
+        card2.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+        JLabel lbl2 = new JLabel("Stock Bajo"); lbl2.setForeground(new Color(148,163,184));
+        statBajo = new JLabel("—"); statBajo.setForeground(new Color(239,68,68)); statBajo.setFont(new Font("Dialog", Font.BOLD, 18));
+        card2.add(lbl2, BorderLayout.NORTH); card2.add(statBajo, BorderLayout.CENTER);
+
+        JPanel card3 = new JPanel(new BorderLayout());
+        card3.setBackground(new Color(30, 41, 59));
+        card3.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+        JLabel lbl3 = new JLabel("Valor Inventario"); lbl3.setForeground(new Color(148,163,184));
+        statValor = new JLabel("—"); statValor.setForeground(new Color(16,185,129)); statValor.setFont(new Font("Dialog", Font.BOLD, 18));
+        card3.add(lbl3, BorderLayout.NORTH); card3.add(statValor, BorderLayout.CENTER);
+
+        statsPanel.add(card1); statsPanel.add(card2); statsPanel.add(card3);
+        topContainer.add(statsPanel, BorderLayout.SOUTH);
+
+        add(topContainer, BorderLayout.NORTH);
 
         // Tabla de productos
         modeloTabla = new DefaultTableModel() {
@@ -64,10 +104,13 @@ public class GestionInventario extends JPanel {
         modeloTabla.addColumn("ID");
         modeloTabla.addColumn("Código");
         modeloTabla.addColumn("Nombre");
+        modeloTabla.addColumn("Unidad");
         modeloTabla.addColumn("Stock");
         modeloTabla.addColumn("Precio Compra");
         modeloTabla.addColumn("Precio Venta");
+        modeloTabla.addColumn("IVA");
         modeloTabla.addColumn("Estado");
+        modeloTabla.addColumn("Acciones");
 
         tablaProductos = new JTable(modeloTabla);
         tablaProductos.setBackground(new Color(30, 41, 59));
@@ -82,6 +125,101 @@ public class GestionInventario extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(new Color(15, 23, 42));
         add(scrollPane, BorderLayout.CENTER);
+        // Ajustar anchos de columnas (incluye nueva columna IVA)
+        tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
+        tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
+        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(150); // Nombre
+        tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(80); // Unidad
+        tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(250); // Stock (elástico)
+        tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(110); // Precio Compra
+        tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(110); // Precio Venta
+        tablaProductos.getColumnModel().getColumn(7).setPreferredWidth(80); // IVA
+        tablaProductos.getColumnModel().getColumn(8).setPreferredWidth(80); // Estado
+        tablaProductos.getColumnModel().getColumn(9).setPreferredWidth(140); // Acciones
+
+        // Renderer para la columna Stock: barra de progreso y porcentaje
+        tablaProductos.getColumnModel().getColumn(4).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                JPanel panel = new JPanel(new BorderLayout());
+                panel.setOpaque(!isSelected);
+                panel.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+
+                try {
+                    String text = value != null ? value.toString() : "0 uds";
+                    int qty = Integer.parseInt(text.replaceAll("[^0-9]", ""));
+                    // Usamos stock óptimo por defecto de 200 si no está disponible en modelo
+                    int stockOptimo = 200;
+                    // calculamos porcentaje
+                    int pct = Math.min(100, (int) Math.round((qty * 100.0) / stockOptimo));
+
+                    // barra simple
+                    javax.swing.JProgressBar bar = new javax.swing.JProgressBar(0, 100);
+                    bar.setValue(pct);
+                    bar.setStringPainted(false);
+                    bar.setBorderPainted(false);
+                    bar.setPreferredSize(new java.awt.Dimension(120, 12));
+                    if (pct <= 30) {
+                        bar.setForeground(new Color(239, 68, 68));
+                    } else if (pct <= 69) {
+                        bar.setForeground(new Color(249, 115, 22));
+                    } else {
+                        bar.setForeground(new Color(16, 185, 129));
+                    }
+
+                    JLabel info = new JLabel(qty + " / " + stockOptimo + " uds   " + pct + "%");
+                    info.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+                    info.setFont(new Font("Dialog", Font.BOLD, 12));
+                    panel.add(info, BorderLayout.NORTH);
+                    panel.add(bar, BorderLayout.SOUTH);
+                } catch (Exception e) {
+                    panel.add(new JLabel(value != null ? value.toString() : "0 uds"));
+                }
+                return panel;
+            }
+        });
+
+        // Columna Acciones: renderer simple y handler de clics
+        tablaProductos.getColumnModel().getColumn(9).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 4));
+                p.setOpaque(!isSelected);
+                p.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+                JLabel edit = new JLabel("Editar");
+                edit.setForeground(new Color(99, 102, 241));
+                edit.setFont(new Font("Dialog", Font.BOLD, 12));
+                JLabel del = new JLabel("Borrar");
+                del.setForeground(new Color(239, 68, 68));
+                del.setFont(new Font("Dialog", Font.BOLD, 12));
+                p.add(edit);
+                p.add(del);
+                return p;
+            }
+        });
+
+        // Mouse listener para detectar clicks en 'Acciones'
+        tablaProductos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = tablaProductos.rowAtPoint(e.getPoint());
+                int col = tablaProductos.columnAtPoint(e.getPoint());
+                if (row == -1 || col == -1) return;
+                if (col == 9) { // Acciones
+                    int cellX = e.getX() - tablaProductos.getCellRect(row, col, true).x;
+                    int width = tablaProductos.getColumnModel().getColumn(col).getWidth();
+                    if (cellX < width / 2) {
+                        // Edit
+                        editarProducto();
+                    } else {
+                        // Delete
+                        eliminarProducto();
+                    }
+                }
+            }
+        });
 
         // Panel inferior: Botones de Acción
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -113,9 +251,11 @@ public class GestionInventario extends JPanel {
                         p.getId(), 
                         p.getCodigoBarras(), 
                         p.getNombre(), 
-                        p.getCantidad(), 
+                        p.getUnidadMedida() != null ? p.getUnidadMedida() : "Unidad",
+                        p.getStockActual(), 
                         "$" + p.getPrecioCompra(),
                         "$" + p.getPrecioVenta(),
+                        p.getIva() + "%",
                         p.getEstado() != null && p.getEstado() == 1 ? "Activo" : "Inactivo"
                 });
             }
@@ -143,11 +283,15 @@ public class GestionInventario extends JPanel {
 
         JComboBox<Categoria> cbCat = new JComboBox<>(categorias);
         JComboBox<Proveedor> cbProv = new JComboBox<>(proveedores);
+        JTextField txtUnidadMedida = new JTextField("");
+        JTextField txtIva = new JTextField("19"); // IVA default 19%
 
         Object[] message = {
                 "Código de Barras:", txtCodigo,
                 "Nombre:", txtNombre,
-                "Stock Inicial:", txtCant,
+                "Unidad de Medida:", txtUnidadMedida,
+                "IVA (%):", txtIva,
+                "Stock Actual:", txtCant,
                 "Precio Compra:", txtPCompra,
                 "Precio Venta:", txtPVenta,
                 "Categoría:", cbCat,
@@ -160,12 +304,13 @@ public class GestionInventario extends JPanel {
                 Producto p = new Producto();
                 p.setCodigoBarras(txtCodigo.getText());
                 p.setNombre(txtNombre.getText());
-                p.setCantidad(Integer.parseInt(txtCant.getText()));
+                p.setStockActual(Integer.parseInt(txtCant.getText()));
                 p.setPrecioCompra(Double.parseDouble(txtPCompra.getText()));
                 p.setPrecioVenta(Double.parseDouble(txtPVenta.getText()));
-                p.setIva(19.0);
+                p.setIva(Double.parseDouble(txtIva.getText()));
                 p.setEstado(1);
                 p.setStockMinimo(5);
+                p.setUnidadMedida(txtUnidadMedida.getText().trim().isEmpty() ? "Unidad" : txtUnidadMedida.getText().trim());
 
                 Categoria c = (Categoria) cbCat.getSelectedItem();
                 if (c != null) p.setIdCategoria(c.getId());
@@ -194,13 +339,17 @@ public class GestionInventario extends JPanel {
             Producto p = ApiClient.get("/productos/" + id, Producto.class);
             
             JTextField txtNombre = new JTextField(p.getNombre());
-            JTextField txtCant = new JTextField(String.valueOf(p.getCantidad()));
+            JTextField txtCant = new JTextField(String.valueOf(p.getStockActual()));
             JTextField txtPVenta = new JTextField(String.valueOf(p.getPrecioVenta()));
             JComboBox<String> cbEstado = new JComboBox<>(new String[]{"Activo", "Inactivo"});
             cbEstado.setSelectedItem(p.getEstado() != null && p.getEstado() == 1 ? "Activo" : "Inactivo");
+            JTextField txtUnidadMedida = new JTextField(p.getUnidadMedida() != null ? p.getUnidadMedida() : "");
+            JTextField txtIva = new JTextField(String.valueOf(p.getIva()));
 
             Object[] message = {
                     "Nombre:", txtNombre,
+                    "Unidad de Medida:", txtUnidadMedida,
+                    "IVA (%):", txtIva,
                     "Stock:", txtCant,
                     "Precio Venta:", txtPVenta,
                     "Estado:", cbEstado
@@ -209,9 +358,11 @@ public class GestionInventario extends JPanel {
             int option = JOptionPane.showConfirmDialog(this, message, "Editar Producto", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION) {
                 p.setNombre(txtNombre.getText());
-                p.setCantidad(Integer.parseInt(txtCant.getText()));
+                p.setStockActual(Integer.parseInt(txtCant.getText()));
                 p.setPrecioVenta(Double.parseDouble(txtPVenta.getText()));
                 p.setEstado(cbEstado.getSelectedItem().equals("Activo") ? 1 : 0);
+                p.setIva(Double.parseDouble(txtIva.getText()));
+                p.setUnidadMedida(txtUnidadMedida.getText().trim().isEmpty() ? "Unidad" : txtUnidadMedida.getText().trim());
 
                 ApiClient.put("/productos/" + id, p, Producto.class);
                 cargarProductos();

@@ -25,8 +25,8 @@ public class Producto {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
-    private Integer cantidad;
+    @Column(name = "stock_actual", nullable = false)
+    private Integer stockActual;
 
     @Column(name = "precio_compra")
     private double precioCompra;
@@ -49,9 +49,15 @@ public class Producto {
     @Column(name = "stock_minimo")
     private Integer stockMinimo;
 
+    @Column(name = "stock_optimo")
+    private Integer stockOptimo;
+
+    @Column(name = "unidad_medida", nullable = false)
+    private String unidadMedida = "Unidad";
+
     /** Verifica si el stock actual es menor o igual al mínimo. @author RADJ */
     public boolean verificarStockMinimo() {
-        return cantidad <= stockMinimo;
+        return stockActual <= stockMinimo;
     }
 
     /** Calcula el valor total de una cantidad dada basándose en el precio de venta. @author RADJ */

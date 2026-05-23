@@ -50,6 +50,8 @@ public class Administrador extends JPanel {
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private JTable tableAlertas;
+    private JButton btnAlertas;
+    private JPanel statsClientes;
 
     public Administrador() {
         try {
@@ -77,110 +79,221 @@ public class Administrador extends JPanel {
     }
 
     private JPanel buildToolbar() {
-        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 8));
+        JPanel toolbar = new JPanel(new BorderLayout());
         toolbar.setBackground(BG_SIDEBAR);
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(255, 255, 255, 15)));
 
+        // Left section (Logo) - Vertically Centered using GridBagLayout
+        JPanel leftPanel = new JPanel(new java.awt.GridBagLayout());
+        leftPanel.setOpaque(false);
+        java.awt.GridBagConstraints gbcLeft = new java.awt.GridBagConstraints();
+        gbcLeft.insets = new java.awt.Insets(8, 16, 8, 16);
+        gbcLeft.gridx = 0;
+        gbcLeft.gridy = 0;
+
         JLabel brand = new JLabel("AcaciosWork");
         brand.setForeground(PRIMARY);
-        brand.setFont(new Font("Dialog", Font.BOLD, 14));
-        brand.setBorder(new EmptyBorder(0, 8, 0, 16));
-        toolbar.add(brand);
+        brand.setFont(new Font("Inter", Font.BOLD, 36));
+        leftPanel.add(brand, gbcLeft);
+        toolbar.add(leftPanel, BorderLayout.WEST);
 
-        JButton btnSalir = createToolbarBtn("‹ Salir", new Color(71, 85, 105), new Color(51, 65, 85));
-        btnSalir.setBackground(new Color(71, 85, 105));
-        btnSalir.addActionListener(e -> MainFrame.navigateTo(new Login()));
-        toolbar.add(btnSalir);
+        // Center section (Navigation Buttons) - Vertically Centered using GridBagLayout
+        JPanel centerPanel = new JPanel(new java.awt.GridBagLayout());
+        centerPanel.setOpaque(false);
+        java.awt.GridBagConstraints gbcCenter = new java.awt.GridBagConstraints();
+        gbcCenter.insets = new java.awt.Insets(8, 5, 8, 5);
+        gbcCenter.gridy = 0;
 
         String[][] sections = {
-                { "Inventario", "inventario", "249,115,22", "239,68,68" },
-                { "Proveedores", "proveedores", "249,115,22", "239,68,68" },
-                { "Clientes", "clientes", "249,115,22", "239,68,68" },
-                { "Usuarios", "usuarios", "249,115,22", "239,68,68" },
-                { "Reportes", "reportes", "249,115,22", "239,68,68" },
-                { "⚠ Alertas", "alertas", "236,72,153", "244,63,94" },
+                { "Inventario", "inventario" },
+                { "Proveedores", "proveedores" },
+                { "Clientes", "clientes" },
+                { "Usuarios", "usuarios" },
+                { "Reportes", "reportes" },
+                { "⚠ Alertas Stock", "alertas" }
         };
-        for (String[] s : sections) {
-            Color c1 = parseColor(s[2]);
-            Color c2 = parseColor(s[3]);
-            JButton btn = createToolbarBtn(s[0], c1, c2);
-            btn.putClientProperty("isTab", true);
-            btn.addActionListener(e -> {
-                setActiveBtn(btn, c1, c2);
-                cardLayout.show(contentPanel, s[1]);
-                if (s[1].equals("alertas"))
-                    refreshAlertas();
-            });
-            toolbar.add(btn);
-            if (s[1].equals("inventario"))
-                btn.setBackground(PRIMARY);
-        }
-        return toolbar;
-    }
 
-    private void setActiveBtn(JButton btn, Color c1, Color c2) {
-        for (Component c : ((JPanel) btn.getParent()).getComponents()) {
-            if (c instanceof JButton && Boolean.TRUE.equals(((JButton) c).getClientProperty("isTab"))) {
-                c.setBackground(null);
+        int btnIdx = 0;
+        for (String[] s : sections) {
+            JButton btn;
+            if (s[1].equals("alertas")) {
+                btnAlertas = createToolbarBtn(s[0], s[1]);
+                btn = btnAlertas;
+            } else {
+                btn = createToolbarBtn(s[0], s[1]);
+            }
+            btn.addActionListener(e -> {
+                setActiveBtn(btn);
+                cardLayout.show(contentPanel, s[1]);
+                if (s[1].equals("alertas")) {
+                    refreshAlertas();
+                }
+            });
+            gbcCenter.gridx = btnIdx++;
+            centerPanel.add(btn, gbcCenter);
+            if (s[1].equals("inventario")) {
+                btn.putClientProperty("active", true);
             }
         }
-        btn.setBackground(c1.darker());
-    }
+        toolbar.add(centerPanel, BorderLayout.CENTER);
 
-    private JButton createToolbarBtn(String text, Color c1, Color c2) {
-        JButton btn = new JButton(text) {
+        // Right section (User Profile + Logout Button) - Vertically Centered using GridBagLayout
+        JPanel rightPanel = new JPanel(new java.awt.GridBagLayout());
+        rightPanel.setOpaque(false);
+        java.awt.GridBagConstraints gbcRight = new java.awt.GridBagConstraints();
+        gbcRight.gridy = 0;
+
+        String userName = "Usuario";
+        if (SessionManager.getUsuario() != null) {
+            Usuario u = SessionManager.getUsuario();
+            userName = u.getNombre() + (u.getApellido() != null && !u.getApellido().equals("—") ? " " + u.getApellido() : "");
+        }
+
+        JLabel lblUser = new JLabel("👤 " + userName);
+        lblUser.setForeground(new Color(203, 213, 225));
+        lblUser.setFont(new Font("Inter", Font.BOLD, 24));
+        
+        gbcRight.gridx = 0;
+        gbcRight.insets = new java.awt.Insets(8, 12, 8, 12);
+        rightPanel.add(lblUser, gbcRight);
+
+        JButton btnSalir = new JButton("✕ Salir") {
             @Override
             protected void paintComponent(Graphics g) {
-                boolean active = getBackground() != null;
-                setForeground(active ? Color.WHITE : TEXT_MUTED);
-                if (active) {
-                    Graphics2D g2 = (Graphics2D) g.create();
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setPaint(new GradientPaint(0, 0, c1, 0, getHeight(), c2));
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                    g2.dispose();
-                }
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Red gradient matching var(--btn-exit)
+                g2.setPaint(new GradientPaint(0, 0, new Color(255, 59, 48), 0, getHeight(), new Color(255, 45, 85)));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.dispose();
                 super.paintComponent(g);
             }
         };
-        btn.setForeground(TEXT_MUTED);
-        btn.setFont(new Font("Dialog", Font.BOLD, 12));
-        btn.setBorder(new EmptyBorder(7, 18, 7, 18));
+        btnSalir.setForeground(Color.WHITE);
+        btnSalir.setFont(new Font("Inter", Font.BOLD, 12));
+        btnSalir.setBorder(new EmptyBorder(6, 16, 6, 16));
+        btnSalir.setFocusPainted(false);
+        btnSalir.setContentAreaFilled(false);
+        btnSalir.setOpaque(false);
+        btnSalir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSalir.addActionListener(e -> MainFrame.navigateTo(new Login()));
+        
+        gbcRight.gridx = 1;
+        gbcRight.insets = new java.awt.Insets(8, 12, 8, 16);
+        rightPanel.add(btnSalir, gbcRight);
+
+        toolbar.add(rightPanel, BorderLayout.EAST);
+        return toolbar;
+    }
+
+    private void setActiveBtn(JButton btn) {
+        for (Component c : btn.getParent().getComponents()) {
+            if (c instanceof JButton && Boolean.TRUE.equals(((JButton) c).getClientProperty("isTab"))) {
+                ((JButton) c).putClientProperty("active", false);
+            }
+        }
+        btn.putClientProperty("active", true);
+        btn.getParent().repaint();
+    }
+
+    private JButton createToolbarBtn(String text, String secName) {
+        JButton btn = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                boolean active = Boolean.TRUE.equals(getClientProperty("active"));
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                Color c1, c2;
+                if (active) {
+                    // Active style: Indigo gradient
+                    c1 = new Color(99, 102, 241);
+                    c2 = new Color(79, 70, 229);
+                    setForeground(Color.WHITE);
+                } else if ("alertas".equals(secName)) {
+                    // Alertas Stock button
+                    if (Boolean.TRUE.equals(getClientProperty("pulsing"))) {
+                        // Pulsing / Red style
+                        c1 = new Color(255, 59, 48);
+                        c2 = new Color(255, 45, 85);
+                        setForeground(Color.WHITE);
+                    } else {
+                        // Dark slate style
+                        c1 = new Color(71, 85, 105);
+                        c2 = new Color(51, 65, 85);
+                        setForeground(new Color(203, 213, 225));
+                    }
+                } else {
+                    // Inactive nav style: Orange gradient
+                    c1 = new Color(249, 115, 22);
+                    c2 = new Color(239, 68, 68);
+                    setForeground(Color.WHITE);
+                }
+                
+                g2.setPaint(new GradientPaint(0, 0, c1, 0, getHeight(), c2));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.dispose();
+                
+                super.paintComponent(g);
+            }
+        };
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Inter", Font.BOLD, 12));
+        btn.setBorder(new EmptyBorder(6, 16, 6, 16));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
         btn.setOpaque(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.putClientProperty("isTab", true);
         return btn;
     }
 
     private JPanel buildInventarioPanel() {
         JPanel panel = createContentPanel();
-        JPanel stats = new JPanel(new GridLayout(1, 3, 12, 0));
+        JPanel stats = new JPanel(new GridLayout(1, 5, 12, 0));
         stats.setOpaque(false);
         stats.setBorder(new EmptyBorder(0, 0, 16, 0));
         stats.add(buildStatCard("Total Productos", "0", TEXT_MAIN));
         stats.add(buildStatCard("Stock Bajo", "0", DANGER));
         stats.add(buildStatCard("Valor Inventario", "$0", ACCENT));
+        stats.add(buildStatCard("Valor Costo", "$0", new Color(245, 158, 11)));
+        stats.add(buildStatCard("Utilidad Neta", "$0", ACCENT));
 
         JTable table = buildStyledTable(
-                new String[] { "ID", "Código", "Nombre", "Stock", "P. Compra", "P. Venta", "IVA", "Estado" });
+                new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "P. Compra", "P. Venta", "IVA", "Estado", "Acciones" });
         hideColumn(table, 0);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
+        table.getColumnModel().getColumn(2).setPreferredWidth(160); // Nombre
+        table.getColumnModel().getColumn(3).setPreferredWidth(100); // Unidad
+        table.getColumnModel().getColumn(4).setPreferredWidth(300); // Stock
+        table.getColumnModel().getColumn(5).setPreferredWidth(110); // P. Compra
+        table.getColumnModel().getColumn(6).setPreferredWidth(110); // P. Venta
+        table.getColumnModel().getColumn(7).setPreferredWidth(80);  // IVA
+        table.getColumnModel().getColumn(8).setPreferredWidth(100); // Estado
+        table.getColumnModel().getColumn(8).setCellRenderer(new EstadoCellRenderer());
+        table.getColumnModel().getColumn(4).setCellRenderer(new StockBarCellRenderer());
 
-        JButton bAdd = createActionButton("+ Nuevo", ACCENT);
+        setupAccionesColumn(table, 
+            () -> editarProductoInv(table, stats),
+            () -> eliminarGeneric(table, "/productos", "Producto", () -> refreshInventario(table, stats))
+        );
+
+        JButton bAdd = createActionButton("+ Nuevo Producto", ACCENT);
         bAdd.addActionListener(e -> agregarProductoDash(table, stats));
-        JButton bEdit = createActionButton("✎ Editar", PRIMARY);
-        bEdit.addActionListener(e -> editarProductoInv(table, stats));
-        JButton bDel = createActionButton("🗑 Eliminar", DANGER);
-        bDel.addActionListener(
-                e -> eliminarGeneric(table, "/productos", "Producto", () -> refreshInventario(table, stats)));
 
-        panel.add(buildSectionHeader("Inventario de Productos", "Existencias y precios", bAdd, bEdit, bDel),
+        panel.add(buildSectionHeader("Inventario de Productos", "Control total de existencias y precios", bAdd),
                 BorderLayout.NORTH);
 
         JPanel center = new JPanel(new BorderLayout(0, 12));
         center.setOpaque(false);
         center.add(stats, BorderLayout.NORTH);
-        center.add(wrapTable(table), BorderLayout.CENTER);
+
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
+        tableContainer.setOpaque(false);
+        tableContainer.add(buildSearchPanel(table), BorderLayout.NORTH);
+        tableContainer.add(wrapTable(table), BorderLayout.CENTER);
+
+        center.add(tableContainer, BorderLayout.CENTER);
         panel.add(center, BorderLayout.CENTER);
 
         refreshInventario(table, stats);
@@ -190,73 +303,116 @@ public class Administrador extends JPanel {
     private JPanel buildProveedoresPanel() {
         JPanel panel = createContentPanel();
         JTable table = buildStyledTable(
-                new String[] { "ID", "Nombre", "Teléfono", "Email", "Doc/NIT", "Cuenta Bancaria", "Estado" });
+                new String[] { "ID", "Nombre", "Teléfono", "Email", "Doc/NIT", "Cuenta Bancaria", "Estado", "Acciones" });
         hideColumn(table, 0);
+        table.getColumnModel().getColumn(6).setCellRenderer(new EstadoCellRenderer());
 
-        JButton bAdd = createActionButton("+ Nuevo", ACCENT);
+        setupAccionesColumn(table,
+            () -> editarProveedorDash(table),
+            () -> eliminarGeneric(table, "/proveedores", "Proveedor", () -> refreshProveedores(table))
+        );
+
+        JButton bAdd = createActionButton("+ Nuevo Proveedor", ACCENT);
         bAdd.addActionListener(e -> agregarProveedorDash(table));
-        JButton bEdit = createActionButton("✎ Editar", PRIMARY);
-        bEdit.addActionListener(e -> editarProveedorDash(table));
-        JButton bDel = createActionButton("🗑 Eliminar", DANGER);
-        bDel.addActionListener(
-                e -> eliminarGeneric(table, "/proveedores", "Proveedor", () -> refreshProveedores(table)));
 
-        panel.add(buildSectionHeader("Proveedores", "Gestión de suministradores", bAdd, bEdit, bDel),
+        panel.add(buildSectionHeader("Proveedores", "Gestión de contactos y suministradores", bAdd),
                 BorderLayout.NORTH);
-        panel.add(wrapTable(table), BorderLayout.CENTER);
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
+        tableContainer.setOpaque(false);
+        tableContainer.add(buildSearchPanel(table), BorderLayout.NORTH);
+        tableContainer.add(wrapTable(table), BorderLayout.CENTER);
+
+        panel.add(tableContainer, BorderLayout.CENTER);
         refreshProveedores(table);
         return panel;
     }
 
     private JPanel buildClientesPanel() {
         JPanel panel = createContentPanel();
+        
+        statsClientes = new JPanel(new GridLayout(1, 2, 12, 0));
+        statsClientes.setOpaque(false);
+        statsClientes.setBorder(new EmptyBorder(0, 0, 16, 0));
+        statsClientes.add(buildStatCard("Total Clientes", "0", TEXT_MAIN));
+        statsClientes.add(buildStatCard("Activos", "0", ACCENT));
+
         JTable table = buildStyledTable(
-                new String[] { "ID", "Nombre", "Identificación", "Teléfono", "Email", "Frecuente", "Estado" });
+                new String[] { "ID", "Nombre", "Identificación", "Teléfono", "Email", "Frecuente", "Estado", "Acciones" });
         hideColumn(table, 0);
+        table.getColumnModel().getColumn(6).setCellRenderer(new EstadoCellRenderer());
 
-        JButton bAdd = createActionButton("+ Nuevo", ACCENT);
+        setupAccionesColumn(table,
+            () -> editarClienteDash(table),
+            () -> eliminarGeneric(table, "/clientes", "Cliente", () -> refreshClientes(table))
+        );
+
+        JButton bAdd = createActionButton("+ Nuevo Cliente", ACCENT);
         bAdd.addActionListener(e -> agregarClienteDash(table));
-        JButton bEdit = createActionButton("✎ Editar", PRIMARY);
-        bEdit.addActionListener(e -> editarClienteDash(table));
-        JButton bDel = createActionButton("🗑 Eliminar", DANGER);
-        bDel.addActionListener(e -> eliminarGeneric(table, "/clientes", "Cliente", () -> refreshClientes(table)));
 
-        panel.add(buildSectionHeader("Clientes", "Base de datos registrados", bAdd, bEdit, bDel), BorderLayout.NORTH);
-        panel.add(wrapTable(table), BorderLayout.CENTER);
+        panel.add(buildSectionHeader("Clientes", "Base de datos de clientes registrados", bAdd), BorderLayout.NORTH);
+
+        JPanel center = new JPanel(new BorderLayout(0, 12));
+        center.setOpaque(false);
+        center.add(statsClientes, BorderLayout.NORTH);
+
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
+        tableContainer.setOpaque(false);
+        tableContainer.add(buildSearchPanel(table), BorderLayout.NORTH);
+        tableContainer.add(wrapTable(table), BorderLayout.CENTER);
+
+        center.add(tableContainer, BorderLayout.CENTER);
+        panel.add(center, BorderLayout.CENTER);
+
         refreshClientes(table);
         return panel;
     }
 
     private JPanel buildUsuariosPanel() {
         JPanel panel = createContentPanel();
-        JTable table = buildStyledTable(new String[] { "ID", "Nombre", "Usuario", "Doc/Id", "Estado" });
+        JTable table = buildStyledTable(new String[] { "ID", "Nombre", "Usuario", "Doc/Id", "Estado", "Acciones" });
         hideColumn(table, 0);
+        table.getColumnModel().getColumn(4).setCellRenderer(new EstadoCellRenderer());
 
-        JButton bAdd = createActionButton("+ Nuevo", ACCENT);
+        setupAccionesColumn(table,
+            () -> editarUsuarioDash(table),
+            () -> eliminarUsuarioDash(table)
+        );
+
+        JButton bAdd = createActionButton("+ Nuevo Usuario", ACCENT);
         bAdd.addActionListener(e -> agregarUsuarioDash(table));
 
-        JButton bEdit = createActionButton("✎ Editar", PRIMARY);
-        bEdit.addActionListener(e -> editarUsuarioDash(table));
-
-        JButton bDel = createActionButton("🗑 Eliminar", DANGER);
-        bDel.addActionListener(e -> eliminarUsuarioDash(table));
-
-        panel.add(buildSectionHeader("Usuarios del Sistema", "Administración de accesos", bAdd, bEdit, bDel),
+        panel.add(buildSectionHeader("Usuarios del Sistema", "Administración de accesos y roles", bAdd),
                 BorderLayout.NORTH);
-        panel.add(wrapTable(table), BorderLayout.CENTER);
-        loadTable(table, "/usuarios", row -> new Object[] { id(row), str(row, "nombre"), str(row, "usuario"),
-                str(row, "numeroDocumento"), str(row, "activo").equals("1") ? "Activo" : "Inactivo" });
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
+        tableContainer.setOpaque(false);
+        tableContainer.add(buildSearchPanel(table), BorderLayout.NORTH);
+        tableContainer.add(wrapTable(table), BorderLayout.CENTER);
+
+        panel.add(tableContainer, BorderLayout.CENTER);
+        refreshUsuarios(table);
         return panel;
     }
 
     private JPanel buildReportesPanel() {
         JPanel panel = createContentPanel();
-        panel.add(buildSectionHeader("Reportes", "Exportación de informes", (JButton) null), BorderLayout.NORTH);
-        JPanel grid = new JPanel(new GridLayout(12, 8, 12, 12));
+        panel.add(buildSectionHeader("Reportes", "Generación y exportación de informes", (JButton) null), BorderLayout.NORTH);
+        
+        JPanel grid = new JPanel(new GridLayout(0, 3, 16, 16));
         grid.setOpaque(false);
-        String[] rpts = { "📦 INVENTARIO", "👥 CLIENTES", "🏭 PROVEEDORES", "👤 USUARIOS", "📊 RESUMEN" };
-        for (String r : rpts)
-            grid.add(buildReportCard(r));
+        
+        String[][] rpts = {
+            { "📦 Inventario General", "Lista completa de productos con stock y precios actuales.", "inventario" },
+            { "⚠️ Productos con Stock Bajo", "Listado de artículos por debajo del stock mínimo definido.", "stock-bajo" },
+            { "👥 Reporte de Clientes", "Base de datos completa de clientes con información de contacto.", "clientes" },
+            { "🏭 Directorio de Proveedores", "Directorio de proveedores registrados con NIT y contacto.", "proveedores" },
+            { "👤 Usuarios del Sistema", "Informe detallado de usuarios, roles y accesos.", "usuarios" },
+            { "📊 Resumen Ejecutivo", "Métricas principales de inventario y estado general de la empresa.", "resumen" }
+        };
+        
+        for (String[] r : rpts) {
+            grid.add(buildReportCard(r[0], r[1], r[2]));
+        }
+        
         JScrollPane scroll = new JScrollPane(grid);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.setOpaque(false);
@@ -268,12 +424,28 @@ public class Administrador extends JPanel {
     private JPanel buildAlertasPanel() {
         JPanel panel = createContentPanel();
 
-        JButton bPdf = createActionButton("Descargar lista PDF", new Color(40, 167, 69));
-        JButton bPrint = createActionButton("Imprimir lista", new Color(34, 139, 34));
+        JButton bPdf = new JButton("📄 Descargar lista PDF") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(new GradientPaint(0, 0, new Color(245, 158, 11), 0, getHeight(), new Color(217, 119, 6)));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        bPdf.setForeground(Color.WHITE);
+        bPdf.setFont(new Font("Inter", Font.BOLD, 12));
+        bPdf.setBorder(new EmptyBorder(8, 18, 8, 18));
+        bPdf.setFocusPainted(false);
+        bPdf.setContentAreaFilled(false);
+        bPdf.setOpaque(false);
+        bPdf.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         panel.add(
                 buildSectionHeader("Alertas de Stock Crítico",
-                        "Productos con existencias en nivel mínimo de reabastecimiento", bPdf, bPrint),
+                        "Productos con existencias en nivel mínimo de reabastecimiento", bPdf),
                 BorderLayout.NORTH);
 
         tableAlertas = buildStyledTable(
@@ -360,16 +532,21 @@ public class Administrador extends JPanel {
             }
         });
 
-        panel.add(wrapTable(tableAlertas), BorderLayout.CENTER);
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
+        tableContainer.setOpaque(false);
+        tableContainer.add(buildSearchPanel(tableAlertas), BorderLayout.NORTH);
+        tableContainer.add(wrapTable(tableAlertas), BorderLayout.CENTER);
+
+        panel.add(tableContainer, BorderLayout.CENTER);
 
         bPdf.addActionListener(e -> generarReporte("stock-bajo"));
-        bPrint.addActionListener(e -> generarReporte("stock-bajo"));
 
         // Botón Ver Proveedor
         tableAlertas.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                int row = tableAlertas.getSelectedRow();
-                int col = tableAlertas.getSelectedColumn();
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                int row = tableAlertas.rowAtPoint(e.getPoint());
+                int col = tableAlertas.columnAtPoint(e.getPoint());
                 if (col == 5 && row != -1) { // Columna Acción
                     Administrador.this.mostrarInfoProveedor(tableAlertas.getValueAt(row, 0));
                 }
@@ -394,8 +571,8 @@ public class Administrador extends JPanel {
         }
 
         // Obtenemos el ID (columna 0, oculta)
-        Object idVal = table.getModel().getValueAt(row, 0);
-        String nameVal = table.getModel().getValueAt(row, 1).toString();
+        Object idVal = table.getValueAt(row, 0);
+        String nameVal = table.getValueAt(row, 1).toString();
 
         if (JOptionPane.showConfirmDialog(this, "¿Eliminar " + entityName + ": " + nameVal + "?", "Confirmar Acción",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
@@ -432,7 +609,8 @@ public class Administrador extends JPanel {
                 str(row, "email"),
                 str(row, "numeroDocumento"),
                 str(row, "cuentaBancaria"),
-                str(row, "activo").equals("1") ? "Activo" : "Inactivo"
+                str(row, "activo").equals("1") ? "Activo" : "Inactivo",
+                ""
         });
     }
 
@@ -444,8 +622,37 @@ public class Administrador extends JPanel {
                 str(row, "telefono"),
                 str(row, "email"),
                 str(row, "frecuente").equals("true") ? "Sí" : "No",
-                str(row, "activo").equals("1") ? "Activo" : "Inactivo"
+                str(row, "activo").equals("1") ? "Activo" : "Inactivo",
+                ""
         });
+
+        if (statsClientes != null) {
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() {
+                    try {
+                        Object[] data = ApiClient.get("/clientes", Object[].class);
+                        int activosCount = 0;
+                        if (data != null) {
+                            for (Object raw : data) {
+                                java.util.Map<String, Object> c = (java.util.Map<String, Object>) raw;
+                                if ("1".equals(str(c, "activo"))) {
+                                    activosCount++;
+                                }
+                            }
+                            final int total = data.length;
+                            final int activos = activosCount;
+                            SwingUtilities.invokeLater(() -> {
+                                updateStatCard((JPanel) statsClientes.getComponents()[0], String.valueOf(total));
+                                updateStatCard((JPanel) statsClientes.getComponents()[1], String.valueOf(activos));
+                            });
+                        }
+                    } catch (Exception e) {
+                    }
+                    return null;
+                }
+            }.execute();
+        }
     }
 
     private void populateInventarioTable(JTable table, Object[] rows, JPanel stats) {
@@ -455,34 +662,60 @@ public class Administrador extends JPanel {
             return;
         int bajo = 0;
         double valor = 0;
+        double valorCosto = 0;
         for (Object raw : rows) {
             java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
             Long id = id(p);
-            int qty = num(p, "cantidad");
-            int min = num(p, "stockMinimo");
+            int qty = num(p, "stockActual");
+            int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
+            int opt = p.get("stockOptimo") != null ? num(p, "stockOptimo") : 200;
             double precioCompra = dbl(p, "precioCompra");
             double precioVenta = dbl(p, "precioVenta");
             valor += qty * precioVenta;
+            valorCosto += qty * precioCompra;
             if (qty <= min)
                 bajo++;
 
             String estadoLabel = "1".equals(str(p, "estado")) ? "Activo" : "Inactivo";
             String ivaLabel = str(p, "iva") != null ? str(p, "iva") + "%" : "0%";
+            String unidadMedida = str(p, "unidadMedida") != null && !str(p, "unidadMedida").equals("—") ? str(p, "unidadMedida") : "Unidad";
 
             model.addRow(new Object[] {
                     id,
                     str(p, "codigoBarras"),
                     str(p, "nombre"),
-                    qty + " uds",
+                    unidadMedida,
+                    new StockData(qty, min, opt),
                     "$" + (long) precioCompra,
                     "$" + (long) precioVenta,
                     ivaLabel,
-                    estadoLabel
+                    estadoLabel,
+                    ""
             });
         }
+        
+        final double finalValor = valor;
+        final double finalCosto = valorCosto;
+        final double finalUtilidad = valor - valorCosto;
+        final int finalBajo = bajo;
+        
+        java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.GERMANY);
+        nf.setMaximumFractionDigits(0);
+        
         updateStatCard((JPanel) stats.getComponents()[0], String.valueOf(rows.length));
-        updateStatCard((JPanel) stats.getComponents()[1], String.valueOf(bajo));
-        updateStatCard((JPanel) stats.getComponents()[2], "$" + String.format("%,.0f", valor));
+        updateStatCard((JPanel) stats.getComponents()[1], String.valueOf(finalBajo));
+        updateStatCard((JPanel) stats.getComponents()[2], "$" + nf.format(finalValor));
+        updateStatCard((JPanel) stats.getComponents()[3], "$" + nf.format(finalCosto));
+        updateStatCard((JPanel) stats.getComponents()[4], "$" + nf.format(finalUtilidad));
+        
+        updateAlertasPulsing(bajo);
+    }
+
+    private void updateAlertasPulsing(int bajoCount) {
+        if (btnAlertas != null) {
+            btnAlertas.putClientProperty("pulsing", bajoCount > 0);
+            btnAlertas.repaint();
+        }
     }
 
     private void agregarProductoDash(JTable table, JPanel stats) {
@@ -510,7 +743,7 @@ public class Administrador extends JPanel {
 
     private void refreshUsuarios(JTable table) {
         loadTable(table, "/usuarios", row -> new Object[] { id(row), str(row, "nombre"), str(row, "usuario"),
-                str(row, "numeroDocumento"), str(row, "activo").equals("1") ? "Activo" : "Inactivo" });
+                str(row, "numeroDocumento"), str(row, "activo").equals("1") ? "Activo" : "Inactivo", "" });
     }
 
     private void agregarUsuarioDash(JTable table) {
@@ -569,33 +802,50 @@ public class Administrador extends JPanel {
         h.setBorder(new EmptyBorder(0, 0, 16, 0));
         JLabel lt = new JLabel(t);
         lt.setForeground(TEXT_MAIN);
-        lt.setFont(new Font("Dialog", Font.BOLD, 20));
+        lt.setFont(new Font("Inter", Font.BOLD, 22));
         JLabel ls = new JLabel(s);
         ls.setForeground(TEXT_MUTED);
-        ls.setFont(new Font("Dialog", Font.PLAIN, 12));
+        ls.setFont(new Font("Inter", Font.PLAIN, 12));
         JPanel l = new JPanel(new GridLayout(2, 1, 0, 2));
         l.setOpaque(false);
         l.add(lt);
         l.add(ls);
-        h.add(l, BorderLayout.WEST);
+
+        JPanel leftContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        leftContainer.setOpaque(false);
+        leftContainer.add(l);
+
         if (b != null && b.length > 0 && b[0] != null) {
-            JPanel r = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-            r.setOpaque(false);
-            for (JButton btn : b)
-                if (btn != null)
-                    r.add(btn);
-            h.add(r, BorderLayout.EAST);
+            for (JButton btn : b) {
+                if (btn != null) {
+                    leftContainer.add(btn);
+                }
+            }
         }
+
+        h.add(leftContainer, BorderLayout.WEST);
         return h;
     }
 
     private JButton createActionButton(String t, Color bg) {
-        JButton b = new JButton(t);
+        JButton b = new JButton(t) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
         b.setBackground(bg);
         b.setForeground(Color.WHITE);
-        b.setFont(new Font("Dialog", Font.BOLD, 12));
+        b.setFont(new Font("Inter", Font.BOLD, 12));
         b.setBorder(new EmptyBorder(8, 18, 8, 18));
         b.setFocusPainted(false);
+        b.setContentAreaFilled(false);
+        b.setOpaque(false);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return b;
     }
@@ -607,9 +857,10 @@ public class Administrador extends JPanel {
                 new EmptyBorder(14, 18, 14, 18)));
         JLabel ll = new JLabel(l);
         ll.setForeground(TEXT_MUTED);
+        ll.setFont(new Font("Inter", Font.BOLD, 18));
         JLabel lv = new JLabel(v);
         lv.setForeground(vc);
-        lv.setFont(new Font("Dialog", Font.BOLD, 22));
+        lv.setFont(new Font("Inter", Font.BOLD, 36));
         lv.setName("value");
         c.add(ll);
         c.add(lv);
@@ -648,6 +899,60 @@ public class Administrador extends JPanel {
         return s;
     }
 
+    private JPanel buildSearchPanel(JTable table) {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setOpaque(false);
+        p.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
+
+        javax.swing.JTextField txtSearch = new javax.swing.JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(BG_CARD);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.setColor(new Color(255, 255, 255, 20));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        txtSearch.setBackground(BG_CARD);
+        txtSearch.setForeground(TEXT_MAIN);
+        txtSearch.setCaretColor(TEXT_MAIN);
+        txtSearch.setFont(new Font("Inter", Font.PLAIN, 14));
+        txtSearch.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(),
+            BorderFactory.createEmptyBorder(8, 14, 8, 14)
+        ));
+        
+        txtSearch.putClientProperty("JTextField.placeholderText", "🔍 Buscar en la tabla...");
+        
+        javax.swing.table.TableRowSorter<javax.swing.table.TableModel> sorter = 
+            new javax.swing.table.TableRowSorter<>(table.getModel());
+        
+        // Ensure actions column (the last one) is not sorted/filtered, or just let all columns be searched
+        // Since we are matching regex, it's fine to search all columns.
+        table.setRowSorter(sorter);
+
+        txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void search() {
+                String text = txtSearch.getText();
+                if (text.trim().length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(text)));
+                }
+            }
+            @Override public void insertUpdate(javax.swing.event.DocumentEvent e) { search(); }
+            @Override public void removeUpdate(javax.swing.event.DocumentEvent e) { search(); }
+            @Override public void changedUpdate(javax.swing.event.DocumentEvent e) { search(); }
+        });
+
+        p.add(txtSearch, BorderLayout.CENTER);
+        return p;
+    }
+
 
 
     private void loadTable(JTable t, String ep,
@@ -677,54 +982,48 @@ public class Administrador extends JPanel {
         }
     }
 
-    private JPanel buildReportCard(String t) {
-        JPanel c = new JPanel(new BorderLayout(0, 8));
+    private JPanel buildReportCard(String titulo, String descripcion, String tipo) {
+        JPanel c = new JPanel(new BorderLayout(0, 12));
         c.setBackground(BG_CARD);
-        c.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(255, 255, 255, 13), 1),
-                new EmptyBorder(16, 16, 16, 16)));
-        JLabel lt = new JLabel(t);
+        c.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(255, 255, 255, 13), 1),
+            new EmptyBorder(18, 18, 18, 18)
+        ));
+        
+        JLabel lt = new JLabel(titulo);
         lt.setForeground(TEXT_MAIN);
-        JButton b = new JButton("Generar PDF");
-        b.setBackground(PRIMARY);
-        b.setForeground(Color.WHITE);
-        b.setFocusPainted(false);
-        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        String tipo = "";
-        if (t.contains("Inventario"))
-            tipo = "inventario";
-        else if (t.contains("Stock Bajo"))
-            tipo = "stock-bajo";
-        else if (t.contains("Clientes"))
-            tipo = "clientes";
-        else if (t.contains("Proveedores"))
-            tipo = "proveedores";
-        else if (t.contains("Usuarios"))
-            tipo = "usuarios";
-        else if (t.contains("Resumen"))
-            tipo = "resumen";
-
-        final String finalTipo = tipo;
-        b.addActionListener(e -> generarReporte(finalTipo));
-
-        c.add(lt, BorderLayout.NORTH);
-
-        if (t.contains("Inventario")) {
-            try {
-                java.net.URL imgUrl = getClass().getResource("/images/inventario.png");
-                if (imgUrl != null) {
-                    javax.swing.ImageIcon origIcon = new javax.swing.ImageIcon(imgUrl);
-                    java.awt.Image img = origIcon.getImage();
-                    java.awt.Image newImg = img.getScaledInstance(160, 160, java.awt.Image.SCALE_SMOOTH);
-                    JLabel lblImg = new JLabel(new javax.swing.ImageIcon(newImg));
-                    lblImg.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                    c.add(lblImg, BorderLayout.CENTER);
-                }
-            } catch (Exception ex) {
-                // Silencioso
+        lt.setFont(new Font("Inter", Font.BOLD, 22));
+        
+        JLabel ld = new JLabel("<html><body style='width: 260px;'>" + descripcion + "</body></html>");
+        ld.setForeground(TEXT_MUTED);
+        ld.setFont(new Font("Inter", Font.PLAIN, 16));
+        
+        JButton b = new JButton("Generar PDF") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(new GradientPaint(0, 0, new Color(245, 158, 11), 0, getHeight(), new Color(217, 119, 6)));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
             }
-        }
-
+        };
+        b.setForeground(Color.WHITE);
+        b.setFont(new Font("Inter", Font.BOLD, 12));
+        b.setBorder(new EmptyBorder(8, 16, 8, 16));
+        b.setFocusPainted(false);
+        b.setContentAreaFilled(false);
+        b.setOpaque(false);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        b.addActionListener(e -> generarReporte(tipo));
+        
+        JPanel textPanel = new JPanel(new BorderLayout(0, 6));
+        textPanel.setOpaque(false);
+        textPanel.add(lt, BorderLayout.NORTH);
+        textPanel.add(ld, BorderLayout.CENTER);
+        
+        c.add(textPanel, BorderLayout.CENTER);
         c.add(b, BorderLayout.SOUTH);
         return c;
     }
@@ -765,7 +1064,7 @@ public class Administrador extends JPanel {
                         if (data != null) {
                             for (Object raw : data) {
                                 java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
-                                int qty = num(p, "cantidad");
+                                int qty = num(p, "stockActual");
                                 double precioCompra = dbl(p, "precioCompra");
                                 double precioVenta = dbl(p, "precioVenta");
                                 String estado = num(p, "estado") == 1 ? "Activo" : "Inactivo";
@@ -807,7 +1106,7 @@ public class Administrador extends JPanel {
                         if (data != null) {
                             for (Object raw : data) {
                                 java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
-                                int qty = num(p, "cantidad");
+                                int qty = num(p, "stockActual");
                                 int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
                                 if (qty <= min) {
                                     stockCriticoCount++;
@@ -953,7 +1252,7 @@ public class Administrador extends JPanel {
                         if (productos != null) {
                             for (Object raw : productos) {
                                 java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
-                                int qty = num(p, "cantidad");
+                                int qty = num(p, "stockActual");
                                 int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
                                 valorInventario += qty * dbl(p, "precioVenta");
                                 totalStock += qty;
@@ -1192,10 +1491,6 @@ public class Administrador extends JPanel {
         return v != null ? Long.valueOf(v.toString()) : 0L;
     }
 
-    private Color parseColor(String rgb) {
-        String[] p = rgb.split(",");
-        return new Color(Integer.parseInt(p[0].trim()), Integer.parseInt(p[1].trim()), Integer.parseInt(p[2].trim()));
-    }
 
     private void agregarProveedorDash(JTable table) {
         new ProveedorDialog((java.awt.Frame) SwingUtilities.getWindowAncestor(this), null,
@@ -1260,7 +1555,7 @@ public class Administrador extends JPanel {
                     if (products != null) {
                         for (Object raw : products) {
                             java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
-                            int stock = num(p, "cantidad");
+                            int stock = num(p, "stockActual");
                             int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
                             if (stock <= min) {
                                 Object idProv = p.get("idProveedor");
@@ -1320,6 +1615,239 @@ public class Administrador extends JPanel {
             JOptionPane.showMessageDialog(this, msg, "Información de Contacto", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "No se pudo obtener la información del proveedor.");
+        }
+    }
+
+    public static class StockData {
+        public final int actual;
+        public final int minimo;
+        public final int optimo;
+        public StockData(int actual, int minimo, int optimo) {
+            this.actual = actual;
+            this.minimo = minimo;
+            this.optimo = optimo;
+        }
+    }
+
+    public static class StockBarPanel extends JPanel {
+        private int actual;
+        private int optimo;
+        private int pct;
+        private Color textColor;
+        private Color barColorStart;
+        private Color barColorEnd;
+
+        public StockBarPanel() {
+            setLayout(new BorderLayout(0, 2));
+            setOpaque(false);
+            setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        }
+
+        public void setStockData(StockData data, boolean isSelected) {
+            this.actual = data.actual;
+            this.optimo = data.optimo > 0 ? data.optimo : 200;
+            this.pct = (int) Math.round(((double) actual / optimo) * 100);
+
+            if (pct <= 30) {
+                textColor = new Color(248, 113, 113);
+                barColorStart = new Color(248, 113, 113);
+                barColorEnd = new Color(239, 68, 68);
+            } else if (pct <= 69) {
+                textColor = new Color(251, 146, 60);
+                barColorStart = new Color(251, 146, 60);
+                barColorEnd = new Color(249, 115, 22);
+            } else {
+                textColor = new Color(52, 211, 153);
+                barColorStart = new Color(52, 211, 153);
+                barColorEnd = new Color(16, 185, 129);
+            }
+
+            removeAll();
+
+            JPanel infoPanel = new JPanel(new BorderLayout());
+            infoPanel.setOpaque(false);
+
+            JLabel lblQty = new JLabel(actual + " / " + optimo + " uds");
+            lblQty.setFont(new Font("Inter", Font.PLAIN, 11));
+            lblQty.setForeground(new Color(226, 232, 240));
+
+            JLabel lblPct = new JLabel(pct + "%");
+            lblPct.setFont(new Font("Inter", Font.BOLD, 11));
+            lblPct.setForeground(textColor);
+
+            infoPanel.add(lblQty, BorderLayout.WEST);
+            infoPanel.add(lblPct, BorderLayout.EAST);
+            add(infoPanel, BorderLayout.NORTH);
+
+            JPanel barPanel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(255, 255, 255, 13));
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                    g2.setColor(new Color(255, 255, 255, 20));
+                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 8, 8);
+
+                    int fillWidth = (int) (getWidth() * (Math.min(pct, 100) / 100.0));
+                    if (fillWidth > 0) {
+                        GradientPaint paint = new GradientPaint(0, 0, barColorStart, fillWidth, 0, barColorEnd);
+                        g2.setPaint(paint);
+                        g2.fillRoundRect(0, 0, fillWidth, getHeight(), 8, 8);
+                    }
+                    g2.dispose();
+                }
+            };
+            barPanel.setOpaque(false);
+            barPanel.setPreferredSize(new java.awt.Dimension(100, 8));
+            add(barPanel, BorderLayout.CENTER);
+        }
+    }
+
+    public static class StockBarCellRenderer implements javax.swing.table.TableCellRenderer {
+        private final StockBarPanel rendererPanel = new StockBarPanel();
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof StockData) {
+                rendererPanel.setStockData((StockData) value, isSelected);
+            }
+            if (isSelected) {
+                rendererPanel.setBackground(table.getSelectionBackground());
+                rendererPanel.setOpaque(true);
+            } else {
+                rendererPanel.setOpaque(false);
+            }
+            return rendererPanel;
+        }
+    }
+
+    public static class DotIcon implements javax.swing.Icon {
+        private final Color color;
+        private final int size;
+
+        public DotIcon(Color color, int size) {
+            this.color = color;
+            this.size = size;
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(color);
+            g2.fillOval(x, y, size, size);
+            g2.dispose();
+        }
+
+        @Override
+        public int getIconWidth() { return size; }
+        @Override
+        public int getIconHeight() { return size; }
+    }
+
+    public static class EstadoCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
+        private final DotIcon iconActivo = new DotIcon(new Color(16, 185, 129), 8);
+        private final DotIcon iconInactivo = new DotIcon(new Color(239, 68, 68), 8);
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            setFont(new Font("Inter", Font.BOLD, 12));
+            setIconTextGap(8);
+            setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
+            
+            String valStr = value != null ? value.toString() : "";
+            if ("Activo".equalsIgnoreCase(valStr)) {
+                setIcon(iconActivo);
+                setForeground(new Color(16, 185, 129));
+            } else if ("Inactivo".equalsIgnoreCase(valStr)) {
+                setIcon(iconInactivo);
+                setForeground(new Color(239, 68, 68));
+            } else {
+                setIcon(null);
+            }
+            if (isSelected) {
+                setBackground(table.getSelectionBackground());
+            } else {
+                setBackground(table.getBackground());
+            }
+            return this;
+        }
+    }
+
+    public static class AccionesPanel extends JPanel {
+        public final JButton btnEditar;
+        public final JButton btnBorrar;
+
+        public AccionesPanel() {
+            setLayout(new FlowLayout(FlowLayout.CENTER, 6, 2));
+            setOpaque(false);
+
+            btnEditar = new JButton("Editar");
+            btnEditar.setFont(new Font("Inter", Font.BOLD, 11));
+            btnEditar.setForeground(Color.WHITE);
+            btnEditar.setBackground(new Color(51, 65, 85));
+            btnEditar.setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 10));
+            btnEditar.setFocusPainted(false);
+            btnEditar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            btnBorrar = new JButton("Borrar");
+            btnBorrar.setFont(new Font("Inter", Font.BOLD, 11));
+            btnBorrar.setForeground(new Color(239, 68, 68));
+            btnBorrar.setBackground(new Color(239, 68, 68, 38));
+            btnBorrar.setBorder(BorderFactory.createEmptyBorder(4, 10, 4, 10));
+            btnBorrar.setFocusPainted(false);
+            btnBorrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            add(btnEditar);
+            add(btnBorrar);
+        }
+    }
+
+    public static class AccionesCellRenderer implements javax.swing.table.TableCellRenderer {
+        private final AccionesPanel panel = new AccionesPanel();
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                panel.setBackground(table.getSelectionBackground());
+                panel.setOpaque(true);
+            } else {
+                panel.setOpaque(false);
+            }
+            return panel;
+        }
+    }
+
+    private void setupAccionesColumn(JTable table, Runnable onEditar, Runnable onBorrar) {
+        int colIndex = table.getColumnCount() - 1;
+        if (table.getColumnName(colIndex).equals("Acciones")) {
+            table.getColumnModel().getColumn(colIndex).setCellRenderer(new AccionesCellRenderer());
+            table.getColumnModel().getColumn(colIndex).setPreferredWidth(140);
+
+            table.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mousePressed(java.awt.event.MouseEvent e) {
+                    int row = table.rowAtPoint(e.getPoint());
+                    int col = table.columnAtPoint(e.getPoint());
+                    if (col == colIndex && row != -1) {
+                        java.awt.Rectangle rect = table.getCellRect(row, col, true);
+                        int cellX = e.getX() - rect.x;
+                        int width = rect.width;
+                        table.setRowSelectionInterval(row, row);
+                        if (cellX < width / 2) {
+                            onEditar.run();
+                        } else {
+                            onBorrar.run();
+                        }
+                    }
+                }
+            });
         }
     }
 }

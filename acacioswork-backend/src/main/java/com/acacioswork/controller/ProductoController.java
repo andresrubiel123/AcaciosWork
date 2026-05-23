@@ -45,7 +45,7 @@ public class ProductoController {
         return productoService.findById(id).map(p -> {
             p.setNombre(details.getNombre());
             p.setCodigoBarras(details.getCodigoBarras());
-            p.setCantidad(details.getCantidad());
+            p.setStockActual(details.getStockActual());
             p.setPrecioCompra(details.getPrecioCompra());
             p.setPrecioVenta(details.getPrecioVenta());
             p.setIva(details.getIva());
@@ -53,6 +53,8 @@ public class ProductoController {
             p.setIdProveedor(details.getIdProveedor());
             p.setEstado(details.getEstado());
             p.setStockMinimo(details.getStockMinimo());
+            p.setStockOptimo(details.getStockOptimo());
+            p.setUnidadMedida(details.getUnidadMedida());
             Producto updated = productoService.save(p);
             return ResponseEntity.ok(new ApiResponse<>(true, "Producto actualizado", updated));
         }).orElse(ResponseEntity.status(404).body(new ApiResponse<>(false, "Producto no encontrado", null)));

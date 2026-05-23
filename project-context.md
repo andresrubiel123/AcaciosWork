@@ -3,7 +3,7 @@
 
 > **ESTADO**: DESARROLLO ACTIVO - FASE DE ESTABILIZACIÓN Y ESCALADO
 > **AUTOR PRINCIPAL**: RADJ - andresrubiel@hotmail.com
-> **ÚLTIMA REVISIÓN**: 17 de Mayo, 2026
+> **ÚLTIMA REVISIÓN**: 22 de Mayo, 2026
 
 ---
 
@@ -52,7 +52,7 @@ graph TD
     Root --> FE["acacioswork-frontend (Web Dash)"]
     Root --> AN["acacioswork-android (Mobile App)"]
     Root --> DB_S["database (SQL Scripts)"]
-    Root --> CTX["proyect-context (AI/Docs)"]
+    Root --> CTX["project-context.md (AI/Docs)"]
 
     BE --> BE_CTRL["Controladores"]
     BE --> BE_SRV["Servicios (Business)"]
@@ -187,7 +187,7 @@ graph LR
 *   **UI/ViewModels/Network**: `app/src/main/java/com/acacioswork/`
 
 ### 5. Base de Datos (`database/`)
-*   **Esquema Actualizado**: `database/tienda_acacios.sql` (Lectura obligatoria para cambios en modelos).
+*   **Esquema Actualizado**: `database/02_tables.sql` (Lectura obligatoria para cambios en modelos).
 
 ---
 ## ESTÁNDAR DE DOCUMENTACIÓN Y COMENTARIOS
@@ -212,15 +212,15 @@ Todo bloque de código generado debe incluir: una descripción funcional breve y
 ## 📈 ESTADO DEL AVANCE GLOBAL
 
 ### ✅ Finalizado (Producción Ready)
-- **Seguridad**: Autenticación JWT en Backend y Clientes.
-- **Gestión Core**: CRUDs de Usuarios, Clientes, Proveedores y Categorías operativos en Backend y Desktop.
-- **Inventario**: Control de existencias básico y visualización.
+- **Seguridad**: Autenticación JWT en Backend y Clientes (Web, Desktop, Android).
+- **Gestión Core**: CRUDs de Usuarios, Clientes, Proveedores y Categorías operativos en Backend, Desktop y Android.
+- **Inventario**: Control de existencias avanzado con stock actual (`stockActual`), stock mínimo (`stockMinimo`), stock óptimo (`stockOptimo`) y unidad de medida (`unidadMedida`) en Backend, Desktop, Web y Android.
 - **Ventas**: Módulo de `Venta` y `DetalleVenta` con persistencia atómica.
+- **Android**: Aplicación móvil funcional en Kotlin / Jetpack Compose con pantallas de Login, Dashboard, Clientes, Inventario y Proveedores operativas.
 
 ### 🔄 En Proceso (Próximos Hitos)
-- **Reportes**: Implementación de reportes visuales y exportación a PDF/Excel.
-- **Alertas**: Sistema de notificaciones en tiempo real para stock crítico.
-- **Android**: Implementación de la UI móvil y sincronización con la API.
+- **Reportes**: Implementación de reportes visuales en Frontend y exportación a PDF/Excel. Estructura visual inicial en Desktop y Android.
+- **Alertas**: Sistema de notificaciones para stock crítico.
 - **Cierre de Caja**: Lógica contable para balance diario.
 
 ---
@@ -231,6 +231,11 @@ Todo bloque de código generado debe incluir: una descripción funcional breve y
 *   **2026-05-12**: Estabilización de persistencia de Ventas y manejo de errores 409/400.
 *   **2026-05-16**: **Estandarización de Documentación**: Se actualizaron todos los `README.md` del ecosistema para reflejar el stack tecnológico actual (Java 25, Spring Boot 4, FlatLaf, Kotlin 2).
 *   **2026-05-16**: **Actualización de Contexto**: Reestructuración de este archivo para facilitar el mapeo de archivos a desarrolladores y agentes inteligentes.
+*   **2026-05-22**: **Evolución del modelo de Producto y consolidación Android**:
+    * Renombrado del campo `cantidad` a `stockActual` en base de datos, backend (Spring Boot), frontend (dashboard), desktop (Swing) y móvil (Android).
+    * Adición de los campos `stockOptimo` y `unidadMedida` en el modelo de `Producto` en todos los componentes del sistema.
+    * Actualización de los formularios y diálogos de creación/edición de productos (`ProductoDialog` en Desktop, `ProductoFormDialog` en Android y modal HTML en Frontend) para soportar los nuevos campos de stock y unidad de medida.
+    * Migración y habilitación de la interfaz móvil (Kotlin/Compose) a estado operativo de desarrollo para las vistas de Login, Dashboard, Clientes, Inventario, Proveedores y estructura de Reportes.
 
 ---
 
@@ -239,7 +244,7 @@ Si necesitas trabajar en un módulo específico, estos son los archivos clave:
 
 | Tarea | Archivo/Ruta Principal |
 | :--- | :--- |
-| **Añadir un campo a la BD** | `database/tienda_acacios.sql` -> `backend/.../model/` -> `desktop/.../model/` |
+| **Añadir un campo a la BD** | `database/02_tables.sql` -> `backend/.../model/` -> `desktop/.../model/` |
 | **Modificar la Seguridad** | `backend/.../config/SecurityConfig.java` |
 | **Cambiar el diseño Desktop** | `desktop/.../interfaz_usuario/Administrador.java` |
 | **Arreglar peticiones API Web** | `frontend/js/api.js` |

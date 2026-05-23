@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +34,7 @@ fun ProveedoresTab(
 
     var showDialog by remember { mutableStateOf(false) }
     var editingProveedor by remember { mutableStateOf<Proveedor?>(null) }
+    var searchQuery by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -52,6 +54,26 @@ fun ProveedoresTab(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Buscador de Proveedores
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Buscar proveedor...", color = TextMuted) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = TextMuted) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Primary,
+                    unfocusedBorderColor = BgCard,
+                    containerColor = BgCard,
+                    focusedTextColor = TextLight,
+                    unfocusedTextColor = TextLight
+                ),
+                singleLine = true,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Primary)
@@ -61,16 +83,26 @@ fun ProveedoresTab(
                     Text(text = error ?: "", color = AlertRed)
                 }
             } else {
-                if (proveedores.isEmpty()) {
+                val filteredProveedores = proveedores.filter {
+                    it.nombre.contains(searchQuery, ignoreCase = true) ||
+                            it.numeroDocumento.contains(searchQuery) ||
+                            (it.telefono?.contains(searchQuery) ?: false) ||
+                            (it.email?.contains(searchQuery, ignoreCase = true) ?: false)
+                }
+
+                if (filteredProveedores.isEmpty()) {
                     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                        Text(text = "No hay proveedores registrados.", color = TextMuted)
+                        Text(
+                            text = if (searchQuery.isBlank()) "No hay proveedores registrados." else "No hay proveedores que coincidan con la búsqueda.",
+                            color = TextMuted
+                        )
                     }
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(proveedores) { proveedor ->
+                        items(filteredProveedores) { proveedor ->
                             ProveedorCard(
                                 proveedor = proveedor,
                                 onEdit = {
@@ -92,7 +124,7 @@ fun ProveedoresTab(
                 editingProveedor = null
                 showDialog = true
             },
-            containerColor = Primary,
+            containerColor = AccentGreen,
             contentColor = TextLight,
             modifier = Modifier
                 .align(Alignment.BottomEnd)

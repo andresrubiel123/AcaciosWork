@@ -122,7 +122,7 @@ graph TD
     Root --> FE["acacioswork-frontend (Web Dash)"]
     Root --> AN["acacioswork-android (Mobile App)"]
     Root --> DB_S["database (SQL Scripts)"]
-    Root --> CTX["proyect-context (AI/Docs)"]
+    Root --> CTX["project-context.md (AI/Docs)"]
 
     BE --> BE_CTRL["Controladores"]
     BE --> BE_SRV["Servicios (Business)"]
@@ -237,3 +237,4 @@ graph LR
 *   **Modernización:** Uso de **JDK 25** y **Spring Boot 4** para aprovechar las últimas optimizaciones del lenguaje.
 *   **Estandarización:** Identificadores `BIGINT UNSIGNED` en base de datos mapeados como `Long` en Java para consistencia y escalabilidad.
 *   **Seguridad:** Implementación de seguridad centralizada para manejar CORS y autenticación para diferentes orígenes.
+*   **Modelo de Datos Homogéneo:** Coherencia en la denominación de campos de inventario (ej: `stockActual`, `stockMinimo`, `stockOptimo` y `unidadMedida`) en todas las capas y lenguajes del ecosistema (Java, Kotlin, JavaScript, MySQL).
