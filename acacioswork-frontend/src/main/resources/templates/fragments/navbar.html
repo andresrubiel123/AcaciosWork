@@ -1,0 +1,19 @@
+<!-- Barra de navegación modular para el dashboard. @author RADJ -->
+<div th:fragment="navbar" class="top-toolbar">
+    <span class="toolbar-brand">AcaciosWork</span>
+    <div class="toolbar-center">
+        <button class="toolbar-btn active" id="btn-welcome" onclick="showSection('welcome', this)"><span style="color: #f97316; font-size: 1.1rem; vertical-align: middle; margin-right: 0.25rem;">🏠</span>Inicio</button>
+        <button class="toolbar-btn" id="btn-inventario"
+            onclick="showSection('inventario', this)">Inventario</button>
+        <button class="toolbar-btn" id="btn-proveedores"
+            onclick="showSection('proveedores', this)">Proveedores</button>
+        <button class="toolbar-btn" id="btn-clientes" onclick="showSection('clientes', this)">Clientes</button>
+        <button class="toolbar-btn" id="btn-usuarios" onclick="showSection('usuarios', this)">Usuarios</button>
+        <button class="toolbar-btn" id="btn-reportes" onclick="showSection('reportes', this)">Reportes</button>
+        <button class="toolbar-btn btn-alert" id="btn-alertas" onclick="showSection('alertas', this)">⚠ Alertas Stock</button>
+    </div>
+    <div class="toolbar-right">
+        <span class="user-info" id="userInfo"></span>
+        <button class="toolbar-btn btn-exit" onclick="logout()">✕ Salir</button>
+    </div>
+</div>

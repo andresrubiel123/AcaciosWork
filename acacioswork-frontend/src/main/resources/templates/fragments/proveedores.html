@@ -1,0 +1,35 @@
+<!-- Sección de proveedores para el dashboard. @author RADJ -->
+<div th:fragment="proveedores" id="sec-proveedores" class="section" style="display:none">
+    <div class="section-header">
+        <div>
+            <h1>Proveedores</h1>
+            <p>Gestión de contactos y suministradores</p>
+        </div>
+        <button class="btn btn-success" onclick="openModal('proveedor')">+ Nuevo Proveedor</button>
+    </div>
+    <!-- Buscador de Proveedores -->
+    <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+        <input type="text" id="prov-search-input" oninput="filterTable(this, 'prov-tbody')"
+            placeholder="🔍 Buscar en la tabla..."
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
+    </div>
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Ciudad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="prov-tbody">
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                        Cargando...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

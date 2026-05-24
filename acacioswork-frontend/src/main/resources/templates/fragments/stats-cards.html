@@ -1,0 +1,23 @@
+<!-- Tarjetas de métricas para inventario y clientes. @author RADJ -->
+<div th:fragment="stats-cards" class="stats-grid">
+    <div class="stat-card">
+        <div class="label">Total Productos</div>
+        <div class="value" id="inv-total">—</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Stock Bajo</div>
+        <div class="value" id="inv-bajo" style="color:#ef4444">—</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Valor Inventario</div>
+        <div class="value" id="inv-valor" style="color:#10b981">—</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Valor Costo</div>
+        <div class="value" id="inv-costo" style="color:#f59e0b">—</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Utilidad Neta</div>
+        <div class="value" id="inv-utilidad" style="color:#10b981">—</div>
+    </div>
+</div>

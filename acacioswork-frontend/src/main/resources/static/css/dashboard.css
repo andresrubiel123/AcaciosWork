@@ -1,0 +1,626 @@
+/* Estilos específicos para el dashboard de administrador. @author RADJ */
+
+/* Nav toolbar superior estilo desktop */
+.top-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+}
+
+/* Título de la marca con color neón y animación. @author RADJ */
+.toolbar-brand {
+    font-weight: 700;
+    font-size: 3.6rem;
+    color: #39ff14;
+    letter-spacing: -0.02em;
+    animation: neon-pulse 2s infinite ease-in-out;
+    display: inline-block;
+}
+
+.toolbar-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 300px;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    height: 38px;
+    padding: 0 1.2rem;
+    border-radius: 2rem;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    color: white;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.toolbar-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.toolbar-btn.active {
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.50);
+    border: 2px solid white;
+}
+
+.toolbar-btn.btn-exit {
+    background: linear-gradient(135deg, #ff3b30, #ff2d55);
+    border: 1px solid #ff6b6b;
+    box-shadow: 0 2px 8px rgba(255, 45, 85, 0.35);
+}
+
+.toolbar-btn.btn-exit:hover {
+    background: linear-gradient(135deg, #ff6b6b, #ff3b30);
+    box-shadow: 0 4px 12px rgba(255, 45, 85, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Color verde para el botón de alertas de stock cuando no hay alertas críticas. @author RADJ */
+.toolbar-btn.btn-alert {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+/* Hover para el botón de alertas en estado normal. @author RADJ */
+.toolbar-btn.btn-alert:hover {
+    background: linear-gradient(135deg, #34d399, #10b981);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Estado activo para el botón de alertas de stock. @author RADJ */
+.toolbar-btn.btn-alert.active {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+.toolbar-btn.btn-alert.pulsing {
+    background: linear-gradient(135deg, #ff3b30, #ff2d55);
+    border: 1px solid #ff6b6b;
+    box-shadow: 0 4px 14px rgba(255, 45, 85, 0.5);
+    animation: pulse-red 1.5s infinite;
+}
+
+.toolbar-btn.btn-alert.pulsing:hover {
+    background: linear-gradient(135deg, #ff6b6b, #ff3b30);
+    box-shadow: 0 6px 20px rgba(255, 45, 85, 0.7);
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.6);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(255, 45, 85, 0);
+        transform: scale(1.02);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 45, 85, 0);
+        transform: scale(1);
+    }
+}
+
+/* Animación de pulsación de neón para la marca y el usuario. @author RADJ */
+@keyframes neon-pulse {
+
+    0%,
+    100% {
+        text-shadow: 0 0 4px rgba(57, 255, 20, 0.4);
+        opacity: 0.85;
+    }
+
+    50% {
+        text-shadow: 0 0 12px rgba(57, 255, 20, 0.85), 0 0 20px rgba(57, 255, 20, 0.4);
+        opacity: 1;
+    }
+}
+
+/* Información de usuario logueado con estilo neón. @author RADJ */
+.user-info {
+    font-size: 1.95rem;
+    font-weight: 500;
+    color: #39ff14;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    animation: neon-pulse 2s infinite ease-in-out;
+}
+
+/* Layout */
+.app-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.content-area {
+    flex: 1;
+    padding: 2rem;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+/* Hover animation on rows */
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+    transform: translateX(4px);
+}
+
+/* Section titles */
+.section-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h1 {
+    font-size: 1.6rem;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 12px 20px -8px rgba(99, 102, 241, 0.25);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.03) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    transition: 0.75s;
+}
+
+.stat-card:hover::after {
+    left: 120%;
+}
+
+.stat-card .label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+}
+
+.stat-card .value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Tables */
+.card {
+    background: var(--bg-card);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    border-color: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.3);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.9rem;
+}
+
+.badge {
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+.badge-warn {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+/* Estilos específicos para la tabla de productos para controlar el layout de columnas */
+.products-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+/* Columna de Stock Dinámica y Flexible (ocupa el espacio restante) */
+.col-stock {
+    width: auto;
+    min-width: 280px;
+}
+
+.col-codigo {
+    width: 100px;
+    min-width: 90px;
+}
+
+/* Ancho fijo para la columna de nombre */
+.col-nombre {
+    width: 160px;
+    min-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-unidad {
+    width: 100px;
+    min-width: 90px;
+}
+
+.col-precio {
+    width: 110px;
+    min-width: 100px;
+}
+
+.col-iva {
+    width: 80px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.col-estado {
+    width: 100px;
+    min-width: 90px;
+    text-align: center;
+}
+
+.col-acciones {
+    width: 140px;
+    min-width: 130px;
+}
+
+/* Contenedor principal de la barra de stock */
+.stock-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.2rem 0;
+}
+
+/* Barra de progreso de fondo con efecto glassmorphism */
+.stock-bar-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Relleno dinámico de la barra */
+.stock-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estados de color premium */
+.stock-bar-fill.red {
+    background: linear-gradient(90deg, #f87171, #ef4444);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.stock-bar-fill.orange {
+    background: linear-gradient(90deg, #fb923c, #f97316);
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+}
+
+.stock-bar-fill.green {
+    background: linear-gradient(90deg, #34d399, #10b981);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Información textual del stock */
+.stock-bar-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.stock-bar-qty {
+    color: #e2e8f0;
+}
+
+.stock-bar-pct {
+    font-weight: 600;
+}
+
+.stock-bar-pct.red {
+    color: #f87171;
+}
+
+.stock-bar-pct.orange {
+    color: #fb923c;
+}
+
+.stock-bar-pct.green {
+    color: #34d399;
+}
+
+/* Buttons inside content */
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: var(--accent);
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-pdf {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+.btn-pdf:hover {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+    background: #334155;
+    color: white;
+    border-radius: 0.4rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-del {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-content h2 {
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.6);
+    color: white;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--primary-color);
+}
+
+/* Alerts section */
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.06);
+    margin-bottom: 0.75rem;
+}
+
+.alert-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f59e0b;
+    flex-shrink: 0;
+}
+
+.alert-dot.red {
+    background: #ef4444;
+}
+
+/* Report cards */
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.report-card {
+    background: var(--bg-card);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.report-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.report-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.report-card p {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section {
+    animation: fadeIn 0.25s ease-out;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+}

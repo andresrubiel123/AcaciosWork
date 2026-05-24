@@ -1,0 +1,48 @@
+<!-- Sección de reportes para el dashboard. @author RADJ -->
+<div th:fragment="reportes" id="sec-reportes" class="section" style="display:none">
+    <div class="section-header">
+        <div>
+            <h1>Reportes</h1>
+            <p>Generación y exportación de informes</p>
+        </div>
+    </div>
+    <div class="report-grid">
+        <div class="report-card">
+            <h3>📦 Inventario General</h3>
+            <p>Lista completa de productos con stock y precios actuales.</p><br><button class="btn btn-pdf"
+                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('inventario')">Generar
+                PDF</button>
+        </div>
+        <div class="report-card">
+            <h3>⚠️ Productos con Stock Bajo</h3>
+            <p>Listado de artículos por debajo del stock mínimo definido.</p><br><button class="btn btn-pdf"
+                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('stock-bajo')">Generar
+                PDF</button>
+        </div>
+        <div class="report-card">
+            <h3>👥 Reporte de Clientes</h3>
+            <p>Base de clientes registrados con su información de contacto.</p><br><button
+                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                onclick="generarReporte('clientes')">Generar PDF</button>
+        </div>
+        <div class="report-card">
+            <h3>🏭 Reporte de Proveedores</h3>
+            <p>Directorio de proveedores con datos de contacto y productos.</p><br><button
+                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                onclick="generarReporte('proveedores')">Generar PDF</button>
+        </div>
+        <div class="report-card">
+            <h3>👤 Usuarios del Sistema</h3>
+            <p>Listado de usuarios activos, roles y permisos asignados.</p><br><button class="btn btn-pdf"
+                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('usuarios')">Generar
+                PDF</button>
+        </div>
+        <div class="report-card">
+            <h3>📊 Reporte Ejecutivo</h3>
+            <p>Métricas principales de inventario y estado general de la empresa.</p><br><button
+                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                onclick="generarReporte('resumen')">Generar
+                PDF</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<!-- Tabla y buscador de productos del inventario. @author RADJ -->
+<div th:fragment="products-table">
+    <!-- Buscador de Inventario -->
+    <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+        <input type="text" id="inv-search-input" oninput="filterTable(this, 'inv-tbody')"
+            placeholder="🔍 Buscar en la tabla..."
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
+    </div>
+    <div class="card">
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th class="col-codigo">Código</th>
+                    <th class="col-nombre">Nombre</th>
+                    <th class="col-unidad">Unidad</th>
+                    <th class="col-stock">Stock</th>
+                    <th class="col-precio">P. Compra</th>
+                    <th class="col-precio">P. Venta</th>
+                    <th class="col-iva">IVA</th>
+                    <th class="col-estado">Estado</th>
+                    <th class="col-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inv-tbody">
+                <tr>
+                    <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                        Cargando...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

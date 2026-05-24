@@ -1,0 +1,45 @@
+<!-- Sección de clientes para el dashboard. @author RADJ -->
+<div th:fragment="clientes" id="sec-clientes" class="section" style="display:none">
+    <div class="section-header">
+        <div>
+            <h1>Clientes</h1>
+            <p>Base de datos de clientes registrados</p>
+        </div>
+        <button class="btn btn-success" onclick="openModal('cliente')">+ Nuevo Cliente</button>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="label">Total Clientes</div>
+            <div class="value" id="cli-total">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Activos</div>
+            <div class="value" id="cli-activos" style="color:#10b981">—</div>
+        </div>
+    </div>
+    <!-- Buscador de Clientes -->
+    <div class="search-container" style="position: relative; margin-bottom: 1rem;">
+        <input type="text" id="cli-search-input" oninput="filterTable(this, 'cli-tbody')"
+            placeholder="🔍 Buscar en la tabla..."
+            style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
+    </div>
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Documento</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cli-tbody">
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                        Cargando...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
