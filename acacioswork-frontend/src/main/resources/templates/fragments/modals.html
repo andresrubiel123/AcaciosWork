@@ -9,7 +9,7 @@
                 <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
                     <button type="button" class="btn" style="flex:1;background:#334155;color:white"
                         onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
+                    <button type="submit" class="btn btn-orange" style="flex:1">Guardar</button>
                 </div>
             </form>
         </div>
@@ -19,7 +19,8 @@
     <div id="proveedorModal" class="modal-overlay">
         <div class="modal-content"
             style="max-width: 500px; background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1rem; padding: 2rem;">
-            <h2 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: white;">🏢 Detalles del Proveedor</h2>
+            <h2 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: white;">🏢
+                Detalles del Proveedor</h2>
             <div id="prov-details-content"
                 style="display: grid; gap: 0.85rem; font-size: 0.95rem; margin-bottom: 1.5rem; color: var(--text-muted);">
                 <!-- Se poblará dinámicamente -->
@@ -29,4 +30,7 @@
                 onclick="closeProveedorModal()">Cerrar</button>
         </div>
     </div>
+
+    <!-- Toast de notificación -->
+    <div id="toast" class="toast"></div>
 </div>

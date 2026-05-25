@@ -20,6 +20,7 @@ class SessionManager private constructor(context: Context) {
         var token: String? = null
         var userFullName: String? = null
         var userRole: String? = null
+        var userId: Long? = null
 
         fun getInstance(context: Context): SessionManager {
             return INSTANCE ?: synchronized(this) {
@@ -33,6 +34,7 @@ class SessionManager private constructor(context: Context) {
     private val TOKEN_KEY = stringPreferencesKey("jwt_token")
     private val USER_NAME_KEY = stringPreferencesKey("user_name")
     private val USER_ROLE_KEY = stringPreferencesKey("user_role")
+    private val USER_ID_KEY = stringPreferencesKey("user_id")
 
     init {
         // Inicializar los valores en memoria al crear la instancia de forma síncrona/bloqueante
@@ -41,20 +43,27 @@ class SessionManager private constructor(context: Context) {
                 token = getToken().first()
                 userFullName = getUserName().first()
                 userRole = getUserRole().first()
+                userId = getUserId().first()?.toLongOrNull()
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    suspend fun saveSession(jwtToken: String, name: String, role: String) {
+    suspend fun saveSession(jwtToken: String, name: String, role: String, id: Long? = null) {
         token = jwtToken
         userFullName = name
         userRole = role
+        userId = id
         appContext.dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = jwtToken
             preferences[USER_NAME_KEY] = name
             preferences[USER_ROLE_KEY] = role
+            if (id != null) {
+                preferences[USER_ID_KEY] = id.toString()
+            } else {
+                preferences.remove(USER_ID_KEY)
+            }
         }
     }
 
@@ -62,6 +71,7 @@ class SessionManager private constructor(context: Context) {
         token = null
         userFullName = null
         userRole = null
+        userId = null
         appContext.dataStore.edit { preferences ->
             preferences.clear()
         }
@@ -82,6 +92,12 @@ class SessionManager private constructor(context: Context) {
     fun getUserRole(): Flow<String?> {
         return appContext.dataStore.data.map { preferences ->
             preferences[USER_ROLE_KEY]
+        }
+    }
+
+    fun getUserId(): Flow<String?> {
+        return appContext.dataStore.data.map { preferences ->
+            preferences[USER_ID_KEY]
         }
     }
 }

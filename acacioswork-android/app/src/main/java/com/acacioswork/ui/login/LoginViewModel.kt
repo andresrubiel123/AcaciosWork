@@ -40,7 +40,8 @@ class LoginViewModel : ViewModel() {
                     sessionManager.saveSession(
                         jwtToken = loginResponse.token,
                         name = fullName,
-                        role = loginResponse.usuario.idRol.toString()
+                        role = loginResponse.usuario.idRol.toString(),
+                        id = loginResponse.usuario.id
                     )
                     
                     _loginState.value = LoginState.Success

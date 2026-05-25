@@ -1,6 +1,7 @@
 <!-- Orquestador principal del dashboard de administrador usando Thymeleaf. @author RADJ -->
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,14 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- Estilos globales y específicos del dashboard -->
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
+
 <body style="background: var(--bg-dark); color: var(--text-main);">
     <div class="app-body">
         <!-- Barra de navegación modular -->
@@ -21,12 +25,16 @@
         <!-- ═══ CONTENIDO PRINCIPAL ═══ -->
         <div class="content-area">
             <!-- ─── BIENVENIDA (Vacío) ─── -->
-            <div id="sec-welcome" class="section" style="display: block; text-align: center; padding: 5rem 2rem;">
-                <div class="card" style="max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); padding: 3rem;">
-                    <h2 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 2rem;">Bienvenido a AcaciosWork</h2>
-                    <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem;">Por favor, seleccione una opción del menú superior para comenzar a gestionar el sistema.</p>
-                    <div style="font-size: 4rem;">💼</div>
+            <div id="sec-welcome" class="section" style="display: block; padding: 2rem;">
+                <div class="card"
+                    style="max-width: 600px; margin: 0 auto 2rem auto; background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); padding: 3rem; text-align: center;">
+                    <h2 style="color: rgb(207, 90, 1); margin-bottom: 1rem; font-size: 2rem;">Bienvenido a
+                        AcaciosWork</h2>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Por favor, seleccione una
+                        opción del menú lateral para comenzar a gestionar el sistema.</p>
                 </div>
+                <!-- Tarjetas de estadísticas -->
+                <div th:replace="~{fragments/stats-cards :: stats-cards}"></div>
             </div>
 
             <!-- ─── INVENTARIO ─── -->
@@ -38,11 +46,13 @@
                     </div>
                     <button class="btn btn-success" onclick="openModal('inventario')">+ Nuevo Producto</button>
                 </div>
-                <!-- Tarjetas de estadísticas -->
-                <div th:replace="~{fragments/stats-cards :: stats-cards}"></div>
                 <!-- Tabla e Inventario -->
                 <div th:replace="~{fragments/products-table :: products-table}"></div>
             </div>
+
+            <!-- ─── VENTAS (POS) ─── -->
+            <div th:replace="~{fragments/vender :: vender}"></div>
+
 
             <!-- ─── PROVEEDORES ─── -->
             <div th:replace="~{fragments/proveedores :: proveedores}"></div>
@@ -68,4 +78,5 @@
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/dashboard.js}"></script>
 </body>
+
 </html>

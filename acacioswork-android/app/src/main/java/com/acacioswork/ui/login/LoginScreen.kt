@@ -158,12 +158,22 @@ fun LoginScreen(
                     // Botón de Login
                     Button(
                         onClick = { viewModel.login(context, usuario, clave) },
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                        colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
+                        contentPadding = PaddingValues(),
                         shape = RoundedCornerShape(8.dp),
                         enabled = loginState !is LoginState.Loading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                                    colors = listOf(
+                                        androidx.compose.ui.graphics.Color(0xFFF97316),
+                                        androidx.compose.ui.graphics.Color(0xFFEF4444)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            )
                     ) {
                         if (loginState is LoginState.Loading) {
                             CircularProgressIndicator(

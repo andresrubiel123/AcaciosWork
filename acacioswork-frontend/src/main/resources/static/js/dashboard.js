@@ -35,6 +35,11 @@ let cacheProveedores = [];
 let cacheTiposDocumento = [];
 let cacheRoles = [];
 
+let cart = [];
+let allProducts = [];
+let allClientes = [];
+let searchTimeout = null;
+
 /** Verificación de autenticación al cargar la página. @author RADJ */
 document.addEventListener('DOMContentLoaded', async () => {
     /** Validar existencia de sesión activa; redirigir si no existe. @author RADJ */
@@ -44,14 +49,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     /** Cargar listas de referencia iniciales en memoria. @author RADJ */
     await loadReferences();
+    /** Cargar y mostrar estadísticas iniciales en la ventana de inicio. @author RADJ */
+    await loadStats();
 });
 
 /** Cerrar sesión del usuario actual y redirigir al login. @author RADJ */
-function logout() { 
+function logout() {
     /** Limpiar todos los datos guardados en almacenamiento local. @author RADJ */
-    localStorage.clear(); 
+    localStorage.clear();
     /** Redireccionar a la pantalla de inicio de sesión. @author RADJ */
-    window.location.href = 'login'; 
+    window.location.href = 'login';
 }
 
 /** Carga las referencias de la base de datos necesarias para poblar selects. @author RADJ */
@@ -71,7 +78,7 @@ async function loadReferences() {
 /** Control de navegación entre secciones del dashboard. @author RADJ */
 function showSection(name, btn) {
     /** Limpiar inputs de búsqueda al cambiar de sección. @author RADJ */
-    const searchInputs = ['inv-search-input', 'prov-search-input', 'cli-search-input', 'usr-search-input', 'alertas-search-input'];
+    const searchInputs = ['inv-search-input', 'prov-search-input', 'cli-search-input', 'usr-search-input', 'alertas-search-input', 'product-search'];
     searchInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -82,15 +89,74 @@ function showSection(name, btn) {
     /** Remover la clase activa de todos los botones de la barra. @author RADJ */
     document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
     /** Mostrar la sección seleccionada y activar su botón correspondiente. @author RADJ */
-    document.getElementById('sec-' + name).style.display = 'block';
+    const targetSection = document.getElementById('sec-' + name);
+    if (targetSection) targetSection.style.display = 'block';
     if (btn) btn.classList.add('active');
-    
+
     /** Invocar carga de datos específica según la sección de destino. @author RADJ */
+    if (name === 'welcome') loadStats();
     if (name === 'inventario') loadInventario();
     if (name === 'proveedores') loadProveedores();
     if (name === 'clientes') loadClientes();
     if (name === 'usuarios') loadUsuarios();
     if (name === 'alertas') loadAlertas();
+    if (name === 'vender') loadVenderSection();
+}
+
+/** Actualiza la interfaz gráfica de las tarjetas de estadísticas con los productos proporcionados. @author RADJ */
+function updateStatsUI(products) {
+    /** Calcular indicadores financieros y métricas del inventario. @author RADJ */
+    const total = products.length;
+    const bajo = products.filter(p => p.stockActual <= (p.stockMinimo || 5)).length;
+    const valor = products.reduce((a, p) => a + (p.stockActual * p.precioVenta), 0);
+    const valorCosto = products.reduce((a, p) => a + (p.stockActual * (p.precioCompra || 0)), 0);
+    const utilidad = valor - valorCosto;
+
+    /** Actualizar indicadores numéricos en el dashboard. @author RADJ */
+    const totalEl = document.getElementById('inv-total');
+    if (totalEl) totalEl.textContent = total;
+
+    const bajoEl = document.getElementById('inv-bajo');
+    if (bajoEl) bajoEl.textContent = bajo;
+
+    /** Habilitar dinámicamente animación de alerta en stock bajo. @author RADJ */
+    const btnAlertas = document.getElementById('btn-alertas');
+    if (btnAlertas) {
+        if (bajo > 0) {
+            btnAlertas.classList.add('pulsing');
+        } else {
+            btnAlertas.classList.remove('pulsing');
+        }
+    }
+
+    /** Formatear y mostrar valores monetarios de costo e inventario. @author RADJ */
+    const valorEl = document.getElementById('inv-valor');
+    if (valorEl) valorEl.textContent = '$' + valor.toLocaleString();
+
+    const costoEl = document.getElementById('inv-costo');
+    if (costoEl) costoEl.textContent = '$' + valorCosto.toLocaleString();
+
+    /** Actualizar color e indicador de utilidad estimada. @author RADJ */
+    const utilidadEl = document.getElementById('inv-utilidad');
+    if (utilidadEl) {
+        utilidadEl.textContent = '$' + utilidad.toLocaleString();
+        if (utilidad >= 0) {
+            utilidadEl.style.color = '#10b981';
+        } else {
+            utilidadEl.style.color = '#ef4444';
+        }
+    }
+}
+
+/** Carga y visualización de estadísticas globales en la ventana de inicio. @author RADJ */
+async function loadStats() {
+    try {
+        /** Obtener listado de productos desde la API. @author RADJ */
+        const products = await apiRequest('/productos') || [];
+        updateStatsUI(products);
+    } catch (e) {
+        console.error("Error al cargar estadísticas en inicio:", e);
+    }
 }
 
 /** Carga y visualización de productos en inventario. @author RADJ */
@@ -103,39 +169,8 @@ async function loadInventario() {
     try {
         /** Obtener listado de productos desde la API. @author RADJ */
         const products = await apiRequest('/productos') || [];
-        /** Calcular indicadores financieros y métricas del inventario. @author RADJ */
-        const total = products.length;
-        const bajo = products.filter(p => p.stockActual <= (p.stockMinimo || 5)).length;
-        const valor = products.reduce((a, p) => a + (p.stockActual * p.precioVenta), 0);
-        const valorCosto = products.reduce((a, p) => a + (p.stockActual * (p.precioCompra || 0)), 0);
-        const utilidad = valor - valorCosto;
-
-        /** Actualizar indicadores numéricos en el dashboard. @author RADJ */
-        document.getElementById('inv-total').textContent = total;
-        document.getElementById('inv-bajo').textContent = bajo;
-
-        /** Habilitar dinámicamente animación de alerta en stock bajo. @author RADJ */
-        const btnAlertas = document.getElementById('btn-alertas');
-        if (btnAlertas) {
-            if (bajo > 0) {
-                btnAlertas.classList.add('pulsing');
-            } else {
-                btnAlertas.classList.remove('pulsing');
-            }
-        }
-
-        /** Formatear y mostrar valores monetarios de costo e inventario. @author RADJ */
-        document.getElementById('inv-valor').textContent = '$' + valor.toLocaleString();
-        document.getElementById('inv-costo').textContent = '$' + valorCosto.toLocaleString();
-
-        /** Actualizar color e indicador de utilidad estimada. @author RADJ */
-        const utilidadEl = document.getElementById('inv-utilidad');
-        utilidadEl.textContent = '$' + utilidad.toLocaleString();
-        if (utilidad >= 0) {
-            utilidadEl.style.color = '#10b981';
-        } else {
-            utilidadEl.style.color = '#ef4444';
-        }
+        /** Actualizar las tarjetas de estadísticas. @author RADJ */
+        updateStatsUI(products);
 
         /** Generar el HTML de las filas de la tabla de productos. @author RADJ */
         tbody.innerHTML = products.length ? products.map(p => {
@@ -646,6 +681,109 @@ async function generarReporte(tipo) {
                     <p><strong>Estado de Operación:</strong> Operando normalmente</p>
                 </div>
             `;
+        } else if (tipo === 'ventas') {
+            titulo = 'Reporte Histórico de Ventas';
+            headers = ['ID Venta', 'Fecha / Hora', 'Cliente', 'Procesado por', 'Productos', 'Total'];
+            const dataVentas = await apiRequest('/ventas') || [];
+            const dataClientes = await apiRequest('/clientes') || [];
+            const dataUsuarios = await apiRequest('/usuarios') || [];
+
+            // Crear mapas para cruzar IDs con nombres
+            const clientesMap = {};
+            dataClientes.forEach(c => {
+                clientesMap[c.id] = c.nombre;
+            });
+
+            const usuariosMap = {};
+            dataUsuarios.forEach(u => {
+                usuariosMap[u.id] = `${u.nombre} ${u.apellido || ''}`;
+            });
+
+            let totalVentasMonto = 0;
+
+            // Ordenar por fecha descendente
+            dataVentas.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
+
+            rows = dataVentas.map(v => {
+                totalVentasMonto += v.valorTotal || 0;
+                const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
+                const cliente = v.idCliente ? (clientesMap[v.idCliente] || `Cliente #${v.idCliente}`) : 'Sin cliente';
+                const usuario = v.idUsuario ? (usuariosMap[v.idUsuario] || `Usuario #${v.idUsuario}`) : 'Sistema';
+                const nProductos = v.detalles ? v.detalles.length : 0;
+                
+                return [
+                    `#${v.id}`,
+                    fecha,
+                    cliente,
+                    usuario,
+                    `${nProductos} producto(s)`,
+                    `$${v.valorTotal?.toLocaleString('es-CO')}`
+                ];
+            });
+
+            resumenHtml = `
+                <div class="summary-box">
+                    <p><strong>Total de Ventas Realizadas:</strong> ${dataVentas.length}</p>
+                    <p><strong>Monto Total Recaudado:</strong> $${totalVentasMonto.toLocaleString('es-CO')}</p>
+                </div>
+            `;
+        } else if (tipo === 'ganancias') {
+            titulo = 'Reporte de Ganancias y Rentabilidad';
+            headers = ['ID Venta', 'Fecha / Hora', 'Ingreso (Venta)', 'Costo total', 'Ganancia Neta', 'Margen %'];
+            const dataVentas = await apiRequest('/ventas') || [];
+            const dataProductos = await apiRequest('/productos') || [];
+
+            // Map productos por ID para obtener precios de compra
+            const prodMap = {};
+            dataProductos.forEach(p => {
+                prodMap[p.id] = p;
+            });
+
+            let globalIngresos = 0;
+            let globalCostos = 0;
+
+            // Ordenar por fecha descendente
+            dataVentas.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
+
+            rows = dataVentas.map(v => {
+                const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
+                const ingreso = v.valorTotal || 0;
+                globalIngresos += ingreso;
+
+                let costoVenta = 0;
+                if (v.detalles) {
+                    v.detalles.forEach(d => {
+                        const prod = prodMap[d.idProducto];
+                        const precioCompra = prod ? (prod.precioCompra || 0) : 0;
+                        costoVenta += (d.cantidad || 0) * precioCompra;
+                    });
+                }
+                globalCostos += costoVenta;
+
+                const ganancia = ingreso - costoVenta;
+                const margen = ingreso > 0 ? ((ganancia / ingreso) * 100).toFixed(1) + '%' : '0%';
+
+                return [
+                    `#${v.id}`,
+                    fecha,
+                    `$${ingreso.toLocaleString('es-CO')}`,
+                    `$${costoVenta.toLocaleString('es-CO')}`,
+                    `<span style="color:${ganancia >= 0 ? '#10b981' : '#ef4444'}; font-weight:bold">$${ganancia.toLocaleString('es-CO')}</span>`,
+                    margen
+                ];
+            });
+
+            const globalGanancia = globalIngresos - globalCostos;
+            const globalMargen = globalIngresos > 0 ? ((globalGanancia / globalIngresos) * 100).toFixed(1) + '%' : '0%';
+
+            resumenHtml = `
+                <div class="summary-box">
+                    <p><strong>Total Ingresos (Ventas):</strong> $${globalIngresos.toLocaleString('es-CO')}</p>
+                    <p><strong>Total Costo de Ventas:</strong> $${globalCostos.toLocaleString('es-CO')}</p>
+                    <p><strong>Ganancia Neta Total:</strong> <span style="color:${globalGanancia >= 0 ? '#10b981' : '#ef4444'}; font-weight:bold">$${globalGanancia.toLocaleString('es-CO')}</span></p>
+                    <p><strong>Margen de Ganancia Promedio:</strong> ${globalMargen}</p>
+                </div>
+            `;
         }
 
         /** Crear y poblar ventana de impresión para el reporte. @author RADJ */
@@ -1074,7 +1212,7 @@ function populateForm(type, data) {
         document.getElementById('prod-estado').value = data.estado !== undefined ? data.estado : 1;
         document.getElementById('prod-iva').value = data.iva !== undefined ? data.iva : 19;
         document.getElementById('prod-unidadMedida').value = data.unidadMedida || '';
-    } 
+    }
     /** Poblar campos del formulario de Proveedor. @author RADJ */
     else if (type === 'proveedor') {
         document.getElementById('prov-nombre').value = data.nombre || '';
@@ -1085,7 +1223,7 @@ function populateForm(type, data) {
         document.getElementById('prov-direccion').value = data.direccion || '';
         document.getElementById('prov-cuentaBancaria').value = data.cuentaBancaria || '';
         document.getElementById('prov-activo').value = data.activo !== undefined ? data.activo : 1;
-    } 
+    }
     /** Poblar campos del formulario de Cliente. @author RADJ */
     else if (type === 'cliente') {
         document.getElementById('cli-nombre').value = data.nombre || '';
@@ -1096,7 +1234,7 @@ function populateForm(type, data) {
         document.getElementById('cli-direccion').value = data.direccion || '';
         document.getElementById('cli-frecuente').value = data.frecuente ? 'true' : 'false';
         document.getElementById('cli-activo').value = data.activo !== undefined ? data.activo : 1;
-    } 
+    }
     /** Poblar campos del formulario de Usuario. @author RADJ */
     else if (type === 'usuario') {
         document.getElementById('usr-nombre').value = data.nombre || '';
@@ -1229,3 +1367,230 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
         alert("Error al guardar: " + e.message);
     }
 });
+
+/** ─── SECCIÓN POS / VENTAS DE ADMINISTRADOR ─── */
+
+/** Carga e inicializa la sección de Ventas. @author RADJ */
+async function loadVenderSection() {
+    try {
+        allProducts = await apiRequest('/productos') || [];
+    } catch (e) {
+        console.error('Error al precargar productos:', e);
+    }
+
+    try {
+        allClientes = await apiRequest('/clientes') || [];
+        loadClienteSelect();
+    } catch (e) {
+        console.error('Error al cargar clientes:', e);
+    }
+
+    limpiarCarrito();
+}
+
+/** Carga los clientes en el selector. @author RADJ */
+function loadClienteSelect() {
+    const select = document.getElementById('client-select');
+    if (!select) return;
+    select.innerHTML = '<option value="">— Venta sin cliente registrado —</option>';
+    allClientes.forEach(c => {
+        if (c.activo === 1) {
+            select.innerHTML += `<option value="${c.id}">${c.nombre} (${c.numeroDocumento || 'Sin doc'})</option>`;
+        }
+    });
+}
+
+/** Búsqueda de productos en tiempo real. @author RADJ */
+function searchProducts(query) {
+    clearTimeout(searchTimeout);
+    const dropdown = document.getElementById('product-dropdown');
+    if (!dropdown) return;
+    if (!query || query.length < 1) { dropdown.style.display = 'none'; return; }
+
+    searchTimeout = setTimeout(() => {
+        const q = query.toLowerCase();
+        const results = allProducts.filter(p =>
+            (p.nombre && p.nombre.toLowerCase().includes(q)) ||
+            (p.codigoBarras && p.codigoBarras.toLowerCase().includes(q))
+        ).slice(0, 12);
+
+        if (!results.length) {
+            dropdown.innerHTML = '<div class="product-dropdown-item" style="color:var(--text-muted); cursor:default;">Sin resultados</div>';
+        } else {
+            dropdown.innerHTML = results.map(p => {
+                const sinStock = (p.stockActual || 0) <= 0;
+                return `<div class="product-dropdown-item ${sinStock ? 'no-stock' : ''}"
+                    onclick="${sinStock ? '' : `addToCart(${p.id})`}">
+                    <div>
+                        <div class="p-name">${p.nombre}</div>
+                        <div class="p-meta">Stock: ${p.stockActual || 0} uds${sinStock ? ' — Sin stock' : ''}</div>
+                    </div>
+                    <div class="p-price">${formatCurrency(p.precioVenta)}</div>
+                </div>`;
+            }).join('');
+        }
+        dropdown.style.display = 'block';
+    }, 180);
+}
+
+// Cerrar dropdown al hacer click fuera
+document.addEventListener('click', e => {
+    const searchWrapper = e.target.closest('.pos-search-wrapper');
+    if (!searchWrapper) {
+        const dropdown = document.getElementById('product-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+    }
+});
+
+/** Formatear moneda a pesos colombianos. @author RADJ */
+function formatCurrency(n) {
+    return '$' + Number(n).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+/** Mostrar Toast Notification. @author RADJ */
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/** Agregar un producto al carrito. @author RADJ */
+function addToCart(productId) {
+    const producto = allProducts.find(p => p.id === productId);
+    if (!producto) return;
+
+    const searchInput = document.getElementById('product-search');
+    if (searchInput) searchInput.value = '';
+    const dropdown = document.getElementById('product-dropdown');
+    if (dropdown) dropdown.style.display = 'none';
+
+    const existing = cart.find(item => item.producto.id === productId);
+    if (existing) {
+        if (existing.cantidad >= (producto.stockActual || 0)) {
+            showToast('No hay más stock disponible para este producto.', 'error');
+            return;
+        }
+        existing.cantidad++;
+    } else {
+        cart.push({ producto, cantidad: 1 });
+    }
+    renderCart();
+}
+
+/** Quitar producto del carrito. @author RADJ */
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.producto.id !== productId);
+    renderCart();
+}
+
+/** Cambiar cantidad del producto en el carrito. @author RADJ */
+function updateQuantity(productId, newQty) {
+    const item = cart.find(i => i.producto.id === productId);
+    if (!item) return;
+    const qty = parseInt(newQty) || 1;
+    const maxStock = item.producto.stockActual || 0;
+    item.cantidad = Math.max(1, Math.min(qty, maxStock));
+    renderCart();
+}
+
+/** Limpiar todos los elementos del carrito. @author RADJ */
+function limpiarCarrito() {
+    cart = [];
+    renderCart();
+}
+
+/** Renderizar la tabla del carrito. @author RADJ */
+function renderCart() {
+    const tbody = document.getElementById('cart-tbody');
+    if (!tbody) return;
+
+    if (!cart.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="cart-empty-msg">🛒 El carrito está vacío.<br><span style="font-size:0.78rem;">Busca y agrega productos arriba.</span></div></td></tr>`;
+        updateSummary(0, 0);
+        const btn = document.getElementById('btn-registrar');
+        if (btn) btn.disabled = true;
+        return;
+    }
+
+    let totalItems = 0;
+    let totalCost = 0;
+    tbody.innerHTML = cart.map(item => {
+        const subtotal = item.cantidad * item.producto.precioVenta;
+        totalItems += item.cantidad;
+        totalCost += subtotal;
+        return `<tr>
+            <td style="font-weight:500; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.producto.nombre}">${item.producto.nombre}</td>
+            <td style="text-align:center;">
+                <input type="number" class="qty-input" value="${item.cantidad}" min="1" max="${item.producto.stockActual || 1}"
+                    onchange="updateQuantity(${item.producto.id}, this.value)" oninput="updateQuantity(${item.producto.id}, this.value)">
+            </td>
+            <td style="text-align:right; color:var(--text-muted);">${formatCurrency(item.producto.precioVenta)}</td>
+            <td style="text-align:right; font-weight:600; color:#10b981;">${formatCurrency(subtotal)}</td>
+            <td style="text-align:center;">
+                <button class="remove-item-btn" onclick="removeFromCart(${item.producto.id})" title="Quitar">✕</button>
+            </td>
+        </tr>`;
+    }).join('');
+
+    updateSummary(totalItems, totalCost);
+    const btn = document.getElementById('btn-registrar');
+    if (btn) btn.disabled = false;
+}
+
+/** Actualizar resumen financiero. @author RADJ */
+function updateSummary(items, total) {
+    const summaryItems = document.getElementById('summary-items');
+    const summarySubtotal = document.getElementById('summary-subtotal');
+    const summaryTotal = document.getElementById('summary-total');
+
+    if (summaryItems) summaryItems.textContent = items;
+    if (summarySubtotal) summarySubtotal.textContent = formatCurrency(total);
+    if (summaryTotal) summaryTotal.textContent = formatCurrency(total);
+}
+
+/** Registrar la venta en la base de datos. @author RADJ */
+async function registrarVenta() {
+    if (!cart.length) return;
+    const btn = document.getElementById('btn-registrar');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = '⏳ Registrando...';
+
+    // Obtener id de usuario administrador logueado
+    let idUsuario = null;
+    const usuarioRaw = localStorage.getItem('usuario');
+    if (usuarioRaw) {
+        try {
+            idUsuario = JSON.parse(usuarioRaw).id;
+        } catch (e) {
+            console.error('Error al parsear usuario de localStorage:', e);
+        }
+    }
+
+    const clienteIdRaw = document.getElementById('client-select').value;
+    const idCliente = clienteIdRaw ? parseInt(clienteIdRaw) : null;
+
+    const detalles = cart.map(item => ({
+        idProducto: item.producto.id,
+        cantidad: item.cantidad,
+        precioUnitario: item.producto.precioVenta
+    }));
+
+    try {
+        await apiRequest('/ventas', 'POST', { idUsuario, idCliente, detalles });
+        showToast('✅ Venta registrada con éxito', 'success');
+        limpiarCarrito();
+        // Recargar productos para reflejar los nuevos stocks
+        allProducts = await apiRequest('/productos') || [];
+        const clientSelect = document.getElementById('client-select');
+        if (clientSelect) clientSelect.value = '';
+    } catch (e) {
+        showToast('❌ Error al registrar: ' + e.message, 'error');
+    } finally {
+        btn.textContent = '✅ Registrar Venta';
+        btn.disabled = cart.length === 0;
+    }
+}
+

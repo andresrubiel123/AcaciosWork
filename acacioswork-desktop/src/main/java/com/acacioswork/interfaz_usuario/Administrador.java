@@ -54,12 +54,13 @@ public class Administrador extends JPanel {
     private JTable tableAlertas;
     private JButton btnAlertas;
     private JPanel statsClientes;
+    private JPanel statsInventario;
 
     public Administrador() {
         try {
             setLayout(new BorderLayout());
             setBackground(BG_DARK);
-            add(buildToolbar(), BorderLayout.NORTH);
+            add(buildToolbar(), BorderLayout.WEST);
 
             cardLayout = new CardLayout();
             contentPanel = new JPanel(cardLayout);
@@ -67,6 +68,7 @@ public class Administrador extends JPanel {
 
             contentPanel.add(buildWelcomePanel(), "welcome");
             contentPanel.add(buildInventarioPanel(), "inventario");
+            contentPanel.add(new PuntoDeVenta(false), "vender");
             contentPanel.add(buildProveedoresPanel(), "proveedores");
             contentPanel.add(buildClientesPanel(), "clientes");
             contentPanel.add(buildUsuariosPanel(), "usuarios");
@@ -75,6 +77,7 @@ public class Administrador extends JPanel {
 
             add(contentPanel, BorderLayout.CENTER);
             cardLayout.show(contentPanel, "welcome");
+            refreshWelcomeStats();
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al cargar el Dashboard: " + e.getMessage());
@@ -84,32 +87,58 @@ public class Administrador extends JPanel {
     private JPanel buildToolbar() {
         JPanel toolbar = new JPanel(new BorderLayout());
         toolbar.setBackground(BG_SIDEBAR);
-        toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(255, 255, 255, 15)));
+        toolbar.setPreferredSize(new java.awt.Dimension(260, 0));
+        toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(255, 255, 255, 15)));
 
-        // Left section (Logo) - Vertically Centered using GridBagLayout
-        JPanel leftPanel = new JPanel(new java.awt.GridBagLayout());
-        leftPanel.setOpaque(false);
-        java.awt.GridBagConstraints gbcLeft = new java.awt.GridBagConstraints();
-        gbcLeft.insets = new java.awt.Insets(8, 16, 8, 16);
-        gbcLeft.gridx = 0;
-        gbcLeft.gridy = 0;
+        // Top Section (Logo) - Vertically Centered using GridBagLayout
+        JPanel logoPanel = new JPanel(new java.awt.GridBagLayout());
+        logoPanel.setOpaque(false);
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(24, 16, 24, 16));
+        java.awt.GridBagConstraints gbcLogo = new java.awt.GridBagConstraints();
+        gbcLogo.gridx = 0;
+        gbcLogo.gridy = 0;
 
         JLabel brand = new JLabel("AcaciosWork");
         brand.setForeground(PRIMARY);
-        brand.setFont(new Font("Inter", Font.BOLD, 36));
-        leftPanel.add(brand, gbcLeft);
-        toolbar.add(leftPanel, BorderLayout.WEST);
+        brand.setFont(new Font("Inter", Font.BOLD, 28));
+        logoPanel.add(brand, gbcLogo);
+
+        // Nombre de la persona logueada debajo del título del programa
+        String userName = "Usuario";
+        if (SessionManager.getUsuario() != null) {
+            Usuario u = SessionManager.getUsuario();
+            userName = u.getNombre()
+                    + (u.getApellido() != null && !u.getApellido().equals("—") ? " " + u.getApellido() : "");
+        }
+
+        JLabel lblUser = new JLabel("👤 " + userName);
+        lblUser.setForeground(new Color(203, 213, 225));
+        lblUser.setFont(new Font("Inter", Font.BOLD, 15));
+
+        gbcLogo.gridy = 1;
+        gbcLogo.insets = new java.awt.Insets(8, 0, 0, 0);
+        logoPanel.add(lblUser, gbcLogo);
+
+        toolbar.add(logoPanel, BorderLayout.NORTH);
+
+        // Center container holding menu buttons (top) and user/exit section (bottom)
+        JPanel menuContainer = new JPanel(new BorderLayout());
+        menuContainer.setOpaque(false);
 
         // Center section (Navigation Buttons) - Vertically Centered using GridBagLayout
         JPanel centerPanel = new JPanel(new java.awt.GridBagLayout());
         centerPanel.setOpaque(false);
         java.awt.GridBagConstraints gbcCenter = new java.awt.GridBagConstraints();
-        gbcCenter.insets = new java.awt.Insets(8, 5, 8, 5);
+        gbcCenter.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbcCenter.insets = new java.awt.Insets(5, 16, 5, 16);
+        gbcCenter.gridx = 0;
+        gbcCenter.weightx = 1.0;
         gbcCenter.gridy = 0;
 
         String[][] sections = {
                 { "🏠 Inicio", "welcome" },
                 { "Inventario", "inventario" },
+                { "🛒 Vender", "vender" },
                 { "Proveedores", "proveedores" },
                 { "Clientes", "clientes" },
                 { "Usuarios", "usuarios" },
@@ -117,7 +146,6 @@ public class Administrador extends JPanel {
                 { "⚠ Alertas Stock", "alertas" }
         };
 
-        int btnIdx = 0;
         for (String[] s : sections) {
             JButton btn;
             if (s[1].equals("alertas")) {
@@ -129,39 +157,29 @@ public class Administrador extends JPanel {
             btn.addActionListener(e -> {
                 setActiveBtn(btn);
                 cardLayout.show(contentPanel, s[1]);
+                if (s[1].equals("welcome")) {
+                    refreshWelcomeStats();
+                }
                 if (s[1].equals("alertas")) {
                     refreshAlertas();
                 }
             });
-            gbcCenter.gridx = btnIdx++;
             centerPanel.add(btn, gbcCenter);
+            gbcCenter.gridy++;
             if (s[1].equals("welcome")) {
                 btn.putClientProperty("active", true);
             }
         }
-        toolbar.add(centerPanel, BorderLayout.CENTER);
+        menuContainer.add(centerPanel, BorderLayout.NORTH);
 
-        // Right section (User Profile + Logout Button) - Vertically Centered using
-        // GridBagLayout
+        // Bottom section (User Profile + Logout Button) - Vertically Centered using GridBagLayout
         JPanel rightPanel = new JPanel(new java.awt.GridBagLayout());
         rightPanel.setOpaque(false);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 24, 16));
         java.awt.GridBagConstraints gbcRight = new java.awt.GridBagConstraints();
-        gbcRight.gridy = 0;
-
-        String userName = "Usuario";
-        if (SessionManager.getUsuario() != null) {
-            Usuario u = SessionManager.getUsuario();
-            userName = u.getNombre()
-                    + (u.getApellido() != null && !u.getApellido().equals("—") ? " " + u.getApellido() : "");
-        }
-
-        JLabel lblUser = new JLabel("👤 " + userName);
-        lblUser.setForeground(new Color(203, 213, 225));
-        lblUser.setFont(new Font("Inter", Font.BOLD, 24));
-
         gbcRight.gridx = 0;
-        gbcRight.insets = new java.awt.Insets(8, 12, 8, 12);
-        rightPanel.add(lblUser, gbcRight);
+        gbcRight.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbcRight.weightx = 1.0;
 
         JButton btnSalir = new JButton("✕ Salir") {
             @Override
@@ -170,25 +188,26 @@ public class Administrador extends JPanel {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 // Red gradient matching var(--btn-exit)
                 g2.setPaint(new GradientPaint(0, 0, new Color(255, 59, 48), 0, getHeight(), new Color(255, 45, 85)));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2.dispose();
                 super.paintComponent(g);
             }
         };
         btnSalir.setForeground(Color.WHITE);
-        btnSalir.setFont(new Font("Inter", Font.BOLD, 12));
-        btnSalir.setBorder(new EmptyBorder(6, 16, 6, 16));
+        btnSalir.setFont(new Font("Inter", Font.BOLD, 13));
+        btnSalir.setBorder(new EmptyBorder(10, 16, 10, 16));
         btnSalir.setFocusPainted(false);
         btnSalir.setContentAreaFilled(false);
         btnSalir.setOpaque(false);
         btnSalir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnSalir.addActionListener(e -> MainFrame.navigateTo(new Login()));
 
-        gbcRight.gridx = 1;
-        gbcRight.insets = new java.awt.Insets(8, 12, 8, 16);
+        gbcRight.gridy = 0;
+        gbcRight.insets = new java.awt.Insets(0, 0, 0, 0);
         rightPanel.add(btnSalir, gbcRight);
 
-        toolbar.add(rightPanel, BorderLayout.EAST);
+        menuContainer.add(rightPanel, BorderLayout.SOUTH);
+        toolbar.add(menuContainer, BorderLayout.CENTER);
 
         /** Animación de pulsación de verde neón para la marca y el usuario. @author RADJ */
         final Color colorBright = new Color(57, 255, 20);
@@ -228,8 +247,7 @@ public class Administrador extends JPanel {
         JButton btn = new JButton(text) {
             @Override
             public java.awt.Dimension getPreferredSize() {
-                java.awt.Dimension d = super.getPreferredSize();
-                return new java.awt.Dimension(d.width + 24, 38);
+                return new java.awt.Dimension(228, 42);
             }
 
             @Override
@@ -252,25 +270,28 @@ public class Administrador extends JPanel {
                         c2 = new Color(255, 45, 85);
                         setForeground(Color.WHITE);
                     } else {
-                        // Dark slate style
-                        c1 = new Color(71, 85, 105);
-                        c2 = new Color(51, 65, 85);
-                        setForeground(new Color(203, 213, 225));
+                        // Dark translucent style
+                        c1 = new Color(30, 41, 59, 200);
+                        c2 = new Color(30, 41, 59, 200);
+                        setForeground(new Color(239, 68, 68));
                     }
                 } else {
-                    // Inactive nav style: Orange gradient
-                    c1 = new Color(249, 115, 22);
-                    c2 = new Color(239, 68, 68);
-                    setForeground(Color.WHITE);
+                    // Inactive nav style: Dark slate translucent
+                    c1 = new Color(30, 41, 59, 120);
+                    c2 = new Color(30, 41, 59, 120);
+                    setForeground(TEXT_MUTED);
                 }
 
                 g2.setPaint(new GradientPaint(0, 0, c1, 0, getHeight(), c2));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
 
                 if (active) {
-                    g2.setColor(Color.WHITE);
-                    g2.setStroke(new java.awt.BasicStroke(2));
-                    g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20);
+                    g2.setColor(new Color(255, 255, 255, 38));
+                    g2.setStroke(new java.awt.BasicStroke(1));
+                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+                } else if (!"alertas".equals(secName)) {
+                    g2.setColor(new Color(255, 255, 255, 10));
+                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
                 }
 
                 g2.dispose();
@@ -278,8 +299,9 @@ public class Administrador extends JPanel {
                 super.paintComponent(g);
             }
         };
-        btn.setForeground(Color.WHITE);
-        btn.setFont(new Font("Inter", Font.BOLD, 12));
+        btn.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btn.setForeground(TEXT_MUTED);
+        btn.setFont(new Font("Inter", Font.BOLD, 13));
         btn.setBorder(new EmptyBorder(6, 16, 6, 16));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
@@ -291,14 +313,6 @@ public class Administrador extends JPanel {
 
     private JPanel buildInventarioPanel() {
         JPanel panel = createContentPanel();
-        JPanel stats = new JPanel(new GridLayout(1, 5, 12, 0));
-        stats.setOpaque(false);
-        stats.setBorder(new EmptyBorder(0, 0, 16, 0));
-        stats.add(buildStatCard("Total Productos", "0", TEXT_MAIN));
-        stats.add(buildStatCard("Stock Bajo", "0", DANGER));
-        stats.add(buildStatCard("Valor Inventario", "$0", ACCENT));
-        stats.add(buildStatCard("Valor Costo", "$0", new Color(245, 158, 11)));
-        stats.add(buildStatCard("Utilidad Neta", "$0", ACCENT));
 
         JTable table = buildStyledTable(
                 new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "P. Compra", "P. Venta", "IVA", "Estado",
@@ -316,18 +330,17 @@ public class Administrador extends JPanel {
         table.getColumnModel().getColumn(4).setCellRenderer(new StockBarCellRenderer());
 
         setupAccionesColumn(table,
-                () -> editarProductoInv(table, stats),
-                () -> eliminarGeneric(table, "/productos", "Producto", () -> refreshInventario(table, stats)));
+                () -> editarProductoInv(table, statsInventario),
+                () -> eliminarGeneric(table, "/productos", "Producto", () -> refreshInventario(table, statsInventario)));
 
         JButton bAdd = createActionButton("+ Nuevo Producto", ACCENT);
-        bAdd.addActionListener(e -> agregarProductoDash(table, stats));
+        bAdd.addActionListener(e -> agregarProductoDash(table, statsInventario));
 
         panel.add(buildSectionHeader("Inventario de Productos", "Control total de existencias y precios", bAdd),
                 BorderLayout.NORTH);
 
         JPanel center = new JPanel(new BorderLayout(0, 12));
         center.setOpaque(false);
-        center.add(stats, BorderLayout.NORTH);
 
         JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
         tableContainer.setOpaque(false);
@@ -337,7 +350,7 @@ public class Administrador extends JPanel {
         center.add(tableContainer, BorderLayout.CENTER);
         panel.add(center, BorderLayout.CENTER);
 
-        refreshInventario(table, stats);
+        refreshInventario(table, statsInventario);
         return panel;
     }
 
@@ -450,6 +463,8 @@ public class Administrador extends JPanel {
                 { "🏭 Directorio de Proveedores", "Directorio de proveedores registrados con NIT y contacto.",
                         "proveedores" },
                 { "👤 Usuarios del Sistema", "Informe detallado de usuarios, roles y accesos.", "usuarios" },
+                { "🛒 Reporte de Ventas", "Listado histórico de todas las ventas con fecha, clientes y totales.", "ventas" },
+                { "📈 Reporte de Ganancias", "Análisis de rentabilidad detallando costos, ingresos y margen de ganancia.", "ganancias" },
                 { "📊 Resumen Ejecutivo", "Métricas principales de inventario y estado general de la empresa.",
                         "resumen" }
         };
@@ -1342,6 +1357,174 @@ public class Administrador extends JPanel {
                                 .append("<p><strong>Fecha del Resumen:</strong> ").append(nowStr).append("</p>")
                                 .append("<p><strong>Estado de Operación:</strong> Operando normalmente</p>")
                                 .append("</div>");
+                    } else if ("ventas".equals(tipo)) {
+                        titulo = "Reporte Histórico de Ventas";
+                        String[] headers = { "ID Venta", "Fecha / Hora", "Cliente", "Procesado por", "Productos", "Total" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] dataVentas = ApiClient.get("/ventas", Object[].class);
+                        Object[] dataClientes = ApiClient.get("/clientes", Object[].class);
+                        Object[] dataUsuarios = ApiClient.get("/usuarios", Object[].class);
+
+                        java.util.Map<String, String> clientesMap = new java.util.HashMap<>();
+                        if (dataClientes != null) {
+                            for (Object raw : dataClientes) {
+                                java.util.Map<String, Object> c = (java.util.Map<String, Object>) raw;
+                                clientesMap.put(id(c).toString(), str(c, "nombre"));
+                            }
+                        }
+
+                        java.util.Map<String, String> usuariosMap = new java.util.HashMap<>();
+                        if (dataUsuarios != null) {
+                            for (Object raw : dataUsuarios) {
+                                java.util.Map<String, Object> u = (java.util.Map<String, Object>) raw;
+                                usuariosMap.put(id(u).toString(), str(u, "nombre") + " " + (str(u, "apellido").equals("—") ? "" : str(u, "apellido")));
+                            }
+                        }
+
+                        double totalVentasMonto = 0;
+
+                        if (dataVentas != null) {
+                            java.util.List<java.util.Map<String, Object>> ventasList = new java.util.ArrayList<>();
+                            for (Object raw : dataVentas) {
+                                ventasList.add((java.util.Map<String, Object>) raw);
+                            }
+                            ventasList.sort((a, b) -> {
+                                String fA = str(a, "fechaHora");
+                                String fB = str(b, "fechaHora");
+                                return fB.compareTo(fA); // Descending order
+                            });
+
+                            for (java.util.Map<String, Object> v : ventasList) {
+                                double total = dbl(v, "valorTotal");
+                                totalVentasMonto += total;
+                                String fechaRaw = str(v, "fechaHora");
+                                String fecha = "—";
+                                try {
+                                    java.time.LocalDateTime ldt = java.time.LocalDateTime.parse(fechaRaw);
+                                    fecha = ldt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a"));
+                                } catch (Exception e) {
+                                    fecha = fechaRaw;
+                                }
+
+                                String cId = v.get("idCliente") != null ? v.get("idCliente").toString() : "";
+                                String cliente = cId.isEmpty() ? "Sin cliente" : clientesMap.getOrDefault(cId, "Cliente #" + cId);
+
+                                String uId = v.get("idUsuario") != null ? v.get("idUsuario").toString() : "";
+                                String usuario = uId.isEmpty() ? "Sistema" : usuariosMap.getOrDefault(uId, "Usuario #" + uId);
+
+                                java.util.List<?> detalles = (java.util.List<?>) v.get("detalles");
+                                int nProductos = detalles != null ? detalles.size() : 0;
+
+                                rowsHtml.append("<tr>")
+                                        .append("<td>#").append(id(v)).append("</td>")
+                                        .append("<td>").append(fecha).append("</td>")
+                                        .append("<td>").append(cliente).append("</td>")
+                                        .append("<td>").append(usuario).append("</td>")
+                                        .append("<td>").append(nProductos).append(" producto(s)</td>")
+                                        .append("<td>$").append(String.format("%,.0f", total)).append("</td>")
+                                        .append("</tr>");
+                            }
+                        }
+
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total de Ventas Realizadas:</strong> ")
+                                .append(dataVentas != null ? dataVentas.length : 0).append("</p>")
+                                .append("<p><strong>Monto Total Recaudado:</strong> $")
+                                .append(String.format("%,.0f", totalVentasMonto)).append("</p>")
+                                .append("</div>");
+
+                    } else if ("ganancias".equals(tipo)) {
+                        titulo = "Reporte de Ganancias y Rentabilidad";
+                        String[] headers = { "ID Venta", "Fecha / Hora", "Ingreso (Venta)", "Costo total", "Ganancia Neta", "Margen %" };
+                        for (String h : headers) {
+                            headersHtml.append("<th>").append(h).append("</th>");
+                        }
+
+                        Object[] dataVentas = ApiClient.get("/ventas", Object[].class);
+                        Object[] dataProductos = ApiClient.get("/productos", Object[].class);
+
+                        java.util.Map<String, java.util.Map<String, Object>> prodMap = new java.util.HashMap<>();
+                        if (dataProductos != null) {
+                            for (Object raw : dataProductos) {
+                                java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                                prodMap.put(id(p).toString(), p);
+                            }
+                        }
+
+                        double globalIngresos = 0;
+                        double globalCostos = 0;
+
+                        if (dataVentas != null) {
+                            java.util.List<java.util.Map<String, Object>> ventasList = new java.util.ArrayList<>();
+                            for (Object raw : dataVentas) {
+                                ventasList.add((java.util.Map<String, Object>) raw);
+                            }
+                            ventasList.sort((a, b) -> {
+                                String fA = str(a, "fechaHora");
+                                String fB = str(b, "fechaHora");
+                                return fB.compareTo(fA);
+                            });
+
+                            for (java.util.Map<String, Object> v : ventasList) {
+                                double ingreso = dbl(v, "valorTotal");
+                                globalIngresos += ingreso;
+
+                                String fechaRaw = str(v, "fechaHora");
+                                String fecha = "—";
+                                try {
+                                    java.time.LocalDateTime ldt = java.time.LocalDateTime.parse(fechaRaw);
+                                    fecha = ldt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a"));
+                                } catch (Exception e) {
+                                    fecha = fechaRaw;
+                                }
+
+                                double costoVenta = 0;
+                                java.util.List<?> detalles = (java.util.List<?>) v.get("detalles");
+                                if (detalles != null) {
+                                    for (Object detRaw : detalles) {
+                                        java.util.Map<String, Object> d = (java.util.Map<String, Object>) detRaw;
+                                        String pId = d.get("idProducto") != null ? d.get("idProducto").toString() : "";
+                                        java.util.Map<String, Object> prod = prodMap.get(pId);
+                                        double precioCompra = prod != null ? dbl(prod, "precioCompra") : 0;
+                                        int qty = d.get("cantidad") != null ? ((Number) d.get("cantidad")).intValue() : 0;
+                                        costoVenta += qty * precioCompra;
+                                    }
+                                }
+                                globalCostos += costoVenta;
+
+                                double ganancia = ingreso - costoVenta;
+                                double margenVal = ingreso > 0 ? (ganancia / ingreso) * 100 : 0;
+                                String margen = String.format("%.1f%%", margenVal);
+
+                                String color = ganancia >= 0 ? "#10b981" : "#ef4444";
+
+                                rowsHtml.append("<tr>")
+                                        .append("<td>#").append(id(v)).append("</td>")
+                                        .append("<td>").append(fecha).append("</td>")
+                                        .append("<td>$").append(String.format("%,.0f", ingreso)).append("</td>")
+                                        .append("<td>$").append(String.format("%,.0f", costoVenta)).append("</td>")
+                                        .append("<td><span style='color:").append(color).append("; font-weight:bold'>$")
+                                        .append(String.format("%,.0f", ganancia)).append("</span></td>")
+                                        .append("<td>").append(margen).append("</td>")
+                                        .append("</tr>");
+                            }
+                        }
+
+                        double globalGanancia = globalIngresos - globalCostos;
+                        double globalMargenVal = globalIngresos > 0 ? (globalGanancia / globalIngresos) * 100 : 0;
+                        String globalMargen = String.format("%.1f%%", globalMargenVal);
+                        String globalColor = globalGanancia >= 0 ? "#10b981" : "#ef4444";
+
+                        resumenHtml.append("<div class='summary-box'>")
+                                .append("<p><strong>Total Ingresos (Ventas):</strong> $").append(String.format("%,.0f", globalIngresos)).append("</p>")
+                                .append("<p><strong>Total Costo de Ventas:</strong> $").append(String.format("%,.0f", globalCostos)).append("</p>")
+                                .append("<p><strong>Ganancia Neta Total:</strong> <span style='color:").append(globalColor).append("; font-weight:bold'>$")
+                                .append(String.format("%,.0f", globalGanancia)).append("</span></p>")
+                                .append("<p><strong>Margen de Ganancia Promedio:</strong> ").append(globalMargen).append("</p>")
+                                .append("</div>");
                     }
 
                     String html = "<!DOCTYPE html>\n" +
@@ -1931,20 +2114,20 @@ public class Administrador extends JPanel {
         card.setOpaque(false);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(new EmptyBorder(48, 48, 48, 48));
-        card.setMaximumSize(new java.awt.Dimension(600, 300));
-        card.setPreferredSize(new java.awt.Dimension(600, 300));
+        card.setMaximumSize(new java.awt.Dimension(600, 200));
+        card.setPreferredSize(new java.awt.Dimension(600, 200));
         
         JLabel title = new JLabel("Bienvenido a AcaciosWork", javax.swing.SwingConstants.CENTER);
         title.setFont(new Font("Inter", Font.BOLD, 24));
         title.setForeground(PRIMARY);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel desc = new JLabel("Por favor, seleccione una opción del menú superior para comenzar a gestionar el sistema.", javax.swing.SwingConstants.CENTER);
+        JLabel desc = new JLabel("Por favor, seleccione una opción del menú lateral para comenzar a gestionar el sistema.", javax.swing.SwingConstants.CENTER);
         desc.setFont(new Font("Inter", Font.PLAIN, 14));
         desc.setForeground(TEXT_MUTED);
         desc.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel icon = new JLabel("💼", javax.swing.SwingConstants.CENTER);
+        JLabel icon = new JLabel("", javax.swing.SwingConstants.CENTER);
         icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 64));
         icon.setForeground(PRIMARY);
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1955,11 +2138,73 @@ public class Administrador extends JPanel {
         card.add(Box.createRigidArea(new java.awt.Dimension(0, 32)));
         card.add(icon);
         
+        statsInventario = new JPanel(new GridLayout(1, 5, 12, 0));
+        statsInventario.setOpaque(false);
+        statsInventario.setBorder(new EmptyBorder(16, 0, 0, 0));
+        statsInventario.add(buildStatCard("Total Productos", "0", TEXT_MAIN));
+        statsInventario.add(buildStatCard("Stock Bajo", "0", DANGER));
+        statsInventario.add(buildStatCard("Valor Inventario", "$0", ACCENT));
+        statsInventario.add(buildStatCard("Valor Costo", "$0", new Color(245, 158, 11)));
+        statsInventario.add(buildStatCard("Utilidad Neta", "$0", ACCENT));
+        
+        JPanel centerContainer = new JPanel();
+        centerContainer.setOpaque(false);
+        centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
+        
         JPanel wrapper = new JPanel(new java.awt.GridBagLayout());
         wrapper.setOpaque(false);
         wrapper.add(card);
         
-        panel.add(wrapper, BorderLayout.CENTER);
+        centerContainer.add(wrapper);
+        centerContainer.add(Box.createRigidArea(new java.awt.Dimension(0, 24)));
+        centerContainer.add(statsInventario);
+        
+        panel.add(centerContainer, BorderLayout.CENTER);
         return panel;
+    }
+
+    private void refreshWelcomeStats() {
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    Object[] data = ApiClient.get("/productos", Object[].class);
+                    SwingUtilities.invokeLater(() -> {
+                        if (data == null || statsInventario == null) return;
+                        int bajo = 0;
+                        double valor = 0;
+                        double valorCosto = 0;
+                        for (Object raw : data) {
+                            java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                            int qty = num(p, "stockActual");
+                            int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
+                            double precioCompra = dbl(p, "precioCompra");
+                            double precioVenta = dbl(p, "precioVenta");
+                            valor += qty * precioVenta;
+                            valorCosto += qty * precioCompra;
+                            if (qty <= min)
+                                bajo++;
+                        }
+                        double finalValor = valor;
+                        double finalCosto = valorCosto;
+                        double finalUtilidad = valor - valorCosto;
+                        int finalBajo = bajo;
+
+                        java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.GERMANY);
+                        nf.setMaximumFractionDigits(0);
+
+                        updateStatCard((JPanel) statsInventario.getComponents()[0], String.valueOf(data.length));
+                        updateStatCard((JPanel) statsInventario.getComponents()[1], String.valueOf(finalBajo));
+                        updateStatCard((JPanel) statsInventario.getComponents()[2], "$" + nf.format(finalValor));
+                        updateStatCard((JPanel) statsInventario.getComponents()[3], "$" + nf.format(finalCosto));
+                        updateStatCard((JPanel) statsInventario.getComponents()[4], "$" + nf.format(finalUtilidad));
+
+                        updateAlertasPulsing(bajo);
+                    });
+                } catch (Exception e) {
+                }
+                return null;
+            }
+        }.execute();
     }
 }

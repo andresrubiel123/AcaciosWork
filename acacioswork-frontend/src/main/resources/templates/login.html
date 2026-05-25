@@ -13,13 +13,55 @@
             justify-content: center;
             align-items: center;
         }
+
+        /* Botón de inicio de sesión con estilo y color del Dashboard */
+        .btn-login {
+            background: linear-gradient(135deg, #f97316, #ef4444) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            transition: all 0.25s ease;
+        }
+
+        .btn-login:hover {
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Título del sistema animado idéntico al del Dashboard */
+        .login-brand {
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #39ff14;
+            letter-spacing: -0.02em;
+            animation: neon-pulse 2s infinite ease-in-out;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        @keyframes neon-pulse {
+            0%, 100% {
+                text-shadow: 0 0 4px rgba(57, 255, 20, 0.4);
+                opacity: 0.85;
+            }
+            50% {
+                text-shadow: 0 0 12px rgba(57, 255, 20, 0.85), 0 0 20px rgba(57, 255, 20, 0.4);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container fade-in" style="max-width: 400px;">
         <div class="card">
-            <h1 style="margin-bottom: 0.5rem; text-align: center; color: var(--primary-color);">AcaciosWork</h1>
+            <h1 class="login-brand">AcaciosWork</h1>
             <p style="margin-bottom: 2rem; text-align: center; color: var(--text-muted);">Acceso al sistema administrativo</p>
 
             <form id="loginForm">
@@ -33,7 +75,7 @@
                     <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
                 </div>
 
-                <button type="submit" id="loginBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                <button type="submit" id="loginBtn" class="btn btn-login" style="width: 100%; margin-top: 1rem;">
                     Iniciar Sesión
                 </button>
             </form>

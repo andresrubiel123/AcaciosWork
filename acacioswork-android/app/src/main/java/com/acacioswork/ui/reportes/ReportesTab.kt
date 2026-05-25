@@ -97,6 +97,32 @@ fun ReportesTab() {
                 )
             }
 
+            // Tarjeta de Reporte de Ventas
+            item {
+                ReporteSimpleCard(
+                    title = "Reporte de Ventas",
+                    description = "Listado histórico de todas las ventas con fecha, clientes y totales.",
+                    icon = Icons.Default.ShoppingCart,
+                    iconColor = Primary,
+                    buttonText = "Generar Reporte de Ventas",
+                    buttonColor = Primary,
+                    onButtonClick = {}
+                )
+            }
+
+            // Tarjeta de Reporte de Ganancias
+            item {
+                ReporteSimpleCard(
+                    title = "Reporte de Ganancias",
+                    description = "Análisis de rentabilidad detallando costos, ingresos y margen de ganancia por venta.",
+                    icon = Icons.Default.Star,
+                    iconColor = AccentGreen,
+                    buttonText = "Generar Reporte de Ganancias",
+                    buttonColor = AccentGreen,
+                    onButtonClick = {}
+                )
+            }
+
             // Tarjeta de Reporte Ejecutivo
             item {
                 ReporteSimpleCard(

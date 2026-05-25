@@ -183,11 +183,23 @@ public class ProveedorDialog extends JDialog {
         btnCancel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnCancel.putClientProperty("JButton.buttonType", "roundRect");
 
-        JButton btnSave = new JButton("Guardar");
-        btnSave.setBackground(Administrador.PRIMARY);
+        JButton btnSave = new JButton("Guardar") {
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+                g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+                // Degradado naranja a rojo del dashboard activo
+                g2.setPaint(new java.awt.GradientPaint(0, 0, new Color(249, 115, 22), 0, getHeight(), new Color(239, 68, 68)));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
         btnSave.setForeground(Color.WHITE);
         btnSave.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnSave.setFocusPainted(false);
+        btnSave.setContentAreaFilled(false);
+        btnSave.setOpaque(false);
         btnSave.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnSave.putClientProperty("JButton.buttonType", "roundRect");
 

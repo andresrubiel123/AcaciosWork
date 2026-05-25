@@ -1,0 +1,96 @@
+<!-- Sección de ventas (POS) para el dashboard de administrador. @author RADJ -->
+<div th:fragment="vender" id="sec-vender" class="section" style="display:none">
+    <div class="section-header">
+        <div>
+            <h1>🛒 Venta de Productos</h1>
+            <p>Registra ventas rápidas con búsqueda en tiempo real</p>
+        </div>
+    </div>
+
+    <div class="pos-layout">
+        <!-- Columna izquierda: búsqueda + carrito -->
+        <div>
+            <div class="card" style="margin-bottom: 1rem;">
+                <p
+                    style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Buscar Producto</p>
+                <div class="pos-search-wrapper">
+                    <input type="text" id="product-search" placeholder="🔍 Escribe el nombre o código del producto..."
+                        oninput="searchProducts(this.value)" autocomplete="off">
+                    <div id="product-dropdown" class="product-dropdown"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <p
+                    style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Productos en la Venta</p>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th style="text-align: center; width: 100px;">Cant.</th>
+                            <th style="text-align: right; width: 120px;">P. Unit.</th>
+                            <th style="text-align: right; width: 120px;">Subtotal</th>
+                            <th style="text-align: center; width: 50px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-tbody">
+                        <tr>
+                            <td colspan="5">
+                                <div class="cart-empty-msg">
+                                    🛒 El carrito está vacío.<br>
+                                    <span style="font-size: 0.78rem;">Busca y agrega productos arriba.</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Columna derecha: resumen y cobro -->
+        <div>
+            <div class="summary-panel">
+                <h3>💳 Resumen de Venta</h3>
+
+                <label
+                    style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.4rem;">Cliente</label>
+                <select id="client-select" class="client-select">
+                    <option value="">— Venta sin cliente registrado —</option>
+                </select>
+
+                <hr class="summary-divider">
+
+                <div class="summary-row">
+                    <span class="label">Productos</span>
+                    <span class="value" id="summary-items">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="label">Subtotal</span>
+                    <span class="value" id="summary-subtotal">$0</span>
+                </div>
+
+                <hr class="summary-divider">
+
+                <div class="summary-row">
+                    <span class="label" style="font-weight: 700; font-size: 1rem;">TOTAL</span>
+                    <span class="summary-total" id="summary-total">$0</span>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button id="btn-registrar" class="btn-registrar" onclick="registrarVenta()" disabled>
+                        ✅ Registrar Venta
+                    </button>
+                </div>
+
+                <button onclick="limpiarCarrito()"
+                    style="width: 100%; margin-top: 0.75rem; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 0.82rem; transition: all 0.15s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+                    onmouseout="this.style.background='transparent'">
+                    🗑️ Limpiar carrito
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

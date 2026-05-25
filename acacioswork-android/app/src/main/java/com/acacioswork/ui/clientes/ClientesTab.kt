@@ -370,7 +370,18 @@ fun ClienteFormDialog(
                     )
                     onSave(c)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+                colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.Transparent),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
+                modifier = Modifier
+                    .background(
+                        brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                            colors = listOf(
+                                androidx.compose.ui.graphics.Color(0xFFF97316),
+                                androidx.compose.ui.graphics.Color(0xFFEF4444)
+                            )
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    )
             ) {
                 Text("Guardar", color = TextLight)
             }

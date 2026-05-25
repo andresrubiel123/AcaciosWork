@@ -6,7 +6,11 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
+import java.awt.RenderingHints;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -95,12 +99,25 @@ public class Login extends JPanel {
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
         // Login Button
-        JButton btnLogin = new JButton("Iniciar Sesión");
-        btnLogin.setBackground(PRIMARY_COLOR);
+        JButton btnLogin = new JButton("Iniciar Sesión") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Degradado naranja a rojo del dashboard activo
+                g2.setPaint(new GradientPaint(0, 0, new Color(249, 115, 22), 0, getHeight(), new Color(239, 68, 68)));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
         btnLogin.setForeground(Color.WHITE);
         btnLogin.setFont(new Font("Inter", Font.BOLD, 16));
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        btnLogin.setFocusPainted(false);
+        btnLogin.setContentAreaFilled(false);
+        btnLogin.setOpaque(false);
         btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnLogin.addActionListener(e -> handleLogin());
         content.add(btnLogin);

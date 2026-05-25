@@ -36,12 +36,16 @@ public class PuntoDeVenta extends JPanel {
     private JLabel lblTotal;
 
     public PuntoDeVenta() {
-        ventaActual = new Venta();
-        ventaActual.setDetalles(new ArrayList<DetalleVenta>());
-        initComponents();
+        this(true);
     }
 
-    private void initComponents() {
+    public PuntoDeVenta(boolean showVolver) {
+        ventaActual = new Venta();
+        ventaActual.setDetalles(new ArrayList<DetalleVenta>());
+        initComponents(showVolver);
+    }
+
+    private void initComponents(boolean showVolver) {
         setLayout(new BorderLayout());
         setBackground(new Color(15, 23, 42));
 
@@ -52,9 +56,11 @@ public class PuntoDeVenta extends JPanel {
         JPanel fila1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         fila1.setOpaque(false);
 
-        JButton btnAtras = new JButton("‹ Volver");
-        btnAtras.addActionListener(e -> MainFrame.navigateTo(new Login()));
-        fila1.add(btnAtras);
+        if (showVolver) {
+            JButton btnAtras = new JButton("‹ Volver");
+            btnAtras.addActionListener(e -> MainFrame.navigateTo(new Login()));
+            fila1.add(btnAtras);
+        }
 
         fila1.add(createLabel("ID Producto:"));
         txtProductoId = new JTextField(10);

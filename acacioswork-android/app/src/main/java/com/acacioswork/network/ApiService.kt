@@ -69,4 +69,8 @@ interface ApiService {
 
     @DELETE("usuarios/{numeroDocumento}")
     suspend fun deleteUsuario(@Path("numeroDocumento") numeroDocumento: String): ApiResponse<String>
+
+    // Ventas
+    @POST("ventas")
+    suspend fun createVenta(@Body venta: Venta): ApiResponse<Venta>
 }
