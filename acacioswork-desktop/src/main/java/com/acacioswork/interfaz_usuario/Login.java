@@ -46,9 +46,28 @@ public class Login extends JPanel {
         header.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
         JLabel lblTitle = new JLabel("AcaciosWork");
         lblTitle.setFont(new Font("Inter", Font.BOLD, 32));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(new Color(57, 255, 20));
         header.add(lblTitle);
         mainPanel.add(header, BorderLayout.NORTH);
+
+        /** Animación de pulsación de verde neón para el título de inicio de sesión. @author RADJ */
+        final Color colorBright = new Color(57, 255, 20);
+        final Color colorDim = new Color(20, 90, 7);
+        final long startTime = System.currentTimeMillis();
+        
+        javax.swing.Timer pulseTimer = new javax.swing.Timer(50, e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            double progress = (elapsed % 2000) / 2000.0; // 2 seconds cycle
+            double sinVal = Math.sin(progress * 2.0 * Math.PI);
+            double factor = (sinVal + 1.0) / 2.0; // range 0.0 to 1.0
+            
+            int r = (int) (colorDim.getRed() + factor * (colorBright.getRed() - colorDim.getRed()));
+            int g = (int) (colorDim.getGreen() + factor * (colorBright.getGreen() - colorDim.getGreen()));
+            int b = (int) (colorDim.getBlue() + factor * (colorBright.getBlue() - colorDim.getBlue()));
+            
+            lblTitle.setForeground(new Color(r, g, b));
+        });
+        pulseTimer.start();
 
         // Content
         JPanel content = new JPanel();

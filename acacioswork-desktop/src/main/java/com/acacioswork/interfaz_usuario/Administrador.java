@@ -15,6 +15,8 @@ import java.awt.RenderingHints;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -63,6 +65,7 @@ public class Administrador extends JPanel {
             contentPanel = new JPanel(cardLayout);
             contentPanel.setBackground(BG_DARK);
 
+            contentPanel.add(buildWelcomePanel(), "welcome");
             contentPanel.add(buildInventarioPanel(), "inventario");
             contentPanel.add(buildProveedoresPanel(), "proveedores");
             contentPanel.add(buildClientesPanel(), "clientes");
@@ -71,7 +74,7 @@ public class Administrador extends JPanel {
             contentPanel.add(buildAlertasPanel(), "alertas");
 
             add(contentPanel, BorderLayout.CENTER);
-            cardLayout.show(contentPanel, "inventario");
+            cardLayout.show(contentPanel, "welcome");
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al cargar el Dashboard: " + e.getMessage());
@@ -105,6 +108,7 @@ public class Administrador extends JPanel {
         gbcCenter.gridy = 0;
 
         String[][] sections = {
+                { "🏠 Inicio", "welcome" },
                 { "Inventario", "inventario" },
                 { "Proveedores", "proveedores" },
                 { "Clientes", "clientes" },
@@ -131,13 +135,14 @@ public class Administrador extends JPanel {
             });
             gbcCenter.gridx = btnIdx++;
             centerPanel.add(btn, gbcCenter);
-            if (s[1].equals("inventario")) {
+            if (s[1].equals("welcome")) {
                 btn.putClientProperty("active", true);
             }
         }
         toolbar.add(centerPanel, BorderLayout.CENTER);
 
-        // Right section (User Profile + Logout Button) - Vertically Centered using GridBagLayout
+        // Right section (User Profile + Logout Button) - Vertically Centered using
+        // GridBagLayout
         JPanel rightPanel = new JPanel(new java.awt.GridBagLayout());
         rightPanel.setOpaque(false);
         java.awt.GridBagConstraints gbcRight = new java.awt.GridBagConstraints();
@@ -146,13 +151,14 @@ public class Administrador extends JPanel {
         String userName = "Usuario";
         if (SessionManager.getUsuario() != null) {
             Usuario u = SessionManager.getUsuario();
-            userName = u.getNombre() + (u.getApellido() != null && !u.getApellido().equals("—") ? " " + u.getApellido() : "");
+            userName = u.getNombre()
+                    + (u.getApellido() != null && !u.getApellido().equals("—") ? " " + u.getApellido() : "");
         }
 
         JLabel lblUser = new JLabel("👤 " + userName);
         lblUser.setForeground(new Color(203, 213, 225));
         lblUser.setFont(new Font("Inter", Font.BOLD, 24));
-        
+
         gbcRight.gridx = 0;
         gbcRight.insets = new java.awt.Insets(8, 12, 8, 12);
         rightPanel.add(lblUser, gbcRight);
@@ -177,12 +183,34 @@ public class Administrador extends JPanel {
         btnSalir.setOpaque(false);
         btnSalir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnSalir.addActionListener(e -> MainFrame.navigateTo(new Login()));
-        
+
         gbcRight.gridx = 1;
         gbcRight.insets = new java.awt.Insets(8, 12, 8, 16);
         rightPanel.add(btnSalir, gbcRight);
 
         toolbar.add(rightPanel, BorderLayout.EAST);
+
+        /** Animación de pulsación de verde neón para la marca y el usuario. @author RADJ */
+        final Color colorBright = new Color(57, 255, 20);
+        final Color colorDim = new Color(20, 90, 7);
+        final long startTime = System.currentTimeMillis();
+
+        javax.swing.Timer pulseTimer = new javax.swing.Timer(50, e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            double progress = (elapsed % 2000) / 2000.0; // 2 seconds cycle
+            double sinVal = Math.sin(progress * 2.0 * Math.PI);
+            double factor = (sinVal + 1.0) / 2.0; // range 0.0 to 1.0
+
+            int r = (int) (colorDim.getRed() + factor * (colorBright.getRed() - colorDim.getRed()));
+            int g = (int) (colorDim.getGreen() + factor * (colorBright.getGreen() - colorDim.getGreen()));
+            int b = (int) (colorDim.getBlue() + factor * (colorBright.getBlue() - colorDim.getBlue()));
+
+            Color currentColor = new Color(r, g, b);
+            brand.setForeground(currentColor);
+            lblUser.setForeground(currentColor);
+        });
+        pulseTimer.start();
+
         return toolbar;
     }
 
@@ -199,16 +227,22 @@ public class Administrador extends JPanel {
     private JButton createToolbarBtn(String text, String secName) {
         JButton btn = new JButton(text) {
             @Override
+            public java.awt.Dimension getPreferredSize() {
+                java.awt.Dimension d = super.getPreferredSize();
+                return new java.awt.Dimension(d.width + 24, 38);
+            }
+
+            @Override
             protected void paintComponent(Graphics g) {
                 boolean active = Boolean.TRUE.equals(getClientProperty("active"));
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
+
                 Color c1, c2;
                 if (active) {
-                    // Active style: Indigo gradient
-                    c1 = new Color(99, 102, 241);
-                    c2 = new Color(79, 70, 229);
+                    // Active style: Same orange gradient
+                    c1 = new Color(249, 115, 22);
+                    c2 = new Color(239, 68, 68);
                     setForeground(Color.WHITE);
                 } else if ("alertas".equals(secName)) {
                     // Alertas Stock button
@@ -229,11 +263,18 @@ public class Administrador extends JPanel {
                     c2 = new Color(239, 68, 68);
                     setForeground(Color.WHITE);
                 }
-                
+
                 g2.setPaint(new GradientPaint(0, 0, c1, 0, getHeight(), c2));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+
+                if (active) {
+                    g2.setColor(Color.WHITE);
+                    g2.setStroke(new java.awt.BasicStroke(2));
+                    g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20);
+                }
+
                 g2.dispose();
-                
+
                 super.paintComponent(g);
             }
         };
@@ -260,7 +301,8 @@ public class Administrador extends JPanel {
         stats.add(buildStatCard("Utilidad Neta", "$0", ACCENT));
 
         JTable table = buildStyledTable(
-                new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "P. Compra", "P. Venta", "IVA", "Estado", "Acciones" });
+                new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "P. Compra", "P. Venta", "IVA", "Estado",
+                        "Acciones" });
         hideColumn(table, 0);
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
         table.getColumnModel().getColumn(2).setPreferredWidth(160); // Nombre
@@ -268,15 +310,14 @@ public class Administrador extends JPanel {
         table.getColumnModel().getColumn(4).setPreferredWidth(300); // Stock
         table.getColumnModel().getColumn(5).setPreferredWidth(110); // P. Compra
         table.getColumnModel().getColumn(6).setPreferredWidth(110); // P. Venta
-        table.getColumnModel().getColumn(7).setPreferredWidth(80);  // IVA
+        table.getColumnModel().getColumn(7).setPreferredWidth(80); // IVA
         table.getColumnModel().getColumn(8).setPreferredWidth(100); // Estado
         table.getColumnModel().getColumn(8).setCellRenderer(new EstadoCellRenderer());
         table.getColumnModel().getColumn(4).setCellRenderer(new StockBarCellRenderer());
 
-        setupAccionesColumn(table, 
-            () -> editarProductoInv(table, stats),
-            () -> eliminarGeneric(table, "/productos", "Producto", () -> refreshInventario(table, stats))
-        );
+        setupAccionesColumn(table,
+                () -> editarProductoInv(table, stats),
+                () -> eliminarGeneric(table, "/productos", "Producto", () -> refreshInventario(table, stats)));
 
         JButton bAdd = createActionButton("+ Nuevo Producto", ACCENT);
         bAdd.addActionListener(e -> agregarProductoDash(table, stats));
@@ -303,14 +344,14 @@ public class Administrador extends JPanel {
     private JPanel buildProveedoresPanel() {
         JPanel panel = createContentPanel();
         JTable table = buildStyledTable(
-                new String[] { "ID", "Nombre", "Teléfono", "Email", "Doc/NIT", "Cuenta Bancaria", "Estado", "Acciones" });
+                new String[] { "ID", "Nombre", "Teléfono", "Email", "Doc/NIT", "Cuenta Bancaria", "Estado",
+                        "Acciones" });
         hideColumn(table, 0);
         table.getColumnModel().getColumn(6).setCellRenderer(new EstadoCellRenderer());
 
         setupAccionesColumn(table,
-            () -> editarProveedorDash(table),
-            () -> eliminarGeneric(table, "/proveedores", "Proveedor", () -> refreshProveedores(table))
-        );
+                () -> editarProveedorDash(table),
+                () -> eliminarGeneric(table, "/proveedores", "Proveedor", () -> refreshProveedores(table)));
 
         JButton bAdd = createActionButton("+ Nuevo Proveedor", ACCENT);
         bAdd.addActionListener(e -> agregarProveedorDash(table));
@@ -329,7 +370,7 @@ public class Administrador extends JPanel {
 
     private JPanel buildClientesPanel() {
         JPanel panel = createContentPanel();
-        
+
         statsClientes = new JPanel(new GridLayout(1, 2, 12, 0));
         statsClientes.setOpaque(false);
         statsClientes.setBorder(new EmptyBorder(0, 0, 16, 0));
@@ -337,14 +378,14 @@ public class Administrador extends JPanel {
         statsClientes.add(buildStatCard("Activos", "0", ACCENT));
 
         JTable table = buildStyledTable(
-                new String[] { "ID", "Nombre", "Identificación", "Teléfono", "Email", "Frecuente", "Estado", "Acciones" });
+                new String[] { "ID", "Nombre", "Identificación", "Teléfono", "Email", "Frecuente", "Estado",
+                        "Acciones" });
         hideColumn(table, 0);
         table.getColumnModel().getColumn(6).setCellRenderer(new EstadoCellRenderer());
 
         setupAccionesColumn(table,
-            () -> editarClienteDash(table),
-            () -> eliminarGeneric(table, "/clientes", "Cliente", () -> refreshClientes(table))
-        );
+                () -> editarClienteDash(table),
+                () -> eliminarGeneric(table, "/clientes", "Cliente", () -> refreshClientes(table)));
 
         JButton bAdd = createActionButton("+ Nuevo Cliente", ACCENT);
         bAdd.addActionListener(e -> agregarClienteDash(table));
@@ -374,9 +415,8 @@ public class Administrador extends JPanel {
         table.getColumnModel().getColumn(4).setCellRenderer(new EstadoCellRenderer());
 
         setupAccionesColumn(table,
-            () -> editarUsuarioDash(table),
-            () -> eliminarUsuarioDash(table)
-        );
+                () -> editarUsuarioDash(table),
+                () -> eliminarUsuarioDash(table));
 
         JButton bAdd = createActionButton("+ Nuevo Usuario", ACCENT);
         bAdd.addActionListener(e -> agregarUsuarioDash(table));
@@ -395,24 +435,29 @@ public class Administrador extends JPanel {
 
     private JPanel buildReportesPanel() {
         JPanel panel = createContentPanel();
-        panel.add(buildSectionHeader("Reportes", "Generación y exportación de informes", (JButton) null), BorderLayout.NORTH);
-        
+        panel.add(buildSectionHeader("Reportes", "Generación y exportación de informes", (JButton) null),
+                BorderLayout.NORTH);
+
         JPanel grid = new JPanel(new GridLayout(0, 3, 16, 16));
         grid.setOpaque(false);
-        
+
         String[][] rpts = {
-            { "📦 Inventario General", "Lista completa de productos con stock y precios actuales.", "inventario" },
-            { "⚠️ Productos con Stock Bajo", "Listado de artículos por debajo del stock mínimo definido.", "stock-bajo" },
-            { "👥 Reporte de Clientes", "Base de datos completa de clientes con información de contacto.", "clientes" },
-            { "🏭 Directorio de Proveedores", "Directorio de proveedores registrados con NIT y contacto.", "proveedores" },
-            { "👤 Usuarios del Sistema", "Informe detallado de usuarios, roles y accesos.", "usuarios" },
-            { "📊 Resumen Ejecutivo", "Métricas principales de inventario y estado general de la empresa.", "resumen" }
+                { "📦 Inventario General", "Lista completa de productos con stock y precios actuales.", "inventario" },
+                { "⚠️ Productos con Stock Bajo", "Listado de artículos por debajo del stock mínimo definido.",
+                        "stock-bajo" },
+                { "👥 Reporte de Clientes", "Base de datos completa de clientes con información de contacto.",
+                        "clientes" },
+                { "🏭 Directorio de Proveedores", "Directorio de proveedores registrados con NIT y contacto.",
+                        "proveedores" },
+                { "👤 Usuarios del Sistema", "Informe detallado de usuarios, roles y accesos.", "usuarios" },
+                { "📊 Resumen Ejecutivo", "Métricas principales de inventario y estado general de la empresa.",
+                        "resumen" }
         };
-        
+
         for (String[] r : rpts) {
             grid.add(buildReportCard(r[0], r[1], r[2]));
         }
-        
+
         JScrollPane scroll = new JScrollPane(grid);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.setOpaque(false);
@@ -678,7 +723,9 @@ public class Administrador extends JPanel {
 
             String estadoLabel = "1".equals(str(p, "estado")) ? "Activo" : "Inactivo";
             String ivaLabel = str(p, "iva") != null ? str(p, "iva") + "%" : "0%";
-            String unidadMedida = str(p, "unidadMedida") != null && !str(p, "unidadMedida").equals("—") ? str(p, "unidadMedida") : "Unidad";
+            String unidadMedida = str(p, "unidadMedida") != null && !str(p, "unidadMedida").equals("—")
+                    ? str(p, "unidadMedida")
+                    : "Unidad";
 
             model.addRow(new Object[] {
                     id,
@@ -693,21 +740,21 @@ public class Administrador extends JPanel {
                     ""
             });
         }
-        
+
         final double finalValor = valor;
         final double finalCosto = valorCosto;
         final double finalUtilidad = valor - valorCosto;
         final int finalBajo = bajo;
-        
+
         java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.GERMANY);
         nf.setMaximumFractionDigits(0);
-        
+
         updateStatCard((JPanel) stats.getComponents()[0], String.valueOf(rows.length));
         updateStatCard((JPanel) stats.getComponents()[1], String.valueOf(finalBajo));
         updateStatCard((JPanel) stats.getComponents()[2], "$" + nf.format(finalValor));
         updateStatCard((JPanel) stats.getComponents()[3], "$" + nf.format(finalCosto));
         updateStatCard((JPanel) stats.getComponents()[4], "$" + nf.format(finalUtilidad));
-        
+
         updateAlertasPulsing(bajo);
     }
 
@@ -922,16 +969,16 @@ public class Administrador extends JPanel {
         txtSearch.setCaretColor(TEXT_MAIN);
         txtSearch.setFont(new Font("Inter", Font.PLAIN, 14));
         txtSearch.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(),
-            BorderFactory.createEmptyBorder(8, 14, 8, 14)
-        ));
-        
+                BorderFactory.createEmptyBorder(),
+                BorderFactory.createEmptyBorder(8, 14, 8, 14)));
+
         txtSearch.putClientProperty("JTextField.placeholderText", "🔍 Buscar en la tabla...");
-        
-        javax.swing.table.TableRowSorter<javax.swing.table.TableModel> sorter = 
-            new javax.swing.table.TableRowSorter<>(table.getModel());
-        
-        // Ensure actions column (the last one) is not sorted/filtered, or just let all columns be searched
+
+        javax.swing.table.TableRowSorter<javax.swing.table.TableModel> sorter = new javax.swing.table.TableRowSorter<>(
+                table.getModel());
+
+        // Ensure actions column (the last one) is not sorted/filtered, or just let all
+        // columns be searched
         // Since we are matching regex, it's fine to search all columns.
         table.setRowSorter(sorter);
 
@@ -941,19 +988,30 @@ public class Administrador extends JPanel {
                 if (text.trim().length() == 0) {
                     sorter.setRowFilter(null);
                 } else {
-                    sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(text)));
+                    sorter.setRowFilter(
+                            javax.swing.RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(text)));
                 }
             }
-            @Override public void insertUpdate(javax.swing.event.DocumentEvent e) { search(); }
-            @Override public void removeUpdate(javax.swing.event.DocumentEvent e) { search(); }
-            @Override public void changedUpdate(javax.swing.event.DocumentEvent e) { search(); }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                search();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                search();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                search();
+            }
         });
 
         p.add(txtSearch, BorderLayout.CENTER);
         return p;
     }
-
-
 
     private void loadTable(JTable t, String ep,
             java.util.function.Function<java.util.Map<String, Object>, Object[]> m) {
@@ -986,18 +1044,17 @@ public class Administrador extends JPanel {
         JPanel c = new JPanel(new BorderLayout(0, 12));
         c.setBackground(BG_CARD);
         c.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(255, 255, 255, 13), 1),
-            new EmptyBorder(18, 18, 18, 18)
-        ));
-        
+                BorderFactory.createLineBorder(new Color(255, 255, 255, 13), 1),
+                new EmptyBorder(18, 18, 18, 18)));
+
         JLabel lt = new JLabel(titulo);
         lt.setForeground(TEXT_MAIN);
         lt.setFont(new Font("Inter", Font.BOLD, 22));
-        
+
         JLabel ld = new JLabel("<html><body style='width: 260px;'>" + descripcion + "</body></html>");
         ld.setForeground(TEXT_MUTED);
         ld.setFont(new Font("Inter", Font.PLAIN, 16));
-        
+
         JButton b = new JButton("Generar PDF") {
             @Override
             protected void paintComponent(Graphics g) {
@@ -1017,12 +1074,12 @@ public class Administrador extends JPanel {
         b.setOpaque(false);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         b.addActionListener(e -> generarReporte(tipo));
-        
+
         JPanel textPanel = new JPanel(new BorderLayout(0, 6));
         textPanel.setOpaque(false);
         textPanel.add(lt, BorderLayout.NORTH);
         textPanel.add(ld, BorderLayout.CENTER);
-        
+
         c.add(textPanel, BorderLayout.CENTER);
         c.add(b, BorderLayout.SOUTH);
         return c;
@@ -1491,7 +1548,6 @@ public class Administrador extends JPanel {
         return v != null ? Long.valueOf(v.toString()) : 0L;
     }
 
-
     private void agregarProveedorDash(JTable table) {
         new ProveedorDialog((java.awt.Frame) SwingUtilities.getWindowAncestor(this), null,
                 () -> refreshProveedores(table)).setVisible(true);
@@ -1622,6 +1678,7 @@ public class Administrador extends JPanel {
         public final int actual;
         public final int minimo;
         public final int optimo;
+
         public StockData(int actual, int minimo, int optimo) {
             this.actual = actual;
             this.minimo = minimo;
@@ -1743,9 +1800,14 @@ public class Administrador extends JPanel {
         }
 
         @Override
-        public int getIconWidth() { return size; }
+        public int getIconWidth() {
+            return size;
+        }
+
         @Override
-        public int getIconHeight() { return size; }
+        public int getIconHeight() {
+            return size;
+        }
     }
 
     public static class EstadoCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
@@ -1759,7 +1821,7 @@ public class Administrador extends JPanel {
             setFont(new Font("Inter", Font.BOLD, 12));
             setIconTextGap(8);
             setBorder(BorderFactory.createEmptyBorder(0, 12, 0, 12));
-            
+
             String valStr = value != null ? value.toString() : "";
             if ("Activo".equalsIgnoreCase(valStr)) {
                 setIcon(iconActivo);
@@ -1849,5 +1911,55 @@ public class Administrador extends JPanel {
                 }
             });
         }
+    }
+
+    private JPanel buildWelcomePanel() {
+        JPanel panel = createContentPanel();
+        
+        JPanel card = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(BG_CARD);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+                g2.setColor(new Color(255, 255, 255, 12));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
+                g2.dispose();
+            }
+        };
+        card.setOpaque(false);
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBorder(new EmptyBorder(48, 48, 48, 48));
+        card.setMaximumSize(new java.awt.Dimension(600, 300));
+        card.setPreferredSize(new java.awt.Dimension(600, 300));
+        
+        JLabel title = new JLabel("Bienvenido a AcaciosWork", javax.swing.SwingConstants.CENTER);
+        title.setFont(new Font("Inter", Font.BOLD, 24));
+        title.setForeground(PRIMARY);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel desc = new JLabel("Por favor, seleccione una opción del menú superior para comenzar a gestionar el sistema.", javax.swing.SwingConstants.CENTER);
+        desc.setFont(new Font("Inter", Font.PLAIN, 14));
+        desc.setForeground(TEXT_MUTED);
+        desc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel icon = new JLabel("💼", javax.swing.SwingConstants.CENTER);
+        icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 64));
+        icon.setForeground(PRIMARY);
+        icon.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        card.add(title);
+        card.add(Box.createRigidArea(new java.awt.Dimension(0, 16)));
+        card.add(desc);
+        card.add(Box.createRigidArea(new java.awt.Dimension(0, 32)));
+        card.add(icon);
+        
+        JPanel wrapper = new JPanel(new java.awt.GridBagLayout());
+        wrapper.setOpaque(false);
+        wrapper.add(card);
+        
+        panel.add(wrapper, BorderLayout.CENTER);
+        return panel;
     }
 }

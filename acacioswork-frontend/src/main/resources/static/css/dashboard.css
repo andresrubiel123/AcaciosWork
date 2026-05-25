@@ -1,6 +1,6 @@
 /* Estilos específicos para el dashboard de administrador. @author RADJ */
 
-/* Nav toolbar superior estilo desktop */
+/* Nav toolbar superior estilo desktop. @author RADJ */
 .top-toolbar {
     display: flex;
     align-items: center;
@@ -152,7 +152,7 @@
     animation: neon-pulse 2s infinite ease-in-out;
 }
 
-/* Layout */
+/* Estilos de distribución y layout. @author RADJ */
 .app-body {
     display: flex;
     flex-direction: column;
@@ -168,7 +168,7 @@
     margin: 0;
 }
 
-/* Hover animation on rows */
+/* Animación al pasar el cursor sobre filas de tabla. @author RADJ */
 tbody tr {
     transition: all 0.2s ease;
 }
@@ -178,7 +178,7 @@ tbody tr:hover {
     transform: translateX(4px);
 }
 
-/* Section titles */
+/* Encabezados de secciones con títulos y descripción. @author RADJ */
 .section-header {
     display: flex;
     justify-content: flex-start;
@@ -196,7 +196,7 @@ tbody tr:hover {
     font-size: 0.9rem;
 }
 
-/* Stats */
+/* Cuadrícula de tarjetas de estadísticas. @author RADJ */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -251,7 +251,7 @@ tbody tr:hover {
     color: white;
 }
 
-/* Tables */
+/* Estilos generales para tablas. @author RADJ */
 .card {
     background: var(--bg-card);
     border-radius: 0.75rem;
@@ -308,13 +308,13 @@ td {
     color: #f59e0b;
 }
 
-/* Estilos específicos para la tabla de productos para controlar el layout de columnas */
+/* Estilos específicos para la tabla de productos para controlar el layout de columnas. @author RADJ */
 .products-table {
     table-layout: fixed;
     width: 100%;
 }
 
-/* Columna de Stock Dinámica y Flexible (ocupa el espacio restante) */
+/* Columna de Stock Dinámica y Flexible (ocupa el espacio restante). @author RADJ */
 .col-stock {
     width: auto;
     min-width: 280px;
@@ -325,7 +325,7 @@ td {
     min-width: 90px;
 }
 
-/* Ancho fijo para la columna de nombre */
+/* Ancho fijo para la columna de nombre. @author RADJ */
 .col-nombre {
     width: 160px;
     min-width: 130px;
@@ -361,7 +361,7 @@ td {
     min-width: 130px;
 }
 
-/* Contenedor principal de la barra de stock */
+/* Contenedor principal de la barra de stock. @author RADJ */
 .stock-bar-wrapper {
     display: flex;
     flex-direction: column;
@@ -369,7 +369,7 @@ td {
     padding: 0.2rem 0;
 }
 
-/* Barra de progreso de fondo con efecto glassmorphism */
+/* Barra de progreso de fondo con efecto glassmorphism. @author RADJ */
 .stock-bar-container {
     width: 100%;
     height: 8px;
@@ -380,14 +380,14 @@ td {
     position: relative;
 }
 
-/* Relleno dinámico de la barra */
+/* Relleno dinámico de la barra. @author RADJ */
 .stock-bar-fill {
     height: 100%;
     border-radius: 9999px;
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Estados de color premium */
+/* Estados de color premium. @author RADJ */
 .stock-bar-fill.red {
     background: linear-gradient(90deg, #f87171, #ef4444);
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
@@ -403,7 +403,7 @@ td {
     box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
-/* Información textual del stock */
+/* Información textual del stock. @author RADJ */
 .stock-bar-info {
     display: flex;
     justify-content: space-between;
@@ -432,7 +432,7 @@ td {
     color: #34d399;
 }
 
-/* Buttons inside content */
+/* Botones personalizados dentro del contenido. @author RADJ */
 .btn {
     padding: 0.6rem 1.2rem;
     border-radius: 0.5rem;
@@ -490,7 +490,7 @@ td {
     color: #ef4444;
 }
 
-/* Modal */
+/* Ventana modal flotante. @author RADJ */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -540,7 +540,7 @@ select:focus {
     border-color: var(--primary-color);
 }
 
-/* Alerts section */
+/* Sección de alertas de inventario crítico. @author RADJ */
 .alert-item {
     display: flex;
     align-items: center;
@@ -564,7 +564,7 @@ select:focus {
     background: #ef4444;
 }
 
-/* Report cards */
+/* Tarjetas de reportes generados. @author RADJ */
 .report-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -595,7 +595,7 @@ select:focus {
     font-size: 0.82rem;
 }
 
-/* Fade animation */
+/* Animación de desvanecimiento suave para secciones. @author RADJ */
 @keyframes fadeIn {
     from {
         opacity: 0;

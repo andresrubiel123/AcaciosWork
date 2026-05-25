@@ -23,9 +23,7 @@ import com.acacioswork.model.Producto;
 import com.acacioswork.model.Venta;
 import com.acacioswork.util.ApiClient;
 
-/**
- * Interfaz de Punto de Venta desacoplada que consume la API REST. @author RADJ
- */
+/**Interfaz Punto de Venta API REST. @author RADJ */
 public class PuntoDeVenta extends JPanel {
 
     private Venta ventaActual;

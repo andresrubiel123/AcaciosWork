@@ -61,8 +61,8 @@ graph TD
     DE --> DE_UI["Interfaz (Swing JPanels)"]
     DE --> DE_MOD["Modelos Locales"]
 
-    FE --> FE_HTML["Vistas (HTML/CSS)"]
-    FE --> FE_JS["Lógica API (JS Fetch)"]
+    FE --> FE_TMPL["Plantillas (Thymeleaf HTML)"]
+    FE --> FE_STAT["Recursos Estáticos (JS/CSS)"]
 ```
 
 ### 3. Flujo de Datos (Data Flow)
@@ -179,9 +179,9 @@ graph LR
 *   **Modelos Locales**: `src/main/java/com/acacioswork/model/`
 
 ### 3. Cliente Web (`acacioswork-frontend/`)
-*   **Vistas (HTML)**: Raíz del módulo (`login.html`, `dashboard.html`).
-*   **Estilos (CSS)**: `css/styles.css`
-*   **Lógica API (JS)**: `js/api.js`
+*   **Plantillas (HTML/Thymeleaf)**: `src/main/resources/templates/` (`login.html`, `administrador-dashboard.html`, `auxiliar-dashboard.html` y fragmentos).
+*   **Estilos (CSS)**: `src/main/resources/static/css/` (`styles.css`, `dashboard.css`).
+*   **Lógica JS**: `src/main/resources/static/js/` (`api.js`, `dashboard.js`).
 
 ### 4. Cliente Móvil (`acacioswork-android/`)
 *   **UI/ViewModels/Network**: `app/src/main/java/com/acacioswork/`
@@ -191,13 +191,21 @@ graph LR
 
 ---
 ## ESTÁNDAR DE DOCUMENTACIÓN Y COMENTARIOS
-Todo bloque de código generado debe incluir: una descripción funcional breve y la firma del autor:
 
-* Lenguaje Tecnología Formato Requerido
-* **Java - Spring - JS / Kotlin** `/** Descripción breve. @author RADJ */`
-* **CSS / MySQL** `/* Descripción breve. @author RADJ */`
-* **HTML** `<!-- Descripción breve. @author RADJ -->`
-* **JavaScript** `// Descripción breve. @author RADJ`
+Todo bloque de código generado debe incluir una descripción en español
+funcional breve y la firma del autor, adaptándose a la sintaxis 
+de cada tecnología según los siguientes tres formatos obligatorios: 
+
+Para Java, Kotlin y JavaScript (JS):
+"/** Descripción breve. @author RADJ */"
+
+Para CSS y MySQL:
+"/* Descripción breve. @author RADJ */"
+
+Para HTML:
+"<!-- Descripción breve. @author RADJ -->"
+
+
 
 ---
 
@@ -236,6 +244,11 @@ Todo bloque de código generado debe incluir: una descripción funcional breve y
     * Adición de los campos `stockOptimo` y `unidadMedida` en el modelo de `Producto` en todos los componentes del sistema.
     * Actualización de los formularios y diálogos de creación/edición de productos (`ProductoDialog` en Desktop, `ProductoFormDialog` en Android y modal HTML en Frontend) para soportar los nuevos campos de stock y unidad de medida.
     * Migración y habilitación de la interfaz móvil (Kotlin/Compose) a estado operativo de desarrollo para las vistas de Login, Dashboard, Clientes, Inventario, Proveedores y estructura de Reportes.
+*   **2026-05-23**: **Restauración y Migración del Frontend a Thymeleaf**:
+    * Eliminación de archivos estáticos del frontend de la raíz (`login.html`, `dashboard.html`, `css/styles.css`, `js/api.js`).
+    * Migración e integración completa en recursos de Spring Boot bajo el módulo `acacioswork-frontend`.
+    * Implementación de vistas de inicio de sesión y dashboards separados por roles (`administrador-dashboard.html`, `auxiliar-dashboard.html`) estructurados mediante fragmentos Thymeleaf reutilizables.
+    * Integración con `ViewController.java` en el backend para el ruteo de vistas y desacoplamiento de la caché de plantillas para desarrollo ágil.
 
 ---
 
@@ -247,5 +260,6 @@ Si necesitas trabajar en un módulo específico, estos son los archivos clave:
 | **Añadir un campo a la BD** | `database/02_tables.sql` -> `backend/.../model/` -> `desktop/.../model/` |
 | **Modificar la Seguridad** | `backend/.../config/SecurityConfig.java` |
 | **Cambiar el diseño Desktop** | `desktop/.../interfaz_usuario/Administrador.java` |
-| **Arreglar peticiones API Web** | `frontend/js/api.js` |
+| **Arreglar peticiones API Web** | `acacioswork-frontend/src/main/resources/static/js/api.js` |
+| **Modificar vistas/plantillas Web** | `acacioswork-frontend/src/main/resources/templates/` |
 | **Añadir lógica de negocio** | `backend/.../service/` (Siempre usar servicios, no lógica en controladores) |

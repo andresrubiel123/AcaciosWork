@@ -14,6 +14,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.acacioswork.ui.theme.*
 
@@ -28,6 +30,18 @@ fun LoginScreen(
     var clave by remember { mutableStateOf("") }
 
     val loginState by viewModel.loginState.collectAsState()
+
+    /** Transición infinita para el color verde neón del título de login. @author RADJ */
+    val infiniteTransition = rememberInfiniteTransition(label = "neonPulse")
+    val animatedColor by infiniteTransition.animateColor(
+        initialValue = NeonGreenDim,
+        targetValue = NeonGreen,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "neonColor"
+    )
 
     LaunchedEffect(loginState) {
         if (loginState is LoginState.Success) {
@@ -65,7 +79,7 @@ fun LoginScreen(
                         text = "AcaciosWork",
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Primary,
+                        color = animatedColor,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))

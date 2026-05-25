@@ -1,17 +1,24 @@
 /** Dashboard Administrador AcaciosWork - CRUD completo y Reportes PDF. @author RADJ */
 
-// Función de filtrado en tiempo real para las tablas
+/** Función de filtrado en tiempo real para las tablas. @author RADJ */
 function filterTable(inputElement, tbodyId) {
+    /** Obtener y limpiar el texto de búsqueda. @author RADJ */
     const filter = inputElement.value.toLowerCase().trim();
+    /** Obtener la referencia del cuerpo de la tabla. @author RADJ */
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
+    /** Obtener todas las filas de la tabla. @author RADJ */
     const rows = tbody.getElementsByTagName('tr');
+    /** Recorrer cada fila de la tabla para aplicar el filtro. @author RADJ */
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
+        /** Ignorar filas que representen mensajes de carga o error. @author RADJ */
         if (row.cells.length === 1 && row.cells[0].colSpan > 1) {
-            continue; // Saltar filas de cargando/error
+            continue;
         }
+        /** Obtener el texto contenido en la fila actual. @author RADJ */
         const text = row.textContent || row.innerText;
+        /** Mostrar u ocultar la fila según coincida con el filtro. @author RADJ */
         if (text.toLowerCase().includes(filter)) {
             row.style.display = '';
         } else {
@@ -20,7 +27,7 @@ function filterTable(inputElement, tbodyId) {
     }
 }
 
-// Variables globales para el manejo de estado
+/** Variables globales para el manejo de estado. @author RADJ */
 let editId = null;
 let currentModalType = '';
 let cacheCategorias = [];
@@ -28,42 +35,57 @@ let cacheProveedores = [];
 let cacheTiposDocumento = [];
 let cacheRoles = [];
 
-// ─── AUTH CHECK ───
+/** Verificación de autenticación al cargar la página. @author RADJ */
 document.addEventListener('DOMContentLoaded', async () => {
+    /** Validar existencia de sesión activa; redirigir si no existe. @author RADJ */
     if (!localStorage.getItem('jwt_token')) { window.location.href = 'login'; return; }
+    /** Mostrar el nombre del usuario autenticado en la interfaz. @author RADJ */
     document.getElementById('userInfo').textContent = '👤 ' + (localStorage.getItem('user_name') || 'Admin');
 
-    // Cargar listas de referencia iniciales
+    /** Cargar listas de referencia iniciales en memoria. @author RADJ */
     await loadReferences();
 });
 
-function logout() { localStorage.clear(); window.location.href = 'login'; }
+/** Cerrar sesión del usuario actual y redirigir al login. @author RADJ */
+function logout() { 
+    /** Limpiar todos los datos guardados en almacenamiento local. @author RADJ */
+    localStorage.clear(); 
+    /** Redireccionar a la pantalla de inicio de sesión. @author RADJ */
+    window.location.href = 'login'; 
+}
 
-// Carga las referencias de la base de datos necesarias para poblar selects
+/** Carga las referencias de la base de datos necesarias para poblar selects. @author RADJ */
 async function loadReferences() {
     try {
+        /** Obtener categorías, proveedores, documentos y roles desde la API. @author RADJ */
         cacheCategorias = await apiRequest('/categorias') || [];
         cacheProveedores = await apiRequest('/proveedores') || [];
         cacheTiposDocumento = await apiRequest('/tipos-documentos') || [];
         cacheRoles = await apiRequest('/roles') || [];
     } catch (e) {
+        /** Registrar en consola cualquier fallo de carga de datos referenciales. @author RADJ */
         console.error("Error al cargar referencias de base de datos:", e);
     }
 }
 
-// ─── NAVEGACIÓN ───
+/** Control de navegación entre secciones del dashboard. @author RADJ */
 function showSection(name, btn) {
-    // Limpiar inputs de búsqueda al cambiar de sección
+    /** Limpiar inputs de búsqueda al cambiar de sección. @author RADJ */
     const searchInputs = ['inv-search-input', 'prov-search-input', 'cli-search-input', 'usr-search-input', 'alertas-search-input'];
     searchInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 
+    /** Ocultar todas las secciones del panel. @author RADJ */
     document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+    /** Remover la clase activa de todos los botones de la barra. @author RADJ */
     document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+    /** Mostrar la sección seleccionada y activar su botón correspondiente. @author RADJ */
     document.getElementById('sec-' + name).style.display = 'block';
     if (btn) btn.classList.add('active');
+    
+    /** Invocar carga de datos específica según la sección de destino. @author RADJ */
     if (name === 'inventario') loadInventario();
     if (name === 'proveedores') loadProveedores();
     if (name === 'clientes') loadClientes();
@@ -71,23 +93,28 @@ function showSection(name, btn) {
     if (name === 'alertas') loadAlertas();
 }
 
-// ─── INVENTARIO ───
+/** Carga y visualización de productos en inventario. @author RADJ */
 async function loadInventario() {
+    /** Limpiar input de búsqueda de inventario. @author RADJ */
     const searchInput = document.getElementById('inv-search-input');
     if (searchInput) searchInput.value = '';
+    /** Obtener el cuerpo de la tabla de inventario. @author RADJ */
     const tbody = document.getElementById('inv-tbody');
     try {
+        /** Obtener listado de productos desde la API. @author RADJ */
         const products = await apiRequest('/productos') || [];
+        /** Calcular indicadores financieros y métricas del inventario. @author RADJ */
         const total = products.length;
         const bajo = products.filter(p => p.stockActual <= (p.stockMinimo || 5)).length;
         const valor = products.reduce((a, p) => a + (p.stockActual * p.precioVenta), 0);
         const valorCosto = products.reduce((a, p) => a + (p.stockActual * (p.precioCompra || 0)), 0);
         const utilidad = valor - valorCosto;
 
+        /** Actualizar indicadores numéricos en el dashboard. @author RADJ */
         document.getElementById('inv-total').textContent = total;
         document.getElementById('inv-bajo').textContent = bajo;
 
-        // Dynamically toggle pulsing style on stock alert button
+        /** Habilitar dinámicamente animación de alerta en stock bajo. @author RADJ */
         const btnAlertas = document.getElementById('btn-alertas');
         if (btnAlertas) {
             if (bajo > 0) {
@@ -97,9 +124,11 @@ async function loadInventario() {
             }
         }
 
+        /** Formatear y mostrar valores monetarios de costo e inventario. @author RADJ */
         document.getElementById('inv-valor').textContent = '$' + valor.toLocaleString();
         document.getElementById('inv-costo').textContent = '$' + valorCosto.toLocaleString();
 
+        /** Actualizar color e indicador de utilidad estimada. @author RADJ */
         const utilidadEl = document.getElementById('inv-utilidad');
         utilidadEl.textContent = '$' + utilidad.toLocaleString();
         if (utilidad >= 0) {
@@ -108,11 +137,13 @@ async function loadInventario() {
             utilidadEl.style.color = '#ef4444';
         }
 
+        /** Generar el HTML de las filas de la tabla de productos. @author RADJ */
         tbody.innerHTML = products.length ? products.map(p => {
             const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
             const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
             const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
 
+            /** Calcular el porcentaje de stock respecto al nivel óptimo. @author RADJ */
             const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
             let colorClass = 'green';
             if (pct <= 30) {
@@ -122,6 +153,7 @@ async function loadInventario() {
             }
             const barWidth = Math.min(pct, 100);
 
+            /** Retornar la estructura HTML de la fila del producto. @author RADJ */
             return `
             <tr>
                 <td class="col-codigo" style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
@@ -149,32 +181,44 @@ async function loadInventario() {
             </tr>`;
         }).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
     } catch (e) {
+        /** Renderizar mensaje de error en la tabla si falla la petición. @author RADJ */
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 
+/** Abrir el modal de edición para un producto específico. @author RADJ */
 function editProducto(id) {
+    /** Invocar modal con el contexto de inventario y el ID seleccionado. @author RADJ */
     openModal('inventario', id);
 }
 
+/** Solicitar confirmación y eliminar un producto de la base de datos. @author RADJ */
 async function deleteProducto(id) {
+    /** Mostrar confirmación nativa al usuario antes de proceder. @author RADJ */
     if (!confirm('¿Eliminar este producto?')) return;
     try {
+        /** Realizar petición DELETE al endpoint de productos. @author RADJ */
         await apiRequest(`/productos/${id}`, 'DELETE');
+        /** Recargar la tabla de inventario tras la eliminación. @author RADJ */
         loadInventario();
         alert('Producto eliminado con éxito.');
     } catch (e) {
+        /** Informar error al usuario si falla la eliminación. @author RADJ */
         alert('Error al eliminar producto: ' + e.message);
     }
 }
 
-// ─── PROVEEDORES ───
+/** Carga y visualización de proveedores. @author RADJ */
 async function loadProveedores() {
+    /** Limpiar campo de filtrado para proveedores. @author RADJ */
     const searchInput = document.getElementById('prov-search-input');
     if (searchInput) searchInput.value = '';
+    /** Obtener la referencia de la tabla de proveedores. @author RADJ */
     const tbody = document.getElementById('prov-tbody');
     try {
+        /** Solicitar listado de proveedores a la API. @author RADJ */
         const data = await apiRequest('/proveedores') || [];
+        /** Generar las filas de la tabla para cada proveedor. @author RADJ */
         tbody.innerHTML = data.length ? data.map(p => `
             <tr>
                 <td style="font-weight:500">${p.nombre}</td>
@@ -187,30 +231,41 @@ async function loadProveedores() {
                 </td>
             </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin proveedores registrados.</td></tr>';
     } catch (e) {
+        /** Mostrar fila de error si falla la consulta de proveedores. @author RADJ */
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 
+/** Solicitar confirmación y eliminar un proveedor del sistema. @author RADJ */
 async function deleteProveedor(id) {
+    /** Solicitar confirmación al usuario antes de la baja. @author RADJ */
     if (!confirm('¿Eliminar este proveedor?')) return;
     try {
+        /** Enviar petición HTTP DELETE al endpoint de proveedores. @author RADJ */
         await apiRequest(`/proveedores/${id}`, 'DELETE');
+        /** Recargar la sección de proveedores. @author RADJ */
         loadProveedores();
         alert('Proveedor eliminado con éxito.');
     } catch (e) {
+        /** Alertar al usuario sobre el fallo en la eliminación. @author RADJ */
         alert('Error al eliminar proveedor: ' + e.message);
     }
 }
 
-// ─── CLIENTES ───
+/** Carga y visualización de clientes del sistema. @author RADJ */
 async function loadClientes() {
+    /** Limpiar campo de búsqueda de clientes. @author RADJ */
     const searchInput = document.getElementById('cli-search-input');
     if (searchInput) searchInput.value = '';
+    /** Obtener cuerpo de la tabla de clientes. @author RADJ */
     const tbody = document.getElementById('cli-tbody');
     try {
+        /** Obtener la lista de clientes registrados en el sistema. @author RADJ */
         const data = await apiRequest('/clientes') || [];
+        /** Actualizar contadores de total y activos en cabecera. @author RADJ */
         document.getElementById('cli-total').textContent = data.length;
         document.getElementById('cli-activos').textContent = data.filter(c => c.activo === 1).length;
+        /** Dibujar filas de clientes en la tabla. @author RADJ */
         tbody.innerHTML = data.length ? data.map(c => `
             <tr>
                 <td style="font-weight:500">${c.nombre}</td>
@@ -223,28 +278,38 @@ async function loadClientes() {
                 </td>
             </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin clientes registrados.</td></tr>';
     } catch (e) {
+        /** Mostrar mensaje de error si no se pueden cargar los clientes. @author RADJ */
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 
+/** Solicitar confirmación y eliminar un cliente del sistema. @author RADJ */
 async function deleteCliente(id) {
+    /** Confirmación nativa ante el usuario. @author RADJ */
     if (!confirm('¿Eliminar este cliente?')) return;
     try {
+        /** Realizar petición DELETE al endpoint de clientes. @author RADJ */
         await apiRequest(`/clientes/${id}`, 'DELETE');
+        /** Actualizar visualización de la lista de clientes. @author RADJ */
         loadClientes();
         alert('Cliente eliminado con éxito.');
     } catch (e) {
+        /** Alertar al usuario ante fallos de eliminación. @author RADJ */
         alert('Error al eliminar cliente: ' + e.message);
     }
 }
 
-// ─── USUARIOS ───
+/** Carga y visualización de usuarios. @author RADJ */
 async function loadUsuarios() {
+    /** Limpiar campo de búsqueda de usuarios. @author RADJ */
     const searchInput = document.getElementById('usr-search-input');
     if (searchInput) searchInput.value = '';
+    /** Obtener la referencia de la tabla de usuarios. @author RADJ */
     const tbody = document.getElementById('usr-tbody');
     try {
+        /** Realizar solicitud GET a usuarios. @author RADJ */
         const data = await apiRequest('/usuarios') || [];
+        /** Generar el HTML de las filas de la tabla de usuarios. @author RADJ */
         tbody.innerHTML = data.length ? data.map(u => `
             <tr>
                 <td style="font-weight:500">${u.nombre} ${u.apellido || ''}</td>
@@ -257,33 +322,44 @@ async function loadUsuarios() {
                 </td>
             </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin usuarios registrados.</td></tr>';
     } catch (e) {
+        /** Mostrar error en la tabla si falla la petición. @author RADJ */
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 
+/** Solicitar confirmación y eliminar un usuario por su documento. @author RADJ */
 async function deleteUsuario(numeroDocumento) {
+    /** Solicitar confirmación para dar de baja al usuario. @author RADJ */
     if (!confirm('¿Eliminar este usuario del sistema?')) return;
     try {
+        /** Realizar petición HTTP DELETE por documento de usuario. @author RADJ */
         await apiRequest(`/usuarios/${numeroDocumento}`, 'DELETE');
+        /** Recargar la sección de listado de usuarios. @author RADJ */
         loadUsuarios();
         alert('Usuario eliminado con éxito.');
     } catch (e) {
+        /** Notificar error en caso de que la eliminación falle. @author RADJ */
         alert('Error al eliminar usuario: ' + e.message);
     }
 }
 
-// ─── ALERTAS STOCK ───
+/** Carga y visualización de alertas críticas de stock. @author RADJ */
 async function loadAlertas() {
+    /** Limpiar campo de búsqueda en alertas. @author RADJ */
     const searchInput = document.getElementById('alertas-search-input');
     if (searchInput) searchInput.value = '';
+    /** Obtener el contenedor principal de alertas de stock. @author RADJ */
     const container = document.getElementById('alertas-container');
     try {
+        /** Cargar referencias de base de datos si no existen en memoria. @author RADJ */
         if (!cacheProveedores.length) {
             await loadReferences();
         }
+        /** Obtener catálogo de productos para analizar stock. @author RADJ */
         const products = await apiRequest('/productos') || [];
         const bajos = products.filter(p => p.stockActual <= (p.stockMinimo || 5));
 
+        /** Manejar interfaz en caso de que no existan alertas de stock bajo. @author RADJ */
         if (bajos.length === 0) {
             container.innerHTML = '<p style="color:#10b981; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">✓ Todos los productos tienen stock suficiente.</p>';
             const btnAlertas = document.getElementById('btn-alertas');
@@ -293,11 +369,13 @@ async function loadAlertas() {
             return;
         }
 
+        /** Activar efecto visual e inputs de búsqueda si hay alertas. @author RADJ */
         const btnAlertas = document.getElementById('btn-alertas');
         if (btnAlertas) btnAlertas.classList.add('pulsing');
         const searchCont = document.getElementById('alertas-search-container');
         if (searchCont) searchCont.style.display = 'block';
 
+        /** Construir estructura de tabla para el reporte de stock bajo. @author RADJ */
         let tableHtml = `
             <div class="card">
                 <table>
@@ -313,6 +391,7 @@ async function loadAlertas() {
                     <tbody id="alertas-tbody">
         `;
 
+        /** Poblar la tabla de alertas y asociar proveedores. @author RADJ */
         bajos.forEach(p => {
             const prov = cacheProveedores.find(pr => pr.id === p.idProveedor);
             const provNombre = prov ? prov.nombre : 'Sin asignar';
@@ -341,23 +420,28 @@ async function loadAlertas() {
 
         container.innerHTML = tableHtml;
     } catch (e) {
+        /** Presentar error en el contenedor de alertas. @author RADJ */
         container.innerHTML = `<p style="color:#ef4444">Error al cargar alertas: ${e.message}</p>`;
         const searchCont = document.getElementById('alertas-search-container');
         if (searchCont) searchCont.style.display = 'none';
     }
 }
 
+/** Cargar y mostrar modal con detalles completos de un proveedor. @author RADJ */
 async function verProveedor(id) {
     try {
+        /** Asegurar carga de proveedores referenciales. @author RADJ */
         if (!cacheProveedores.length) {
             await loadReferences();
         }
+        /** Obtener proveedor desde la caché local o API. @author RADJ */
         const prov = cacheProveedores.find(p => p.id === id) || await apiRequest(`/proveedores/${id}`);
         if (!prov) {
             alert("No se encontró la información del proveedor.");
             return;
         }
 
+        /** Poblar la vista de detalles y mostrar el modal del proveedor. @author RADJ */
         const content = document.getElementById('prov-details-content');
         content.innerHTML = `
             <div><strong>Nombre / Razón Social:</strong> <span style="color:white; margin-left: 0.5rem;">${prov.nombre}</span></div>
@@ -370,16 +454,18 @@ async function verProveedor(id) {
         `;
         document.getElementById('proveedorModal').style.display = 'flex';
     } catch (e) {
+        /** Mostrar fallo al intentar cargar detalles del proveedor. @author RADJ */
         console.error(e);
         alert("Error al cargar detalles del proveedor: " + e.message);
     }
 }
 
+/** Cerrar el modal de detalles del proveedor. @author RADJ */
 function closeProveedorModal() {
     document.getElementById('proveedorModal').style.display = 'none';
 }
 
-// ─── GENERACIÓN DE REPORTES PDF (IMPRESIÓN ELEGANTE) ───
+/** Generación de reportes PDF optimizados para impresión física. @author RADJ */
 async function generarReporte(tipo) {
     try {
         let titulo = '';
@@ -388,6 +474,7 @@ async function generarReporte(tipo) {
         let resumenHtml = '';
         const nowStr = new Date().toLocaleString('es-CO');
 
+        /** Generar reporte específico según la sección seleccionada. @author RADJ */
         if (tipo === 'inventario') {
             titulo = 'Inventario General de Productos';
             headers = ['Código de Barras', 'Nombre del Producto', 'Stock', 'P. Compra', 'P. Venta', 'Estado'];
@@ -397,6 +484,7 @@ async function generarReporte(tipo) {
             let totalValor = 0;
             let totalCosto = 0;
 
+            /** Procesar cada producto del inventario para totales y filas. @author RADJ */
             rows = data.map(p => {
                 totalStock += p.stockActual || 0;
                 totalValor += (p.stockActual || 0) * (p.precioVenta || 0);
@@ -411,6 +499,7 @@ async function generarReporte(tipo) {
                 ];
             });
 
+            /** Crear caja de resumen financiero de inventario. @author RADJ */
             resumenHtml = `
         <div class="summary-box">
             <p><strong>Total Productos:</strong> ${data.length}</p>
@@ -426,6 +515,7 @@ async function generarReporte(tipo) {
             const data = await apiRequest('/productos') || [];
             const stockBajoData = data.filter(p => p.stockActual <= (p.stockMinimo || 5));
 
+            /** Generar filas para productos con niveles de stock críticos. @author RADJ */
             rows = stockBajoData.map(p => {
                 const prov = cacheProveedores.find(pr => pr.id === p.idProveedor);
                 return [
@@ -438,6 +528,7 @@ async function generarReporte(tipo) {
                 ];
             });
 
+            /** Crear caja de resumen de stock crítico. @author RADJ */
             resumenHtml = `
         <div class="summary-box">
             <p><strong>Total en Stock Crítico:</strong> ${stockBajoData.length} productos</p>
@@ -448,6 +539,7 @@ async function generarReporte(tipo) {
             headers = ['Nombre Completo', 'Identificación', 'Teléfono', 'Email', 'Dirección', 'Frecuente', 'Estado'];
             const data = await apiRequest('/clientes') || [];
 
+            /** Construir filas con información detallada de cada cliente. @author RADJ */
             rows = data.map(c => {
                 return [
                     c.nombre,
@@ -460,6 +552,7 @@ async function generarReporte(tipo) {
                 ];
             });
 
+            /** Crear caja resumen del reporte de clientes. @author RADJ */
             resumenHtml = `
         <div class="summary-box">
             <p><strong>Total Clientes Registrados:</strong> ${data.length}</p>
@@ -470,6 +563,7 @@ async function generarReporte(tipo) {
             headers = ['Nombre / Empresa', 'NIT / Identificación', 'Teléfono', 'Email', 'Dirección', 'Cuenta Bancaria', 'Estado'];
             const data = await apiRequest('/proveedores') || [];
 
+            /** Construir filas con información de cada proveedor. @author RADJ */
             rows = data.map(p => {
                 return [
                     p.nombre,
@@ -482,6 +576,7 @@ async function generarReporte(tipo) {
                 ];
             });
 
+            /** Crear caja resumen del reporte de proveedores. @author RADJ */
             resumenHtml = `
         <div class="summary-box">
             <p><strong>Total Proveedores Registrados:</strong> ${data.length}</p>
@@ -492,6 +587,7 @@ async function generarReporte(tipo) {
             headers = ['Nombre Completo', 'Identificación', 'Usuario', 'Email', 'Rol', 'Estado'];
             const data = await apiRequest('/usuarios') || [];
 
+            /** Crear filas de usuarios y sus roles asignados. @author RADJ */
             rows = data.map(u => {
                 return [
                     `${u.nombre} ${u.apellido || ''}`,
@@ -503,6 +599,7 @@ async function generarReporte(tipo) {
                 ];
             });
 
+            /** Crear caja de resumen de usuarios. @author RADJ */
             resumenHtml = `
         <div class="summary-box">
             <p><strong>Total Usuarios Registrados:</strong> ${data.length}</p>
@@ -512,6 +609,7 @@ async function generarReporte(tipo) {
             titulo = 'Resumen Ejecutivo de la Empresa';
             headers = ['Indicador', 'Valor / Métrica', 'Estado / Detalle'];
 
+            /** Obtener información de todos los módulos para el resumen de alto nivel. @author RADJ */
             const productos = await apiRequest('/productos') || [];
             const clientes = await apiRequest('/clientes') || [];
             const proveedores = await apiRequest('/proveedores') || [];
@@ -530,6 +628,7 @@ async function generarReporte(tipo) {
                 if (qty <= min) stockBajo++;
             });
 
+            /** Mapear métricas clave en la tabla resumen. @author RADJ */
             rows = [
                 ['Total de Productos en Catálogo', `${totalProd}`, 'Productos registrados'],
                 ['Unidades de Stock Físico', `${totalStock} uds`, 'Total unidades en inventario'],
@@ -540,6 +639,7 @@ async function generarReporte(tipo) {
                 ['Usuarios en el Sistema', `${usuarios.length}`, 'Cuentas con acceso administrativo']
             ];
 
+            /** Crear caja de resumen ejecutivo con marca temporal. @author RADJ */
             resumenHtml = `
                 <div class="summary-box">
                     <p><strong>Fecha del Resumen:</strong> ${nowStr}</p>
@@ -548,13 +648,14 @@ async function generarReporte(tipo) {
             `;
         }
 
-        // Crear nueva ventana de impresión
+        /** Crear y poblar ventana de impresión para el reporte. @author RADJ */
         const win = window.open('', '_blank');
         if (!win) {
             alert("Por favor habilite los popups en su navegador para generar reportes.");
             return;
         }
 
+        /** Código HTML dinámico de la página de impresión. @author RADJ */
         const html = `
     <!DOCTYPE html>
     <html lang="es">
@@ -677,17 +778,20 @@ async function generarReporte(tipo) {
     </html>
 `;
 
+        /** Escribir el documento HTML en la nueva ventana. @author RADJ */
         win.document.open();
         win.document.write(html);
         win.document.close();
     } catch (e) {
+        /** Notificar fallos en la generación del PDF. @author RADJ */
         console.error("Error al generar reporte:", e);
         alert("Error al generar el reporte: " + e.message);
     }
 }
 
-// ─── FORMULARIO DINÁMICO DE MODAL ───
+/** Obtiene los campos del formulario dinámico según el módulo. @author RADJ */
 function getModalFields(type) {
+    /** Retornar campos HTML para el formulario de Inventario / Producto. @author RADJ */
     if (type === 'inventario') {
         const catOpts = cacheCategorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         const provOpts = cacheProveedores.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
@@ -750,6 +854,7 @@ function getModalFields(type) {
 `;
     }
 
+    /** Retornar campos HTML para el formulario de Proveedor. @author RADJ */
     if (type === 'proveedor') {
         const tdOpts = cacheTiposDocumento.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
         return `
@@ -789,6 +894,7 @@ function getModalFields(type) {
 `;
     }
 
+    /** Retornar campos HTML para el formulario de Cliente. @author RADJ */
     if (type === 'cliente') {
         const tdOpts = cacheTiposDocumento.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
         return `
@@ -831,6 +937,7 @@ function getModalFields(type) {
 `;
     }
 
+    /** Retornar campos HTML para el formulario de Usuario. @author RADJ */
     if (type === 'usuario') {
         const tdOpts = cacheTiposDocumento.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
         const rolOpts = cacheRoles.map(r => `<option value="${r.id}">${r.nombre}</option>`).join('');
@@ -891,16 +998,17 @@ function getModalFields(type) {
     return '';
 }
 
-// Abre el modal de creación o edición con los datos correspondientes
+/** Abre el modal de creación o edición con los datos correspondientes. @author RADJ */
 async function openModal(type, id = null) {
     currentModalType = type;
     editId = id;
 
-    // Asegurar que las referencias estén cargadas antes de dibujar el modal
+    /** Asegurar que las referencias estén cargadas antes de dibujar el modal. @author RADJ */
     if (!cacheCategorias.length || !cacheProveedores.length) {
         await loadReferences();
     }
 
+    /** Definir el título dinámico del modal según acción. @author RADJ */
     document.getElementById('modal-title').textContent = (editId ? 'Editar ' : 'Nuevo ') + {
         inventario: 'Producto',
         proveedor: 'Proveedor',
@@ -908,13 +1016,15 @@ async function openModal(type, id = null) {
         usuario: 'Usuario'
     }[type];
 
+    /** Inyectar campos HTML dinámicos en el modal. @author RADJ */
     const fieldsContainer = document.getElementById('modal-fields');
     fieldsContainer.innerHTML = getModalFields(type);
 
-    // Si estamos editando, cargar los datos actuales
+    /** Si estamos editando, cargar los datos actuales desde la API. @author RADJ */
     if (editId) {
         try {
             let data = null;
+            /** Consultar datos al endpoint adecuado según tipo de formulario. @author RADJ */
             if (type === 'inventario') {
                 data = await apiRequest(`/productos/${editId}`);
             } else if (type === 'proveedor') {
@@ -926,10 +1036,12 @@ async function openModal(type, id = null) {
                 data = usuarios.find(u => u.numeroDocumento === editId);
             }
 
+            /** Rellenar formulario si se obtuvieron los datos. @author RADJ */
             if (data) {
                 populateForm(type, data);
             }
         } catch (e) {
+            /** Controlar errores en carga para edición y cerrar modal. @author RADJ */
             console.error("Error al cargar datos en modal para edición:", e);
             alert("No se pudieron obtener los datos para editar.");
             closeModal();
@@ -937,15 +1049,18 @@ async function openModal(type, id = null) {
         }
     }
 
+    /** Mostrar modal aplicando estilo flex. @author RADJ */
     document.getElementById('mainModal').style.display = 'flex';
 }
 
+/** Cerrar el modal principal de formularios. @author RADJ */
 function closeModal() {
     document.getElementById('mainModal').style.display = 'none';
 }
 
-// Rellena los campos del modal al editar un elemento existente
+/** Rellena los campos del modal al editar un elemento existente. @author RADJ */
 function populateForm(type, data) {
+    /** Poblar campos del formulario de Inventario. @author RADJ */
     if (type === 'inventario') {
         document.getElementById('prod-codigoBarras').value = data.codigoBarras || '';
         document.getElementById('prod-nombre').value = data.nombre || '';
@@ -959,7 +1074,9 @@ function populateForm(type, data) {
         document.getElementById('prod-estado').value = data.estado !== undefined ? data.estado : 1;
         document.getElementById('prod-iva').value = data.iva !== undefined ? data.iva : 19;
         document.getElementById('prod-unidadMedida').value = data.unidadMedida || '';
-    } else if (type === 'proveedor') {
+    } 
+    /** Poblar campos del formulario de Proveedor. @author RADJ */
+    else if (type === 'proveedor') {
         document.getElementById('prov-nombre').value = data.nombre || '';
         document.getElementById('prov-idTipoDocumento').value = data.idTipoDocumento || '';
         document.getElementById('prov-numeroDocumento').value = data.numeroDocumento || '';
@@ -968,7 +1085,9 @@ function populateForm(type, data) {
         document.getElementById('prov-direccion').value = data.direccion || '';
         document.getElementById('prov-cuentaBancaria').value = data.cuentaBancaria || '';
         document.getElementById('prov-activo').value = data.activo !== undefined ? data.activo : 1;
-    } else if (type === 'cliente') {
+    } 
+    /** Poblar campos del formulario de Cliente. @author RADJ */
+    else if (type === 'cliente') {
         document.getElementById('cli-nombre').value = data.nombre || '';
         document.getElementById('cli-idTipoDocumento').value = data.idTipoDocumento || '';
         document.getElementById('cli-numeroDocumento').value = data.numeroDocumento || '';
@@ -977,14 +1096,16 @@ function populateForm(type, data) {
         document.getElementById('cli-direccion').value = data.direccion || '';
         document.getElementById('cli-frecuente').value = data.frecuente ? 'true' : 'false';
         document.getElementById('cli-activo').value = data.activo !== undefined ? data.activo : 1;
-    } else if (type === 'usuario') {
+    } 
+    /** Poblar campos del formulario de Usuario. @author RADJ */
+    else if (type === 'usuario') {
         document.getElementById('usr-nombre').value = data.nombre || '';
         document.getElementById('usr-apellido').value = data.apellido || '';
         document.getElementById('usr-idTipoDocumento').value = data.idTipoDocumento || '';
 
         const docInput = document.getElementById('usr-numeroDocumento');
         docInput.value = data.numeroDocumento || '';
-        docInput.disabled = true; // Bloqueado en edición para mantener consistencia
+        docInput.disabled = true; /** Bloqueado en edición para mantener consistencia. @author RADJ */
 
         document.getElementById('usr-telefono').value = data.telefono || '';
         document.getElementById('usr-email').value = data.email || '';
@@ -999,8 +1120,9 @@ function populateForm(type, data) {
     }
 }
 
-// Construye un objeto JSON a partir de los datos ingresados en el formulario dinámico
+/** Construye un objeto JSON a partir de los datos ingresados en el formulario dinámico. @author RADJ */
 function getFormData(type) {
+    /** Retornar objeto de datos para un Producto. @author RADJ */
     if (type === 'inventario') {
         return {
             codigoBarras: document.getElementById('prod-codigoBarras').value,
@@ -1018,6 +1140,7 @@ function getFormData(type) {
         };
     }
 
+    /** Retornar objeto de datos para un Proveedor. @author RADJ */
     if (type === 'proveedor') {
         return {
             nombre: document.getElementById('prov-nombre').value,
@@ -1031,6 +1154,7 @@ function getFormData(type) {
         };
     }
 
+    /** Retornar objeto de datos para un Cliente. @author RADJ */
     if (type === 'cliente') {
         return {
             nombre: document.getElementById('cli-nombre').value,
@@ -1044,6 +1168,7 @@ function getFormData(type) {
         };
     }
 
+    /** Retornar objeto de datos para un Usuario. @author RADJ */
     if (type === 'usuario') {
         const u = {
             nombre: document.getElementById('usr-nombre').value,
@@ -1066,7 +1191,7 @@ function getFormData(type) {
     return null;
 }
 
-// Controlador de evento submit para registrar nuevas inserciones o actualizaciones (POST / PUT)
+/** Controlador de evento submit para registrar nuevas inserciones o actualizaciones (POST / PUT). @author RADJ */
 document.getElementById('modal-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const type = currentModalType;
@@ -1078,17 +1203,20 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
         let endpoint = '';
         let method = editId ? 'PUT' : 'POST';
 
+        /** Definir endpoint en función del tipo de módulo. @author RADJ */
         if (type === 'inventario') endpoint = editId ? `/productos/${editId}` : '/productos';
         else if (type === 'proveedor') endpoint = editId ? `/proveedores/${editId}` : '/proveedores';
         else if (type === 'cliente') endpoint = editId ? `/clientes/${editId}` : '/clientes';
         else if (type === 'usuario') endpoint = editId ? `/usuarios/${editId}` : '/usuarios';
 
+        /** Enviar petición fetch para guardar cambios. @author RADJ */
         await apiRequest(endpoint, method, data);
         closeModal();
 
-        // Recargar vistas correspondientes y re-mapear referencias de proveedor/categoria por si variaron
+        /** Recargar vistas correspondientes y re-mapear referencias de proveedor/categoria por si variaron. @author RADJ */
         await loadReferences();
 
+        /** Recargar la sección activa específica. @author RADJ */
         if (type === 'inventario') loadInventario();
         else if (type === 'proveedor') loadProveedores();
         else if (type === 'cliente') loadClientes();
@@ -1096,6 +1224,7 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
 
         alert((editId ? 'Registro actualizado' : 'Registro creado') + ' exitosamente.');
     } catch (e) {
+        /** Capturar y reportar fallos en el proceso de guardado. @author RADJ */
         console.error("Error al persistir registro:", e);
         alert("Error al guardar: " + e.message);
     }

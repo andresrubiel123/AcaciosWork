@@ -13,6 +13,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
 import com.acacioswork.network.SessionManager
 import com.acacioswork.ui.clientes.ClientesTab
 import com.acacioswork.ui.inventario.InventarioTab
@@ -22,6 +24,7 @@ import com.acacioswork.ui.theme.*
 import kotlinx.coroutines.launch
 
 sealed class Pantalla(val ruta: String, val titulo: String, val icon: ImageVector) {
+    object Welcome : Pantalla("welcome", "Inicio", Icons.Default.Home)
     object Inventario : Pantalla("inventario", "Inventario", Icons.Default.ShoppingCart)
     object Reportes : Pantalla("reportes", "Reportes", Icons.Default.List)
     object Clientes : Pantalla("clientes", "Clientes", Icons.Default.Person)
@@ -35,9 +38,21 @@ fun DashboardScreen(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var pantallaActual by remember { mutableStateOf<Pantalla>(Pantalla.Inventario) }
+    var pantallaActual by remember { mutableStateOf<Pantalla>(Pantalla.Welcome) }
     
     val userName = SessionManager.userFullName ?: "Manuel Diaz"
+
+    /** Transición infinita para el color verde neón del título y usuario. @author RADJ */
+    val infiniteTransition = rememberInfiniteTransition(label = "neonPulse")
+    val animatedColor by infiniteTransition.animateColor(
+        initialValue = NeonGreenDim,
+        targetValue = NeonGreen,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "neonColor"
+    )
 
     Scaffold(
         topBar = {
@@ -48,12 +63,12 @@ fun DashboardScreen(
                             text = "AcaciosWork",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Primary
+                            color = animatedColor
                         )
                         Text(
                             text = userName,
                             fontSize = 12.sp,
-                            color = TextMuted
+                            color = animatedColor
                         )
                     }
                 },
@@ -85,6 +100,7 @@ fun DashboardScreen(
                 tonalElevation = 8.dp
             ) {
                 val pantallas = listOf(
+                    Pantalla.Welcome,
                     Pantalla.Inventario,
                     Pantalla.Reportes,
                     Pantalla.Clientes,
@@ -116,6 +132,43 @@ fun DashboardScreen(
                 .background(BgDark)
         ) {
             when (pantallaActual) {
+                Pantalla.Welcome -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Card(
+                            modifier = Modifier.padding(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = BgCard)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Bienvenido a AcaciosWork",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Primary
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Por favor, seleccione una opción en la barra inferior para comenzar.",
+                                    fontSize = 14.sp,
+                                    color = TextMuted,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Icon(
+                                    imageVector = Icons.Default.Home,
+                                    contentDescription = null,
+                                    tint = Primary,
+                                    modifier = Modifier.size(64.dp)
+                                )
+                            }
+                        }
+                    }
+                }
                 Pantalla.Inventario -> InventarioTab()
                 Pantalla.Reportes -> ReportesTab()
                 Pantalla.Clientes -> ClientesTab()

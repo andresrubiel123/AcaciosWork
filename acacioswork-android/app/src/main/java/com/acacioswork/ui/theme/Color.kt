@@ -4,12 +4,15 @@ import androidx.compose.ui.graphics.Color
 
 val BgDark = Color(0xFF0F172A)
 val BgCard = Color(0xFF1E293B)
-val Primary = Color(0xFF6366F1)
+val Primary = Color(0xFFF97316)
 val AccentGreen = Color(0xFF10B981)
 val AlertRed = Color(0xFFEF4444)
 val AccentOrange = Color(0xFFF59E0B)
 val TextMuted = Color(0xFF94A3B8)
 val TextLight = Color(0xFFF8FAFC)
+
+val NeonGreen = Color(0xFF39FF14)
+val NeonGreenDim = Color(0xFF1E820A)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
