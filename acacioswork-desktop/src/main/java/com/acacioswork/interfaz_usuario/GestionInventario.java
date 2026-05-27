@@ -128,55 +128,48 @@ public class GestionInventario extends JPanel {
         // Ajustar anchos de columnas (incluye nueva columna IVA)
         tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
         tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
-        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(150); // Nombre
+        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(300); // Nombre
         tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(80); // Unidad
-        tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(250); // Stock (elástico)
+        tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(100); // Stock
         tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(110); // Precio Compra
         tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(110); // Precio Venta
         tablaProductos.getColumnModel().getColumn(7).setPreferredWidth(80); // IVA
         tablaProductos.getColumnModel().getColumn(8).setPreferredWidth(80); // Estado
         tablaProductos.getColumnModel().getColumn(9).setPreferredWidth(140); // Acciones
 
-        // Renderer para la columna Stock: barra de progreso y porcentaje
+        // Renderer para la columna Stock: número coloreado según cantidad. @author RADJ
         tablaProductos.getColumnModel().getColumn(4).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             @Override
             public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                     boolean hasFocus, int row, int column) {
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.setOpaque(!isSelected);
-                panel.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
-
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                label.setFont(new Font("Inter", Font.BOLD, 12));
                 try {
-                    String text = value != null ? value.toString() : "0 uds";
-                    int qty = Integer.parseInt(text.replaceAll("[^0-9]", ""));
-                    // Usamos stock óptimo por defecto de 200 si no está disponible en modelo
+                    int qty = 0;
+                    if (value instanceof Number) {
+                        qty = ((Number) value).intValue();
+                    } else if (value != null) {
+                        qty = Integer.parseInt(value.toString().replaceAll("[^0-9]", ""));
+                    }
                     int stockOptimo = 200;
-                    // calculamos porcentaje
                     int pct = Math.min(100, (int) Math.round((qty * 100.0) / stockOptimo));
 
-                    // barra simple
-                    javax.swing.JProgressBar bar = new javax.swing.JProgressBar(0, 100);
-                    bar.setValue(pct);
-                    bar.setStringPainted(false);
-                    bar.setBorderPainted(false);
-                    bar.setPreferredSize(new java.awt.Dimension(120, 12));
-                    if (pct <= 30) {
-                        bar.setForeground(new Color(239, 68, 68));
-                    } else if (pct <= 69) {
-                        bar.setForeground(new Color(249, 115, 22));
+                    if (isSelected) {
+                        // Mantiene colores de selección de la JTable
                     } else {
-                        bar.setForeground(new Color(16, 185, 129));
+                        if (pct <= 30) {
+                            label.setForeground(new Color(248, 113, 113));
+                        } else if (pct <= 69) {
+                            label.setForeground(new Color(251, 146, 60));
+                        } else {
+                            label.setForeground(new Color(52, 211, 153));
+                        }
                     }
-
-                    JLabel info = new JLabel(qty + " / " + stockOptimo + " uds   " + pct + "%");
-                    info.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
-                    info.setFont(new Font("Dialog", Font.BOLD, 12));
-                    panel.add(info, BorderLayout.NORTH);
-                    panel.add(bar, BorderLayout.SOUTH);
                 } catch (Exception e) {
-                    panel.add(new JLabel(value != null ? value.toString() : "0 uds"));
+                    label.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
                 }
-                return panel;
+                return label;
             }
         });
 

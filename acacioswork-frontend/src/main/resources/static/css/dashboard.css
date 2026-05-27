@@ -336,10 +336,18 @@ td {
     width: 100%;
 }
 
-/* Columna de Stock Dinámica y Flexible (ocupa el espacio restante). @author RADJ */
-.col-stock {
+/* Columna de Stock en la sección de inventario principal. @author RADJ */
+#sec-inventario .col-stock {
+    width: 110px;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Columna de Stock en la sección de inicio (Resumen de Inventario). @author RADJ */
+#sec-welcome .col-stock {
     width: auto;
     min-width: 280px;
+    text-align: left;
 }
 
 .col-codigo {
@@ -347,10 +355,10 @@ td {
     min-width: 90px;
 }
 
-/* Ancho fijo para la columna de nombre. @author RADJ */
+/* Ancho para la columna de nombre igual al de la columna unidad. @author RADJ */
 .col-nombre {
-    width: 160px;
-    min-width: 130px;
+    width: 100px;
+    min-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -451,6 +459,21 @@ td {
 }
 
 .stock-bar-pct.green {
+    color: #34d399;
+}
+
+/* Cantidad de stock en texto simple de color según estado. @author RADJ */
+.stock-qty {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+.stock-qty.red {
+    color: #f87171;
+}
+.stock-qty.orange {
+    color: #fb923c;
+}
+.stock-qty.green {
     color: #34d399;
 }
 

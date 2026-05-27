@@ -32,7 +32,6 @@ public class Login extends JPanel {
 
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
-    private final Color PRIMARY_COLOR = new Color(99, 102, 241); // Indigo
     private final Color ACCENT_COLOR = new Color(16, 185, 129); // Emerald
 
     public Login() {

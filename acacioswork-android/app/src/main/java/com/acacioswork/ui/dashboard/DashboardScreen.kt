@@ -2,6 +2,10 @@ package com.acacioswork.ui.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -35,6 +39,7 @@ sealed class Pantalla(val ruta: String, val titulo: String, val icon: ImageVecto
     object Reportes : Pantalla("reportes", "Reportes", Icons.Default.List)
     object Clientes : Pantalla("clientes", "Clientes", Icons.Default.Person)
     object Proveedores : Pantalla("proveedores", "Proveedores", Icons.Default.Build)
+    object Configuracion : Pantalla("configuracion", "Configuración", Icons.Default.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +54,9 @@ fun DashboardScreen(
     val inventarioViewModel: InventarioViewModel = viewModel()
 
     LaunchedEffect(pantallaActual) {
+        if (com.acacioswork.util.ConfigManager.globalConfig == null) {
+            com.acacioswork.util.ConfigManager.loadConfiguracion()
+        }
         if (pantallaActual == Pantalla.Welcome) {
             inventarioViewModel.cargarProductos()
         }
@@ -118,7 +126,8 @@ fun DashboardScreen(
                     Pantalla.Vender,
                     Pantalla.Reportes,
                     Pantalla.Clientes,
-                    Pantalla.Proveedores
+                    Pantalla.Proveedores,
+                    Pantalla.Configuracion
                 )
 
                 pantallas.forEach { pantalla ->
@@ -204,54 +213,36 @@ fun DashboardScreen(
                     val totalProductos by inventarioViewModel.totalProductos.collectAsState()
                     val stockBajoCount by inventarioViewModel.stockBajoCount.collectAsState()
                     val valorTotal by inventarioViewModel.valorTotalInventario.collectAsState()
-                    val formatCurrency = remember { NumberFormat.getCurrencyInstance(Locale("es", "CO")) }
+                    val productos by inventarioViewModel.productos.collectAsState()
+                    var searchQuery by remember { mutableStateOf("") }
 
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp, vertical = 16.dp),
-                            colors = CardDefaults.cardColors(containerColor = BgCard)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(24.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "Bienvenido a AcaciosWork",
-                                    fontSize = 22.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Primary
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Por favor, seleccione una opción en el menú lateral para comenzar.",
-                                    fontSize = 14.sp,
-                                    color = TextMuted,
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Icon(
-                                    imageVector = Icons.Default.Home,
-                                    contentDescription = null,
-                                    tint = Primary,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                            }
-                        }
+                        /** Encabezado de la Sección de Inicio. @author RADJ */
+                        Text(
+                            text = "Resumen de Inventario",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = TextLight
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Vista rápida del estado de existencias",
+                            fontSize = 12.sp,
+                            color = TextMuted
+                        )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
 
                         // Tarjetas de Estadísticas (Fila responsiva)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             com.acacioswork.ui.inventario.EstadisticaCard(
                                 title = "Total Prod.",
@@ -269,11 +260,146 @@ fun DashboardScreen(
                             )
                             com.acacioswork.ui.inventario.EstadisticaCard(
                                 title = "Valor Total",
-                                value = formatCurrency.format(valorTotal),
+                                value = com.acacioswork.util.ConfigManager.formatCurrency(valorTotal),
                                 icon = Icons.Default.Info,
                                 iconColor = AccentGreen,
                                 modifier = Modifier.weight(1.2f)
                             )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        /** Buscador de la tabla de inicio. @author RADJ */
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            placeholder = { Text("Buscar producto...", color = TextMuted) },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = TextMuted) },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Primary,
+                                unfocusedBorderColor = BgCard,
+                                containerColor = BgCard,
+                                focusedTextColor = TextLight,
+                                unfocusedTextColor = TextLight
+                            ),
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        /** Tabla simplificada de productos. @author RADJ */
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = BgCard),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                // Encabezado de la tabla
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("Código", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                                    Text("Nombre", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1.8f))
+                                    Text("Unidad", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                                    Text("Stock", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Bold, modifier = Modifier.weight(2f))
+                                    Text("Estado", fontSize = 11.sp, color = TextMuted, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                                }
+                                HorizontalDivider(color = BgDark, thickness = 1.dp)
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                val filteredProducts = productos.filter {
+                                    it.nombre.contains(searchQuery, ignoreCase = true) ||
+                                            (it.codigoBarras?.contains(searchQuery) ?: false)
+                                }
+
+                                if (filteredProducts.isEmpty()) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(text = "No se encontraron productos.", color = TextMuted)
+                                    }
+                                } else {
+                                    LazyColumn(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        items(filteredProducts) { p ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 6.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = p.codigoBarras ?: "N/A",
+                                                    fontSize = 12.sp,
+                                                    color = TextLight,
+                                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                Text(
+                                                    text = p.nombre,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = TextLight,
+                                                    modifier = Modifier.weight(1.8f)
+                                                )
+                                                Text(
+                                                    text = p.unidadMedida ?: "Unidad",
+                                                    fontSize = 12.sp,
+                                                    color = TextLight,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                
+                                                // Barra de stock en Compose
+                                                Column(modifier = Modifier.weight(2f).padding(end = 8.dp)) {
+                                                    val opt = if (p.stockOptimo > 0) p.stockOptimo else 200
+                                                    val pct = Math.round((p.stockActual.toDouble() / opt) * 100).toInt()
+                                                    val color = if (pct <= 30) AlertRed else if (pct <= 69) AccentOrange else AccentGreen
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.SpaceBetween
+                                                    ) {
+                                                        Text("${p.stockActual}/${opt}", fontSize = 10.sp, color = TextLight)
+                                                        Text("${pct}%", fontSize = 10.sp, color = color, fontWeight = FontWeight.Bold)
+                                                    }
+                                                    Spacer(modifier = Modifier.height(2.dp))
+                                                    LinearProgressIndicator(
+                                                        progress = Math.min(pct / 100f, 1f),
+                                                        color = color,
+                                                        trackColor = BgDark,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(6.dp)
+                                                            .clip(RoundedCornerShape(3.dp))
+                                                    )
+                                                }
+
+                                                // Estado
+                                                Box(
+                                                    modifier = Modifier.weight(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    val activo = p.estado == 1
+                                                    Text(
+                                                        text = if (activo) "Activo" else "Inactivo",
+                                                        color = if (activo) AccentGreen else AlertRed,
+                                                        fontSize = 11.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -282,6 +408,7 @@ fun DashboardScreen(
                 Pantalla.Reportes -> ReportesTab()
                 Pantalla.Clientes -> ClientesTab()
                 Pantalla.Proveedores -> ProveedoresTab()
+                Pantalla.Configuracion -> com.acacioswork.ui.configuracion.ConfiguracionScreen()
             }
         }
     }

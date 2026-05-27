@@ -73,4 +73,14 @@ interface ApiService {
     // Ventas
     @POST("ventas")
     suspend fun createVenta(@Body venta: Venta): ApiResponse<Venta>
+
+    @GET("ventas")
+    suspend fun getVentas(): ApiResponse<List<Venta>>
+
+    // Configuración
+    @GET("configuracion")
+    suspend fun getConfiguracion(): ApiResponse<Configuracion>
+
+    @PUT("configuracion")
+    suspend fun updateConfiguracion(@Body config: Configuracion): ApiResponse<Configuracion>
 }

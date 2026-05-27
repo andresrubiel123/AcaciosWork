@@ -49,10 +49,6 @@ fun VentasTab(
     var selectedCliente by remember { mutableStateOf<Cliente?>(null) }
     var showClientDialog by remember { mutableStateOf(false) }
 
-    val formatCurrency = NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
-        maximumFractionDigits = 0
-    }
-
     LaunchedEffect(successMessage) {
         successMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
@@ -155,7 +151,7 @@ fun VentasTab(
                                                 )
                                             }
                                             Text(
-                                                text = formatCurrency.format(producto.precioVenta),
+                                                text = com.acacioswork.util.ConfigManager.formatCurrency(producto.precioVenta),
                                                 color = AccentGreen,
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -239,7 +235,6 @@ fun VentasTab(
                     items(cart) { item ->
                         CartItemRow(
                             item = item,
-                            formatCurrency = formatCurrency,
                             onQuantityChange = { qty -> viewModel.updateQuantity(item.producto.id!!, qty) },
                             onRemove = { viewModel.removeFromCart(item.producto.id!!) }
                         )
@@ -262,7 +257,7 @@ fun VentasTab(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Subtotal:", color = TextMuted)
-                        Text(formatCurrency.format(subtotal), color = TextLight, fontWeight = FontWeight.Bold)
+                        Text(com.acacioswork.util.ConfigManager.formatCurrency(subtotal), color = TextLight, fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -271,7 +266,7 @@ fun VentasTab(
                     ) {
                         Text("Total:", color = TextLight, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Text(
-                            text = formatCurrency.format(subtotal),
+                            text = com.acacioswork.util.ConfigManager.formatCurrency(subtotal),
                             color = AccentGreen,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -329,7 +324,6 @@ fun VentasTab(
 @Composable
 fun CartItemRow(
     item: CartItem,
-    formatCurrency: NumberFormat,
     onQuantityChange: (Int) -> Unit,
     onRemove: () -> Unit
 ) {
@@ -355,7 +349,7 @@ fun CartItemRow(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "P. Unit: ${formatCurrency.format(item.producto.precioVenta)}",
+                    text = "P. Unit: ${com.acacioswork.util.ConfigManager.formatCurrency(item.producto.precioVenta)}",
                     fontSize = 12.sp,
                     color = TextMuted
                 )
@@ -390,7 +384,7 @@ fun CartItemRow(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = formatCurrency.format(item.cantidad * item.producto.precioVenta),
+                    text = com.acacioswork.util.ConfigManager.formatCurrency(item.cantidad * item.producto.precioVenta),
                     color = AccentGreen,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp

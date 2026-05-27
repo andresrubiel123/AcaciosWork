@@ -26,15 +26,18 @@
         <div class="content-area">
             <!-- ─── BIENVENIDA (Vacío) ─── -->
             <div id="sec-welcome" class="section" style="display: block; padding: 2rem;">
-                <div class="card"
-                    style="max-width: 600px; margin: 0 auto 2rem auto; background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); padding: 3rem; text-align: center;">
-                    <h2 style="color: rgb(207, 90, 1); margin-bottom: 1rem; font-size: 2rem;">Bienvenido a
-                        AcaciosWork</h2>
-                    <p style="color: var(--text-muted); font-size: 1rem;">Por favor, seleccione una
-                        opción del menú lateral para comenzar a gestionar el sistema.</p>
+                <!-- Encabezado de la ventana de inicio. @author RADJ -->
+                <div class="section-header">
+                    <div>
+                        <h1>Resumen de Inventario</h1>
+                        <p>Vista rápida del estado de existencias</p>
+                    </div>
                 </div>
                 <!-- Tarjetas de estadísticas -->
                 <div th:replace="~{fragments/stats-cards :: stats-cards}"></div>
+
+                <!-- Tabla simplificada de productos en inicio. @author RADJ -->
+                <div th:replace="~{fragments/home-products-table :: home-products-table}"></div>
             </div>
 
             <!-- ─── INVENTARIO ─── -->
@@ -68,6 +71,9 @@
 
             <!-- ─── ALERTAS STOCK ─── -->
             <div th:replace="~{fragments/alertas :: alertas}"></div>
+
+            <!-- ─── CONFIGURACION ─── -->
+            <div th:replace="~{fragments/configuracion :: configuracion}"></div>
         </div>
     </div>
 
@@ -76,6 +82,7 @@
 
     <!-- Scripts de API e interactividad -->
     <script th:src="@{/js/api.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:src="@{/js/dashboard.js}"></script>
 </body>
 

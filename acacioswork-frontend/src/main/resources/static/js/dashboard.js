@@ -34,10 +34,13 @@ let cacheCategorias = [];
 let cacheProveedores = [];
 let cacheTiposDocumento = [];
 let cacheRoles = [];
+let salesChartInstance = null;
 
 let cart = [];
 let allProducts = [];
 let allClientes = [];
+let allProductos = [];
+let globalConfig = null;
 let searchTimeout = null;
 
 /** Verificación de autenticación al cargar la página. @author RADJ */
@@ -46,6 +49,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!localStorage.getItem('jwt_token')) { window.location.href = 'login'; return; }
     /** Mostrar el nombre del usuario autenticado en la interfaz. @author RADJ */
     document.getElementById('userInfo').textContent = '👤 ' + (localStorage.getItem('user_name') || 'Admin');
+
+    /** Cargar Configuración global antes de renderizar nada más. @author RADJ */
+    await loadConfiguracion();
 
     /** Cargar listas de referencia iniciales en memoria. @author RADJ */
     await loadReferences();
@@ -78,7 +84,7 @@ async function loadReferences() {
 /** Control de navegación entre secciones del dashboard. @author RADJ */
 function showSection(name, btn) {
     /** Limpiar inputs de búsqueda al cambiar de sección. @author RADJ */
-    const searchInputs = ['inv-search-input', 'prov-search-input', 'cli-search-input', 'usr-search-input', 'alertas-search-input', 'product-search'];
+    const searchInputs = ['inv-search-input', 'home-inv-search-input', 'prov-search-input', 'cli-search-input', 'usr-search-input', 'alertas-search-input', 'product-search'];
     searchInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -101,6 +107,7 @@ function showSection(name, btn) {
     if (name === 'usuarios') loadUsuarios();
     if (name === 'alertas') loadAlertas();
     if (name === 'vender') loadVenderSection();
+    if (name === 'reportes') loadReportesChart();
 }
 
 /** Actualiza la interfaz gráfica de las tarjetas de estadísticas con los productos proporcionados. @author RADJ */
@@ -110,7 +117,7 @@ function updateStatsUI(products) {
     const bajo = products.filter(p => p.stockActual <= (p.stockMinimo || 5)).length;
     const valor = products.reduce((a, p) => a + (p.stockActual * p.precioVenta), 0);
     const valorCosto = products.reduce((a, p) => a + (p.stockActual * (p.precioCompra || 0)), 0);
-    const utilidad = valor - valorCosto;
+    const ganancia = valor - valorCosto;
 
     /** Actualizar indicadores numéricos en el dashboard. @author RADJ */
     const totalEl = document.getElementById('inv-total');
@@ -136,14 +143,14 @@ function updateStatsUI(products) {
     const costoEl = document.getElementById('inv-costo');
     if (costoEl) costoEl.textContent = '$' + valorCosto.toLocaleString();
 
-    /** Actualizar color e indicador de utilidad estimada. @author RADJ */
-    const utilidadEl = document.getElementById('inv-utilidad');
-    if (utilidadEl) {
-        utilidadEl.textContent = '$' + utilidad.toLocaleString();
-        if (utilidad >= 0) {
-            utilidadEl.style.color = '#10b981';
+    /** Actualizar color e indicador de ganancia estimada. @author RADJ */
+    const gananciaEl = document.getElementById('inv-ganancia');
+    if (gananciaEl) {
+        gananciaEl.textContent = '$' + ganancia.toLocaleString();
+        if (ganancia >= 0) {
+            gananciaEl.style.color = '#10b981';
         } else {
-            utilidadEl.style.color = '#ef4444';
+            gananciaEl.style.color = '#ef4444';
         }
     }
 }
@@ -154,8 +161,57 @@ async function loadStats() {
         /** Obtener listado de productos desde la API. @author RADJ */
         const products = await apiRequest('/productos') || [];
         updateStatsUI(products);
+        renderHomeProductsTable(products);
     } catch (e) {
         console.error("Error al cargar estadísticas en inicio:", e);
+    }
+}
+
+/** Renderiza la tabla simplificada de productos en la sección de inicio. @author RADJ */
+function renderHomeProductsTable(products) {
+    /** Obtener el cuerpo de la tabla simplificada de inicio. @author RADJ */
+    const tbody = document.getElementById('home-inv-tbody');
+    if (!tbody) return;
+    try {
+        /** Generar el HTML de las filas para la tabla de inicio. @author RADJ */
+        tbody.innerHTML = products.length ? products.map(p => {
+            const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
+            const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
+            const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
+
+            /** Calcular el porcentaje de stock respecto al nivel óptimo. @author RADJ */
+            const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
+            let colorClass = 'green';
+            if (pct <= 30) {
+                colorClass = 'red';
+            } else if (pct <= 69) {
+                colorClass = 'orange';
+            }
+            const barWidth = Math.min(pct, 100);
+
+            /** Retornar la estructura HTML de la fila de inicio. @author RADJ */
+            return `
+            <tr>
+                <td class="col-codigo" style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
+                <td class="col-nombre" style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
+                <td class="col-unidad">${p.unidadMedida || 'Unidad'}</td>
+                <td class="col-stock">
+                    <div class="stock-bar-wrapper">
+                        <div class="stock-bar-info">
+                            <span class="stock-bar-qty">${stockActual} / ${stockOptimo} uds</span>
+                            <span class="stock-bar-pct ${colorClass}">${pct}%</span>
+                        </div>
+                        <div class="stock-bar-container">
+                            <div class="stock-bar-fill ${colorClass}" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="col-estado" style="text-align: center;"><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
+            </tr>`;
+        }).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
+    } catch (e) {
+        /** Renderizar mensaje de error en la tabla si falla la carga. @author RADJ */
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 
@@ -169,6 +225,7 @@ async function loadInventario() {
     try {
         /** Obtener listado de productos desde la API. @author RADJ */
         const products = await apiRequest('/productos') || [];
+        allProducts = products;
         /** Actualizar las tarjetas de estadísticas. @author RADJ */
         updateStatsUI(products);
 
@@ -195,29 +252,25 @@ async function loadInventario() {
                 <td class="col-nombre" style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
                 <td class="col-unidad">${p.unidadMedida || 'Unidad'}</td>
                 <td class="col-stock">
-                    <div class="stock-bar-wrapper">
-                        <div class="stock-bar-info">
-                            <span class="stock-bar-qty">${stockActual} / ${stockOptimo} uds</span>
-                            <span class="stock-bar-pct ${colorClass}">${pct}%</span>
-                        </div>
-                        <div class="stock-bar-container">
-                            <div class="stock-bar-fill ${colorClass}" style="width: ${barWidth}%"></div>
-                        </div>
-                    </div>
+                    <span class="stock-qty ${colorClass}">${stockActual}</span>
                 </td>
                 <td class="col-precio">$${p.precioCompra !== undefined ? Math.round(p.precioCompra) : '0'}</td>
                 <td class="col-precio">$${p.precioVenta !== undefined ? Math.round(p.precioVenta) : '0'}</td>
                 <td class="col-iva">${p.iva !== undefined ? Number(p.iva).toFixed(1) : '0.0'}%</td>
                 <td class="col-estado"><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
+                <td class="col-movimientos" style="display:flex;gap:0.4rem;align-items:center;">
+                    <button class="btn-sm" style="background:#10b981;color:#fff;border:none;border-radius:0.25rem;cursor:pointer;padding:0.25rem 0.5rem;font-weight:600;font-size:0.8rem" onclick="openMovimientoModal(${p.id}, 'ENTRADA')">Entrada</button>
+                    <button class="btn-sm" style="background:#ef4444;color:#fff;border:none;border-radius:0.25rem;cursor:pointer;padding:0.25rem 0.5rem;font-weight:600;font-size:0.8rem" onclick="openMovimientoModal(${p.id}, 'SALIDA')">Salida</button>
+                </td>
                 <td class="col-acciones" style="display:flex;gap:0.4rem">
                     <button class="btn-sm" onclick="editProducto(${p.id})">Editar</button>
                     <button class="btn-sm btn-del" onclick="deleteProducto(${p.id})">Borrar</button>
                 </td>
             </tr>`;
-        }).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
+        }).join('') : '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
     } catch (e) {
         /** Renderizar mensaje de error en la tabla si falla la petición. @author RADJ */
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
     }
 }
 
@@ -927,6 +980,136 @@ async function generarReporte(tipo) {
     }
 }
 
+/** Carga e inicializa el gráfico de tendencia de ventas mensuales. @author RADJ */
+async function loadReportesChart() {
+    const ctx = document.getElementById('salesChart');
+    if (!ctx) return;
+
+    try {
+        /** Obtener listado de ventas desde la API. @author RADJ */
+        const ventas = await apiRequest('/ventas') || [];
+        const currentYear = new Date().getFullYear();
+        const monthlyData = Array(12).fill(0);
+
+        /** Agrupar la suma de ingresos de cada venta por su mes correspondiente. @author RADJ */
+        ventas.forEach(v => {
+            if (v.fechaHora) {
+                const fecha = new Date(v.fechaHora);
+                if (fecha.getFullYear() === currentYear) {
+                    const mesIndex = fecha.getMonth(); // 0-11
+                    /** Fallback para sumar detalles si valorTotal es 0. @author RADJ */
+                    let total = v.valorTotal || 0;
+                    if (!total && v.detalles && v.detalles.length > 0) {
+                        total = v.detalles.reduce((sum, d) => sum + (d.subtotal || 0), 0);
+                    }
+                    monthlyData[mesIndex] += total;
+                }
+            }
+        });
+
+        /** Destruir la instancia previa si existe para evitar solapamientos. @author RADJ */
+        if (salesChartInstance) {
+            salesChartInstance.destroy();
+        }
+
+        /** Inicializar Chart.js con la tendencia mensual. @author RADJ */
+        salesChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                datasets: [{
+                    label: 'Ventas Mensuales (' + currentYear + ')',
+                    data: monthlyData,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: '#ffffff',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#f8fafc',
+                            font: {
+                                family: 'Inter',
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#f8fafc',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'COP',
+                            color: '#94a3b8',
+                            align: 'end',
+                            font: {
+                                family: 'Inter',
+                                size: 11,
+                                weight: '600'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: {
+                                family: 'Inter'
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString('es-CO');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Error al cargar gráfico de ventas:", error);
+    }
+}
+
 /** Obtiene los campos del formulario dinámico según el módulo. @author RADJ */
 function getModalFields(type) {
     /** Retornar campos HTML para el formulario de Inventario / Producto. @author RADJ */
@@ -1442,9 +1625,14 @@ document.addEventListener('click', e => {
     }
 });
 
-/** Formatear moneda a pesos colombianos. @author RADJ */
+/** Formatear moneda según la configuración global. @author RADJ */
 function formatCurrency(n) {
-    return '$' + Number(n).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    let moneda = globalConfig ? (globalConfig.moneda || 'COP') : 'COP';
+    try {
+        return new Intl.NumberFormat('es-CO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 }).format(n);
+    } catch (e) {
+        return moneda + ' ' + Number(n).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
 }
 
 /** Mostrar Toast Notification. @author RADJ */
@@ -1593,4 +1781,137 @@ async function registrarVenta() {
         btn.disabled = cart.length === 0;
     }
 }
+
+/** Abre el modal para registrar un movimiento de inventario (Entrada o Salida). @author RADJ */
+function openMovimientoModal(idProducto, tipo) {
+    const prod = allProducts.find(p => p.id === idProducto);
+    const nombreProducto = prod ? prod.nombre : 'Producto #' + idProducto;
+
+    document.getElementById('mov-id-producto').value = idProducto;
+    document.getElementById('mov-tipo').value = tipo;
+    document.getElementById('mov-cantidad').value = '';
+    document.getElementById('mov-referencia').value = '';
+    document.getElementById('mov-observacion').value = '';
+
+    const isEntrada = tipo === 'ENTRADA';
+    const titleText = isEntrada ? '📥 Registrar Entrada' : '📤 Registrar Salida';
+    const subtitleText = `Producto: <strong>${nombreProducto}</strong>`;
+    
+    document.getElementById('mov-modal-title').textContent = titleText;
+    document.getElementById('mov-modal-subtitle').innerHTML = subtitleText;
+
+    const submitBtn = document.getElementById('mov-submit-btn');
+    submitBtn.textContent = isEntrada ? 'Agregar Stock' : 'Retirar Stock';
+    submitBtn.style.background = isEntrada ? '#10b981' : '#ef4444';
+
+    document.getElementById('movimientoModal').style.display = 'flex';
+}
+
+/** Cierra el modal de movimientos de inventario. @author RADJ */
+function closeMovimientoModal() {
+    document.getElementById('movimientoModal').style.display = 'none';
+}
+
+/** Maneja el envío del formulario de movimientos de inventario. @author RADJ */
+document.getElementById('mov-modal-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const idProducto = parseInt(document.getElementById('mov-id-producto').value);
+    const tipo = document.getElementById('mov-tipo').value;
+    const cantidad = parseInt(document.getElementById('mov-cantidad').value);
+    const referencia = document.getElementById('mov-referencia').value.trim();
+    const observacion = document.getElementById('mov-observacion').value.trim();
+
+    if (!idProducto || isNaN(cantidad) || cantidad <= 0) {
+        alert("La cantidad debe ser mayor a cero.");
+        return;
+    }
+
+    try {
+        const userStr = localStorage.getItem('usuario');
+        let idUsuario = 1; // Default
+        if (userStr) {
+            try {
+                const u = JSON.parse(userStr);
+                if (u && u.id) idUsuario = u.id;
+            } catch (err) {}
+        }
+
+        const payload = {
+            idProducto: idProducto,
+            tipoMovimiento: tipo,
+            cantidad: cantidad,
+            referencia: referencia || null,
+            observacion: observacion || null,
+            idUsuario: idUsuario
+        };
+
+        await apiRequest('/movimientos-inventario', 'POST', payload);
+        closeMovimientoModal();
+        await loadInventario();
+        alert('Movimiento registrado y stock actualizado con éxito.');
+    } catch (err) {
+        console.error("Error al registrar movimiento:", err);
+        alert("Error al registrar movimiento: " + err.message);
+    }
+});
+
+/** ─── SECCIÓN CONFIGURACIÓN ─── */
+
+async function loadConfiguracion() {
+    try {
+        globalConfig = await apiRequest('/configuracion', 'GET');
+        if (globalConfig) {
+            const el = (id) => document.getElementById(id);
+            if(el('cfg-nombre-empresa')) el('cfg-nombre-empresa').value = globalConfig.nombreEmpresa || '';
+            if(el('cfg-idioma')) el('cfg-idioma').value = globalConfig.idioma || 'es';
+            if(el('cfg-moneda')) el('cfg-moneda').value = globalConfig.moneda || 'COP';
+            if(el('cfg-lector')) el('cfg-lector').value = globalConfig.lectorCodigoBarras || '';
+            if(el('cfg-impresora')) el('cfg-impresora').value = globalConfig.impresoraActiva || '';
+            if(el('cfg-ticket-logo')) el('cfg-ticket-logo').value = globalConfig.ticketLogotipo || '';
+            if(el('cfg-ticket-encabezado')) el('cfg-ticket-encabezado').value = globalConfig.ticketEncabezado || '';
+            if(el('cfg-ticket-pie')) el('cfg-ticket-pie').value = globalConfig.ticketPiePagina || '';
+            if(el('cfg-ticket-ancho')) el('cfg-ticket-ancho').value = globalConfig.ticketAnchoMm || 80;
+            if(el('cfg-ticket-alto')) el('cfg-ticket-alto').value = globalConfig.ticketAltoMm || 297;
+            if(el('cfg-ticket-margen-izq')) el('cfg-ticket-margen-izq').value = globalConfig.ticketMargenIzq || 5;
+            if(el('cfg-ticket-margen-der')) el('cfg-ticket-margen-der').value = globalConfig.ticketMargenDer || 5;
+        }
+    } catch (e) {
+        console.error("Error cargando configuración", e);
+    }
+}
+
+async function guardarConfiguracion() {
+    const el = (id) => document.getElementById(id);
+    const payload = {
+        nombreEmpresa: el('cfg-nombre-empresa').value,
+        idioma: el('cfg-idioma').value,
+        moneda: el('cfg-moneda').value,
+        lectorCodigoBarras: el('cfg-lector').value,
+        impresoraActiva: el('cfg-impresora').value,
+        ticketLogotipo: el('cfg-ticket-logo').value,
+        ticketEncabezado: el('cfg-ticket-encabezado').value,
+        ticketPiePagina: el('cfg-ticket-pie').value,
+        ticketAnchoMm: parseInt(el('cfg-ticket-ancho').value) || 80,
+        ticketAltoMm: parseInt(el('cfg-ticket-alto').value) || 297,
+        ticketMargenIzq: parseInt(el('cfg-ticket-margen-izq').value) || 5,
+        ticketMargenDer: parseInt(el('cfg-ticket-margen-der').value) || 5
+    };
+    try {
+        globalConfig = await apiRequest('/configuracion', 'PUT', payload);
+        alert("Configuración guardada exitosamente");
+        // Recargar dashboard para aplicar cambios en moneda etc
+        location.reload();
+    } catch (e) {
+        alert("Error al guardar configuración: " + e.message);
+    }
+}
+
+function switchConfigTab(tabName) {
+    document.querySelectorAll('.config-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.config-tab-content').forEach(c => c.style.display = 'none');
+    event.target.classList.add('active');
+    document.getElementById('config-tab-' + tabName).style.display = 'block';
+}
+
 

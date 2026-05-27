@@ -1,0 +1,93 @@
+<!-- Fragmento para la ventana de Configuración. @author RADJ -->
+<div th:fragment="configuracion">
+    <div id="sec-configuracion" class="section" style="display:none">
+        <div class="section-header">
+            <div>
+                <h1>Configuración del Sistema</h1>
+                <p>Ajustes globales, hardware y diseño del ticket de venta</p>
+            </div>
+            <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar Configuración</button>
+        </div>
+
+        <div class="card" style="margin-top: 1rem;">
+            <!-- Tabs Navigation -->
+            <div style="display: flex; gap: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; padding-bottom: 0.5rem;">
+                <button class="btn btn-secondary config-tab-btn active" onclick="switchConfigTab('general')">General</button>
+                <button class="btn btn-secondary config-tab-btn" onclick="switchConfigTab('hardware')">Hardware</button>
+                <button class="btn btn-secondary config-tab-btn" onclick="switchConfigTab('ticket')">Control del Ticket</button>
+            </div>
+
+            <!-- Tab: General -->
+            <div id="config-tab-general" class="config-tab-content">
+                <h3>Información General</h3>
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div class="form-group">
+                        <label>Nombre de la Empresa</label>
+                        <input type="text" id="cfg-nombre-empresa" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Idioma</label>
+                        <select id="cfg-idioma" class="form-control">
+                            <option value="es">Español</option>
+                            <option value="en">Inglés</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <input type="text" id="cfg-moneda" class="form-control" placeholder="Ej. COP, USD, EUR">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Hardware -->
+            <div id="config-tab-hardware" class="config-tab-content" style="display: none;">
+                <h3>Configuración de Hardware</h3>
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div class="form-group">
+                        <label>Lector de Código de Barras (Prefijo/Sufijo)</label>
+                        <input type="text" id="cfg-lector" class="form-control" placeholder="Configuración especial o puerto">
+                    </div>
+                    <div class="form-group">
+                        <label>Impresora Activa (Nombre en Windows)</label>
+                        <input type="text" id="cfg-impresora" class="form-control" placeholder="Ej. EPSON TM-T20II">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Ticket -->
+            <div id="config-tab-ticket" class="config-tab-content" style="display: none;">
+                <h3>Diseño del Ticket</h3>
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>URL o Base64 del Logotipo</label>
+                        <input type="text" id="cfg-ticket-logo" class="form-control" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label>Encabezado del Ticket</label>
+                        <textarea id="cfg-ticket-encabezado" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Pie de Página del Ticket</label>
+                        <textarea id="cfg-ticket-pie" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ancho (mm)</label>
+                        <input type="number" id="cfg-ticket-ancho" class="form-control" value="80">
+                    </div>
+                    <div class="form-group">
+                        <label>Alto (mm) (Opcional si es rollo)</label>
+                        <input type="number" id="cfg-ticket-alto" class="form-control" value="297">
+                    </div>
+                    <div class="form-group">
+                        <label>Margen Izquierdo (mm)</label>
+                        <input type="number" id="cfg-ticket-margen-izq" class="form-control" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Margen Derecho (mm)</label>
+                        <input type="number" id="cfg-ticket-margen-der" class="form-control" value="5">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

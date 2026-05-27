@@ -42,8 +42,6 @@ fun InventarioTab(
     var showDialog by remember { mutableStateOf(false) }
     var editingProducto by remember { mutableStateOf<Producto?>(null) }
 
-    val formatCurrency = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -75,7 +73,7 @@ fun InventarioTab(
                 )
                 EstadisticaCard(
                     title = "Valor Total",
-                    value = formatCurrency.format(valorTotal),
+                    value = com.acacioswork.util.ConfigManager.formatCurrency(valorTotal),
                     icon = Icons.Default.Info,
                     iconColor = AccentGreen,
                     modifier = Modifier.weight(1.2f)
@@ -223,9 +221,6 @@ fun ProductoCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val formatCurrency = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
-    val esStockBajo = producto.stockActual <= producto.stockMinimo
-
     Card(
         colors = CardDefaults.cardColors(containerColor = BgCard),
         shape = RoundedCornerShape(12.dp),
@@ -253,21 +248,18 @@ fun ProductoCard(
                     )
                 }
 
-                // Badge de Stock
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (esStockBajo) AlertRed.copy(alpha = 0.2f) else AccentGreen.copy(alpha = 0.2f))
-                        .border(1.dp, if (esStockBajo) AlertRed else AccentGreen, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = "${producto.stockActual} unidades",
-                        color = if (esStockBajo) AlertRed else AccentGreen,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                // Cantidad de Stock en color según el estado. @author RADJ
+                val opt = if (producto.stockOptimo > 0) producto.stockOptimo else 200
+                val pct = Math.round((producto.stockActual.toDouble() / opt) * 100).toInt()
+                val textColor = if (pct <= 30) AlertRed else if (pct <= 69) AccentOrange else AccentGreen
+
+                Text(
+                    text = "${producto.stockActual}",
+                    color = textColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -282,7 +274,7 @@ fun ProductoCard(
                 Column {
                     Text(text = "P. Compra", fontSize = 11.sp, color = TextMuted)
                     Text(
-                        text = formatCurrency.format(producto.precioCompra),
+                        text = com.acacioswork.util.ConfigManager.formatCurrency(producto.precioCompra),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = TextLight
@@ -300,7 +292,7 @@ fun ProductoCard(
                 Column {
                     Text(text = "P. Venta", fontSize = 11.sp, color = TextMuted)
                     Text(
-                        text = formatCurrency.format(producto.precioVenta),
+                        text = com.acacioswork.util.ConfigManager.formatCurrency(producto.precioVenta),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = Primary

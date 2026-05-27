@@ -33,10 +33,11 @@ public class VentaService {
     }
 
     /**
-     * Registra una venta y descuenta el stock de cada producto vendido.
+     * Registra una venta, calcula el total, y descuenta el stock de cada producto vendido.
      * Lanza IllegalStateException si no hay stock suficiente. @author RADJ
      */
     public Venta save(Venta venta) {
+        double totalVenta = 0;
         // Validar y descontar stock para cada detalle de la venta
         if (venta.getDetalles() != null) {
             for (DetalleVenta detalle : venta.getDetalles()) {
@@ -53,8 +54,21 @@ public class VentaService {
                 }
                 producto.setStockActual(nuevoStock);
                 productoRepository.save(producto);
+
+                /** Calcular subtotal en el detalle de venta. @author RADJ */
+                detalle.calcularSubtotal();
+                totalVenta += detalle.getSubtotal();
             }
         }
+        venta.setValorTotal(totalVenta);
+        return ventaRepository.save(venta);
+    }
+
+    /**
+     * Guarda una venta directamente sin alterar el stock físico de los productos.
+     * @author RADJ
+     */
+    public Venta saveOnly(Venta venta) {
         return ventaRepository.save(venta);
     }
 

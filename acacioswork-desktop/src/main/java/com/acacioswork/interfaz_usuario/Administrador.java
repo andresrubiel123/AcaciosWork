@@ -1,5 +1,6 @@
 package com.acacioswork.interfaz_usuario;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -12,11 +13,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.awt.geom.Path2D;
 import java.io.File;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,12 +52,15 @@ public class Administrador extends JPanel {
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private JTable tableAlertas;
+    private JTable tableHome;
+    private VentasChartPanel chartPanel;
     private JButton btnAlertas;
     private JPanel statsClientes;
     private JPanel statsInventario;
 
     public Administrador() {
         try {
+            com.acacioswork.util.ConfiguracionManager.loadConfiguracion();
             setLayout(new BorderLayout());
             setBackground(BG_DARK);
             add(buildToolbar(), BorderLayout.WEST);
@@ -74,6 +77,7 @@ public class Administrador extends JPanel {
             contentPanel.add(buildUsuariosPanel(), "usuarios");
             contentPanel.add(buildReportesPanel(), "reportes");
             contentPanel.add(buildAlertasPanel(), "alertas");
+            contentPanel.add(new GestionConfiguracion(), "configuracion");
 
             add(contentPanel, BorderLayout.CENTER);
             cardLayout.show(contentPanel, "welcome");
@@ -143,7 +147,8 @@ public class Administrador extends JPanel {
                 { "Clientes", "clientes" },
                 { "Usuarios", "usuarios" },
                 { "Reportes", "reportes" },
-                { "⚠ Alertas Stock", "alertas" }
+                { "⚠ Alertas Stock", "alertas" },
+                { "⚙ Configuración", "configuracion" }
         };
 
         for (String[] s : sections) {
@@ -162,6 +167,9 @@ public class Administrador extends JPanel {
                 }
                 if (s[1].equals("alertas")) {
                     refreshAlertas();
+                }
+                if (s[1].equals("reportes")) {
+                    refreshReportesChart();
                 }
             });
             centerPanel.add(btn, gbcCenter);
@@ -319,15 +327,15 @@ public class Administrador extends JPanel {
                         "Acciones" });
         hideColumn(table, 0);
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
-        table.getColumnModel().getColumn(2).setPreferredWidth(160); // Nombre
+        table.getColumnModel().getColumn(2).setPreferredWidth(350); // Nombre
         table.getColumnModel().getColumn(3).setPreferredWidth(100); // Unidad
-        table.getColumnModel().getColumn(4).setPreferredWidth(300); // Stock
+        table.getColumnModel().getColumn(4).setPreferredWidth(110); // Stock
         table.getColumnModel().getColumn(5).setPreferredWidth(110); // P. Compra
         table.getColumnModel().getColumn(6).setPreferredWidth(110); // P. Venta
         table.getColumnModel().getColumn(7).setPreferredWidth(80); // IVA
         table.getColumnModel().getColumn(8).setPreferredWidth(100); // Estado
         table.getColumnModel().getColumn(8).setCellRenderer(new EstadoCellRenderer());
-        table.getColumnModel().getColumn(4).setCellRenderer(new StockBarCellRenderer());
+        table.getColumnModel().getColumn(4).setCellRenderer(new StockNumberCellRenderer());
 
         setupAccionesColumn(table,
                 () -> editarProductoInv(table, statsInventario),
@@ -478,6 +486,12 @@ public class Administrador extends JPanel {
         scroll.setOpaque(false);
         scroll.getViewport().setOpaque(false);
         panel.add(scroll, BorderLayout.CENTER);
+
+        /** Inicializar y agregar el panel del gráfico de ventas. @author RADJ */
+        chartPanel = new VentasChartPanel();
+        chartPanel.setPreferredSize(new java.awt.Dimension(0, 320));
+        panel.add(chartPanel, BorderLayout.SOUTH);
+
         return panel;
     }
 
@@ -748,8 +762,8 @@ public class Administrador extends JPanel {
                     str(p, "nombre"),
                     unidadMedida,
                     new StockData(qty, min, opt),
-                    "$" + (long) precioCompra,
-                    "$" + (long) precioVenta,
+                    com.acacioswork.util.ConfiguracionManager.formatCurrency(precioCompra),
+                    com.acacioswork.util.ConfiguracionManager.formatCurrency(precioVenta),
                     ivaLabel,
                     estadoLabel,
                     ""
@@ -766,9 +780,9 @@ public class Administrador extends JPanel {
 
         updateStatCard((JPanel) stats.getComponents()[0], String.valueOf(rows.length));
         updateStatCard((JPanel) stats.getComponents()[1], String.valueOf(finalBajo));
-        updateStatCard((JPanel) stats.getComponents()[2], "$" + nf.format(finalValor));
-        updateStatCard((JPanel) stats.getComponents()[3], "$" + nf.format(finalCosto));
-        updateStatCard((JPanel) stats.getComponents()[4], "$" + nf.format(finalUtilidad));
+        updateStatCard((JPanel) stats.getComponents()[2], com.acacioswork.util.ConfiguracionManager.formatCurrency(finalValor));
+        updateStatCard((JPanel) stats.getComponents()[3], com.acacioswork.util.ConfiguracionManager.formatCurrency(finalCosto));
+        updateStatCard((JPanel) stats.getComponents()[4], com.acacioswork.util.ConfiguracionManager.formatCurrency(finalUtilidad));
 
         updateAlertasPulsing(bajo);
     }
@@ -1964,6 +1978,39 @@ public class Administrador extends JPanel {
         }
     }
 
+    public static class StockNumberCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
+        public StockNumberCellRenderer() {
+            setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            c.setFont(new Font("Inter", Font.BOLD, 12));
+            if (value instanceof StockData) {
+                StockData data = (StockData) value;
+                int qty = data.actual;
+                int optimo = data.optimo > 0 ? data.optimo : 200;
+                int pct = (int) Math.round(((double) qty / optimo) * 100);
+
+                setText(String.valueOf(qty));
+                if (isSelected) {
+                    // Mantiene colores por defecto de la selección de Swing
+                } else {
+                    if (pct <= 30) {
+                        setForeground(new Color(248, 113, 113));
+                    } else if (pct <= 69) {
+                        setForeground(new Color(251, 146, 60));
+                    } else {
+                        setForeground(new Color(52, 211, 153));
+                    }
+                }
+            }
+            return c;
+        }
+    }
+
     public static class DotIcon implements javax.swing.Icon {
         private final Color color;
         private final int size;
@@ -2096,68 +2143,44 @@ public class Administrador extends JPanel {
         }
     }
 
+    /** Construye el panel de inicio (welcome panel) con estadísticas y tabla. @author RADJ */
     private JPanel buildWelcomePanel() {
         JPanel panel = createContentPanel();
-        
-        JPanel card = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(BG_CARD);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
-                g2.setColor(new Color(255, 255, 255, 12));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
-                g2.dispose();
-            }
-        };
-        card.setOpaque(false);
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBorder(new EmptyBorder(48, 48, 48, 48));
-        card.setMaximumSize(new java.awt.Dimension(600, 200));
-        card.setPreferredSize(new java.awt.Dimension(600, 200));
-        
-        JLabel title = new JLabel("Bienvenido a AcaciosWork", javax.swing.SwingConstants.CENTER);
-        title.setFont(new Font("Inter", Font.BOLD, 24));
-        title.setForeground(PRIMARY);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        JLabel desc = new JLabel("Por favor, seleccione una opción del menú lateral para comenzar a gestionar el sistema.", javax.swing.SwingConstants.CENTER);
-        desc.setFont(new Font("Inter", Font.PLAIN, 14));
-        desc.setForeground(TEXT_MUTED);
-        desc.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        JLabel icon = new JLabel("", javax.swing.SwingConstants.CENTER);
-        icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 64));
-        icon.setForeground(PRIMARY);
-        icon.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        card.add(title);
-        card.add(Box.createRigidArea(new java.awt.Dimension(0, 16)));
-        card.add(desc);
-        card.add(Box.createRigidArea(new java.awt.Dimension(0, 32)));
-        card.add(icon);
+
+        /** Añadir encabezado de sección alineado a la izquierda. @author RADJ */
+        panel.add(buildSectionHeader("Resumen de Inventario", "Vista rápida del estado de existencias", (JButton) null), BorderLayout.NORTH);
         
         statsInventario = new JPanel(new GridLayout(1, 5, 12, 0));
         statsInventario.setOpaque(false);
-        statsInventario.setBorder(new EmptyBorder(16, 0, 0, 0));
+        statsInventario.setBorder(new EmptyBorder(0, 0, 16, 0));
         statsInventario.add(buildStatCard("Total Productos", "0", TEXT_MAIN));
         statsInventario.add(buildStatCard("Stock Bajo", "0", DANGER));
         statsInventario.add(buildStatCard("Valor Inventario", "$0", ACCENT));
         statsInventario.add(buildStatCard("Valor Costo", "$0", new Color(245, 158, 11)));
         statsInventario.add(buildStatCard("Utilidad Neta", "$0", ACCENT));
         
-        JPanel centerContainer = new JPanel();
+        /** Inicializar tabla simplificada de productos para inicio. @author RADJ */
+        tableHome = buildStyledTable(new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "Estado" });
+        hideColumn(tableHome, 0);
+        tableHome.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
+        tableHome.getColumnModel().getColumn(2).setPreferredWidth(160); // Nombre
+        tableHome.getColumnModel().getColumn(3).setPreferredWidth(100); // Unidad
+        tableHome.getColumnModel().getColumn(4).setPreferredWidth(300); // Stock
+        tableHome.getColumnModel().getColumn(5).setPreferredWidth(100); // Estado
+        tableHome.getColumnModel().getColumn(4).setCellRenderer(new StockBarCellRenderer());
+        tableHome.getColumnModel().getColumn(5).setCellRenderer(new EstadoCellRenderer());
+
+        /** Construir el contenedor para la tabla y su buscador. @author RADJ */
+        JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
+        tableContainer.setOpaque(false);
+        tableContainer.add(buildSearchPanel(tableHome), BorderLayout.NORTH);
+        tableContainer.add(wrapTable(tableHome), BorderLayout.CENTER);
+
+        /** Organizar estadísticas y tabla en el contenedor central. @author RADJ */
+        JPanel centerContainer = new JPanel(new BorderLayout(0, 16));
         centerContainer.setOpaque(false);
-        centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
-        
-        JPanel wrapper = new JPanel(new java.awt.GridBagLayout());
-        wrapper.setOpaque(false);
-        wrapper.add(card);
-        
-        centerContainer.add(wrapper);
-        centerContainer.add(Box.createRigidArea(new java.awt.Dimension(0, 24)));
-        centerContainer.add(statsInventario);
+        centerContainer.add(statsInventario, BorderLayout.NORTH);
+        centerContainer.add(tableContainer, BorderLayout.CENTER);
         
         panel.add(centerContainer, BorderLayout.CENTER);
         return panel;
@@ -2174,16 +2197,38 @@ public class Administrador extends JPanel {
                         int bajo = 0;
                         double valor = 0;
                         double valorCosto = 0;
+
+                        /** Limpiar y preparar la tabla de productos de inicio. @author RADJ */
+                        DefaultTableModel model = (DefaultTableModel) tableHome.getModel();
+                        model.setRowCount(0);
+
                         for (Object raw : data) {
                             java.util.Map<String, Object> p = (java.util.Map<String, Object>) raw;
+                            Long id = id(p);
                             int qty = num(p, "stockActual");
                             int min = p.get("stockMinimo") != null ? num(p, "stockMinimo") : 5;
+                            int opt = p.get("stockOptimo") != null ? num(p, "stockOptimo") : 200;
                             double precioCompra = dbl(p, "precioCompra");
                             double precioVenta = dbl(p, "precioVenta");
                             valor += qty * precioVenta;
                             valorCosto += qty * precioCompra;
                             if (qty <= min)
                                 bajo++;
+
+                            String estadoLabel = "1".equals(str(p, "estado")) ? "Activo" : "Inactivo";
+                            String unidadMedida = str(p, "unidadMedida") != null && !str(p, "unidadMedida").equals("—")
+                                    ? str(p, "unidadMedida")
+                                    : "Unidad";
+
+                            /** Agregar fila a la tabla simplificada de inicio. @author RADJ */
+                            model.addRow(new Object[] {
+                                    id,
+                                    str(p, "codigoBarras"),
+                                    str(p, "nombre"),
+                                    unidadMedida,
+                                    new StockData(qty, min, opt),
+                                    estadoLabel
+                            });
                         }
                         double finalValor = valor;
                         double finalCosto = valorCosto;
@@ -2206,5 +2251,229 @@ public class Administrador extends JPanel {
                 return null;
             }
         }.execute();
+    }
+
+    /**
+     * Consulta las ventas de la API en segundo plano, calcula la tendencia mensual del año actual,
+     * y actualiza el panel del gráfico. @author RADJ
+     */
+    private void refreshReportesChart() {
+        if (chartPanel == null) return;
+        new SwingWorker<double[], Void>() {
+            @Override
+            protected double[] doInBackground() throws Exception {
+                try {
+                    Object[] ventasRaw = ApiClient.get("/ventas", Object[].class);
+                    double[] monthlyData = new double[12];
+                    int currentYear = java.time.LocalDate.now().getYear();
+
+                    if (ventasRaw != null) {
+                        for (Object raw : ventasRaw) {
+                            java.util.Map<String, Object> v = (java.util.Map<String, Object>) raw;
+                            String fechaRaw = (String) v.get("fechaHora");
+                            if (fechaRaw != null) {
+                                java.time.LocalDateTime ldt = java.time.LocalDateTime.parse(fechaRaw);
+                                if (ldt.getYear() == currentYear) {
+                                    int mes = ldt.getMonthValue() - 1; // 1-12 -> 0-11
+                                    double total = dbl(v, "valorTotal");
+                                    if (total == 0.0 && v.get("detalles") != null) {
+                                        // Fallback sum of details
+                                        java.util.List<?> detalles = (java.util.List<?>) v.get("detalles");
+                                        for (Object detRaw : detalles) {
+                                            java.util.Map<String, Object> d = (java.util.Map<String, Object>) detRaw;
+                                            total += dbl(d, "subtotal");
+                                        }
+                                    }
+                                    monthlyData[mes] += total;
+                                }
+                            }
+                        }
+                    }
+                    return monthlyData;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new double[12];
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    double[] res = get();
+                    if (chartPanel != null) {
+                        chartPanel.setSalesData(res);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }.execute();
+    }
+
+    /** Panel de gráfico personalizado que dibuja la tendencia de ventas mensuales. @author RADJ */
+    public static class VentasChartPanel extends JPanel {
+        private double[] data = new double[12];
+        private final String[] months = {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
+
+        public VentasChartPanel() {
+            setBackground(BG_CARD);
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(255, 255, 255, 13), 1),
+                    new EmptyBorder(16, 20, 16, 20)));
+        }
+
+        public void setSalesData(double[] newData) {
+            if (newData != null && newData.length == 12) {
+                System.arraycopy(newData, 0, this.data, 0, 12);
+                repaint();
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int width = getWidth();
+            int height = getHeight();
+
+            // Dibujar título del gráfico
+            g2.setFont(new Font("Inter", Font.BOLD, 14));
+            g2.setColor(TEXT_MAIN);
+            g2.drawString("📈 Tendencia de Ventas Mensuales", 20, 24);
+
+            g2.setFont(new Font("Inter", Font.PLAIN, 10));
+            g2.setColor(TEXT_MUTED);
+            g2.drawString("Ingresos mensuales en pesos colombianos (año actual)", 20, 40);
+
+            // Márgenes del área de gráfico
+            int paddingLeft = 75;
+            int paddingRight = 30;
+            int paddingTop = 60;
+            int paddingBottom = 40;
+
+            int graphWidth = width - paddingLeft - paddingRight;
+            int graphHeight = height - paddingTop - paddingBottom;
+
+            // Determinar valor máximo para escalar el eje Y
+            double maxVal = 50000; // Valor mínimo base
+            for (double val : data) {
+                if (val > maxVal) {
+                    maxVal = val;
+                }
+            }
+
+            // Redondear el máximo a un múltiplo limpio para las divisiones
+            int numDivisions = 5;
+            double divisionStepVal = maxVal / numDivisions;
+
+            // Dibujar "COP" una sola vez en la parte superior del eje Y. @author RADJ
+            g2.setFont(new Font("Inter", Font.BOLD, 10));
+            g2.setColor(TEXT_MUTED);
+            g2.drawString("COP", paddingLeft - 10 - g2.getFontMetrics().stringWidth("COP"), paddingTop - 12);
+
+            // Dibujar rejilla horizontal y etiquetas del eje Y
+            java.text.NumberFormat nfY = java.text.NumberFormat.getNumberInstance(new java.util.Locale("es", "CO"));
+            nfY.setMaximumFractionDigits(0);
+            g2.setFont(new Font("Inter", Font.PLAIN, 10));
+
+            for (int i = 0; i <= numDivisions; i++) {
+                double currentVal = i * divisionStepVal;
+                int y = paddingTop + graphHeight - (int) ((currentVal / maxVal) * graphHeight);
+
+                // Dibujar línea guía de rejilla
+                if (i > 0) {
+                    g2.setColor(new Color(255, 255, 255, 10));
+                    g2.drawLine(paddingLeft, y, paddingLeft + graphWidth, y);
+                }
+
+                // Etiqueta formateada con el valor real
+                String labelStr = nfY.format(currentVal);
+
+                g2.setColor(TEXT_MUTED);
+                g2.drawString(labelStr, paddingLeft - 10 - g2.getFontMetrics().stringWidth(labelStr), y + 4);
+            }
+
+            // Dibujar rejilla vertical y etiquetas del eje X
+            int stepX = graphWidth / 11;
+            int[] pointXs = new int[12];
+            int[] pointYs = new int[12];
+
+            for (int i = 0; i < 12; i++) {
+                int x = paddingLeft + i * stepX;
+                pointXs[i] = x;
+                pointYs[i] = paddingTop + graphHeight - (int) ((data[i] / maxVal) * graphHeight);
+
+                // Rejilla vertical suave
+                g2.setColor(new Color(255, 255, 255, 8));
+                g2.drawLine(x, paddingTop, x, paddingTop + graphHeight);
+
+                // Nombre del mes centrado
+                g2.setColor(TEXT_MUTED);
+                String monthName = months[i];
+                int strW = g2.getFontMetrics().stringWidth(monthName);
+                g2.drawString(monthName, x - strW / 2, paddingTop + graphHeight + 18);
+            }
+
+            // Dibujar eje X principal
+            g2.setColor(new Color(255, 255, 255, 20));
+            g2.drawLine(paddingLeft, paddingTop + graphHeight, paddingLeft + graphWidth, paddingTop + graphHeight);
+
+            // Crear el trazado de la línea con curvas
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(pointXs[0], pointYs[0]);
+            for (int i = 1; i < 12; i++) {
+                int prevX = pointXs[i - 1];
+                int prevY = pointYs[i - 1];
+                int currX = pointXs[i];
+                int currY = pointYs[i];
+                int ctrlX1 = prevX + (currX - prevX) / 2;
+                int ctrlY1 = prevY;
+                int ctrlX2 = prevX + (currX - prevX) / 2;
+                int ctrlY2 = currY;
+                path.curveTo(ctrlX1, ctrlY1, ctrlX2, ctrlY2, currX, currY);
+            }
+
+            // Rellenar área inferior del degradado
+            Path2D.Double fillPath = (Path2D.Double) path.clone();
+            fillPath.lineTo(pointXs[11], paddingTop + graphHeight);
+            fillPath.lineTo(pointXs[0], paddingTop + graphHeight);
+            fillPath.closePath();
+
+            g2.setPaint(new GradientPaint(0, paddingTop, new Color(99, 102, 241, 45), 0, paddingTop + graphHeight, new Color(99, 102, 241, 0)));
+            g2.fill(fillPath);
+
+            // Dibujar la línea principal
+            g2.setColor(PRIMARY);
+            g2.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.draw(path);
+
+            // Dibujar los puntos resaltados
+            for (int i = 0; i < 12; i++) {
+                int x = pointXs[i];
+                int y = pointYs[i];
+
+                g2.setColor(Color.WHITE);
+                g2.fillOval(x - 5, y - 5, 10, 10);
+
+                g2.setColor(new Color(249, 115, 22));
+                g2.fillOval(x - 3, y - 3, 6, 6);
+
+                if (data[i] > 0) {
+                    g2.setFont(new Font("Inter", Font.BOLD, 9));
+                    g2.setColor(new Color(251, 146, 60));
+
+                    // Formatear con el valor real sin el símbolo de dólar ni K/M. @author RADJ
+                    java.text.NumberFormat nfPoint = java.text.NumberFormat.getNumberInstance(new java.util.Locale("es", "CO"));
+                    nfPoint.setMaximumFractionDigits(0);
+                    String valStr = nfPoint.format(data[i]);
+
+                    int strW = g2.getFontMetrics().stringWidth(valStr);
+                    g2.drawString(valStr, x - strW / 2, y - 10);
+                }
+            }
+
+            g2.dispose();
+        }
     }
 }

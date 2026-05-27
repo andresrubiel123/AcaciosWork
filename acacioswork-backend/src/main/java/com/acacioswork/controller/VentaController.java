@@ -1,6 +1,7 @@
 package com.acacioswork.controller;
 
 import com.acacioswork.model.Venta;
+import com.acacioswork.model.DetalleVenta;
 import com.acacioswork.service.VentaService;
 import com.acacioswork.util.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +48,30 @@ public class VentaController {
             return ResponseEntity.ok(new ApiResponse<Void>(true, "Venta eliminada con éxito", null));
         }).orElse(ResponseEntity.status(404)
                 .body(new ApiResponse<Void>(false, "Venta no encontrada para eliminar", null)));
+    }
+
+    /**
+     * Endpoint temporal para recalcular y corregir el valorTotal de todas las ventas históricas.
+     * @author RADJ
+     */
+    @GetMapping("/fix-totals")
+    public ResponseEntity<ApiResponse<String>> fixTotals() {
+        List<Venta> ventas = ventaService.findAll();
+        int fixedCount = 0;
+        for (Venta v : ventas) {
+            double total = 0;
+            if (v.getDetalles() != null) {
+                for (DetalleVenta d : v.getDetalles()) {
+                    d.calcularSubtotal();
+                    total += d.getSubtotal();
+                }
+            }
+            if (v.getValorTotal() != total) {
+                v.setValorTotal(total);
+                ventaService.saveOnly(v);
+                fixedCount++;
+            }
+        }
+        return ResponseEntity.ok(new ApiResponse<>(true, "Ventas corregidas: " + fixedCount, null));
     }
 }
