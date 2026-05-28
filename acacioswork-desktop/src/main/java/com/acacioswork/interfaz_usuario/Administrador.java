@@ -54,6 +54,7 @@ public class Administrador extends JPanel {
     private JTable tableAlertas;
     private JTable tableHome;
     private VentasChartPanel chartPanel;
+    private CategoriasChartPanel categoriasChartPanel;
     private JButton btnAlertas;
     private JPanel statsClientes;
     private JPanel statsInventario;
@@ -170,6 +171,9 @@ public class Administrador extends JPanel {
                 }
                 if (s[1].equals("reportes")) {
                     refreshReportesChart();
+                    if (categoriasChartPanel != null) {
+                        categoriasChartPanel.loadData();
+                    }
                 }
             });
             centerPanel.add(btn, gbcCenter);
@@ -487,10 +491,19 @@ public class Administrador extends JPanel {
         scroll.getViewport().setOpaque(false);
         panel.add(scroll, BorderLayout.CENTER);
 
-        /** Inicializar y agregar el panel del gráfico de ventas. @author RADJ */
+        /** Inicializar y agregar los gráficos de reportes. @author RADJ */
+        JPanel chartsContainer = new JPanel(new GridLayout(2, 1, 0, 16));
+        chartsContainer.setOpaque(false);
+
         chartPanel = new VentasChartPanel();
         chartPanel.setPreferredSize(new java.awt.Dimension(0, 320));
-        panel.add(chartPanel, BorderLayout.SOUTH);
+        chartsContainer.add(chartPanel);
+
+        categoriasChartPanel = new CategoriasChartPanel();
+        categoriasChartPanel.setPreferredSize(new java.awt.Dimension(0, 360));
+        chartsContainer.add(categoriasChartPanel);
+
+        panel.add(chartsContainer, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -1070,19 +1083,19 @@ public class Administrador extends JPanel {
     }
 
     private JPanel buildReportCard(String titulo, String descripcion, String tipo) {
-        JPanel c = new JPanel(new BorderLayout(0, 12));
+        JPanel c = new JPanel(new BorderLayout(0, 8));
         c.setBackground(BG_CARD);
         c.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(255, 255, 255, 13), 1),
-                new EmptyBorder(18, 18, 18, 18)));
+                new EmptyBorder(12, 12, 12, 12)));
 
         JLabel lt = new JLabel(titulo);
         lt.setForeground(TEXT_MAIN);
-        lt.setFont(new Font("Inter", Font.BOLD, 22));
+        lt.setFont(new Font("Inter", Font.BOLD, 16));
 
-        JLabel ld = new JLabel("<html><body style='width: 260px;'>" + descripcion + "</body></html>");
+        JLabel ld = new JLabel("<html><body style='width: 220px;'>" + descripcion + "</body></html>");
         ld.setForeground(TEXT_MUTED);
-        ld.setFont(new Font("Inter", Font.PLAIN, 16));
+        ld.setFont(new Font("Inter", Font.PLAIN, 12));
 
         JButton b = new JButton("Generar PDF") {
             @Override
@@ -1096,15 +1109,15 @@ public class Administrador extends JPanel {
             }
         };
         b.setForeground(Color.WHITE);
-        b.setFont(new Font("Inter", Font.BOLD, 12));
-        b.setBorder(new EmptyBorder(8, 16, 8, 16));
+        b.setFont(new Font("Inter", Font.BOLD, 11));
+        b.setBorder(new EmptyBorder(6, 12, 6, 12));
         b.setFocusPainted(false);
         b.setContentAreaFilled(false);
         b.setOpaque(false);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         b.addActionListener(e -> generarReporte(tipo));
 
-        JPanel textPanel = new JPanel(new BorderLayout(0, 6));
+        JPanel textPanel = new JPanel(new BorderLayout(0, 4));
         textPanel.setOpaque(false);
         textPanel.add(lt, BorderLayout.NORTH);
         textPanel.add(ld, BorderLayout.CENTER);
@@ -2264,8 +2277,18 @@ public class Administrador extends JPanel {
             protected double[] doInBackground() throws Exception {
                 try {
                     Object[] ventasRaw = ApiClient.get("/ventas", Object[].class);
+                    Object[] prodRaw = ApiClient.get("/productos", Object[].class);
                     double[] monthlyData = new double[12];
                     int currentYear = java.time.LocalDate.now().getYear();
+
+                    java.util.Map<Long, java.util.Map<String, Object>> prodMap = new java.util.HashMap<>();
+                    if (prodRaw != null) {
+                        for (Object pr : prodRaw) {
+                            java.util.Map<String, Object> p = (java.util.Map<String, Object>) pr;
+                            long pid = ((Number) p.get("id")).longValue();
+                            prodMap.put(pid, p);
+                        }
+                    }
 
                     if (ventasRaw != null) {
                         for (Object raw : ventasRaw) {
@@ -2284,7 +2307,22 @@ public class Administrador extends JPanel {
                                             total += dbl(d, "subtotal");
                                         }
                                     }
-                                    monthlyData[mes] += total;
+
+                                    double cost = 0.0;
+                                    if (v.get("detalles") != null) {
+                                        java.util.List<?> detalles = (java.util.List<?>) v.get("detalles");
+                                        for (Object detRaw : detalles) {
+                                            java.util.Map<String, Object> d = (java.util.Map<String, Object>) detRaw;
+                                            long pid = ((Number) d.get("idProducto")).longValue();
+                                            double precioCompra = 0.0;
+                                            if (prodMap.containsKey(pid)) {
+                                                precioCompra = dbl(prodMap.get(pid), "precioCompra");
+                                            }
+                                            int cantidad = ((Number) d.get("cantidad")).intValue();
+                                            cost += cantidad * precioCompra;
+                                        }
+                                    }
+                                    monthlyData[mes] += (total - cost);
                                 }
                             }
                         }
@@ -2340,14 +2378,10 @@ public class Administrador extends JPanel {
             // Dibujar título del gráfico
             g2.setFont(new Font("Inter", Font.BOLD, 14));
             g2.setColor(TEXT_MAIN);
-            g2.drawString("📈 Tendencia de Ventas Mensuales", 20, 24);
-
-            g2.setFont(new Font("Inter", Font.PLAIN, 10));
-            g2.setColor(TEXT_MUTED);
-            g2.drawString("Ingresos mensuales en pesos colombianos (año actual)", 20, 40);
+            g2.drawString("📈 Tendencia de Ganancias Mensuales", 20, 24);
 
             // Márgenes del área de gráfico
-            int paddingLeft = 75;
+            int paddingLeft = 90;
             int paddingRight = 30;
             int paddingTop = 60;
             int paddingBottom = 40;
@@ -2373,7 +2407,7 @@ public class Administrador extends JPanel {
             g2.drawString("COP", paddingLeft - 10 - g2.getFontMetrics().stringWidth("COP"), paddingTop - 12);
 
             // Dibujar rejilla horizontal y etiquetas del eje Y
-            java.text.NumberFormat nfY = java.text.NumberFormat.getNumberInstance(new java.util.Locale("es", "CO"));
+            java.text.NumberFormat nfY = java.text.NumberFormat.getNumberInstance(java.util.Locale.of("es", "CO"));
             nfY.setMaximumFractionDigits(0);
             g2.setFont(new Font("Inter", Font.PLAIN, 10));
 
@@ -2463,8 +2497,8 @@ public class Administrador extends JPanel {
                     g2.setFont(new Font("Inter", Font.BOLD, 9));
                     g2.setColor(new Color(251, 146, 60));
 
-                    // Formatear con el valor real sin el símbolo de dólar ni K/M. @author RADJ
-                    java.text.NumberFormat nfPoint = java.text.NumberFormat.getNumberInstance(new java.util.Locale("es", "CO"));
+                    // Numeros en la linea. @author RADJ
+                    java.text.NumberFormat nfPoint = java.text.NumberFormat.getNumberInstance(java.util.Locale.of("es", "COP"));
                     nfPoint.setMaximumFractionDigits(0);
                     String valStr = nfPoint.format(data[i]);
 

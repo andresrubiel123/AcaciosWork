@@ -107,7 +107,7 @@ function showSection(name, btn) {
     if (name === 'usuarios') loadUsuarios();
     if (name === 'alertas') loadAlertas();
     if (name === 'vender') loadVenderSection();
-    if (name === 'reportes') loadReportesChart();
+    if (name === 'reportes') { loadReportesChart(); loadCategoriasChart(); }
 }
 
 /** Actualiza la interfaz gráfica de las tarjetas de estadísticas con los productos proporcionados. @author RADJ */
@@ -763,7 +763,7 @@ async function generarReporte(tipo) {
                 const cliente = v.idCliente ? (clientesMap[v.idCliente] || `Cliente #${v.idCliente}`) : 'Sin cliente';
                 const usuario = v.idUsuario ? (usuariosMap[v.idUsuario] || `Usuario #${v.idUsuario}`) : 'Sistema';
                 const nProductos = v.detalles ? v.detalles.length : 0;
-                
+
                 return [
                     `#${v.id}`,
                     fecha,
@@ -980,29 +980,49 @@ async function generarReporte(tipo) {
     }
 }
 
-/** Carga e inicializa el gráfico de tendencia de ventas mensuales. @author RADJ */
+/** Carga e inicializa el gráfico de tendencia de ganancias mensuales. @author RADJ */
 async function loadReportesChart() {
     const ctx = document.getElementById('salesChart');
     if (!ctx) return;
 
     try {
-        /** Obtener listado de ventas desde la API. @author RADJ */
-        const ventas = await apiRequest('/ventas') || [];
+        /** Obtener listado de ventas y productos desde la API para el cálculo. @author RADJ */
+        const [ventas, productos] = await Promise.all([
+            apiRequest('/ventas') || [],
+            apiRequest('/productos') || []
+        ]);
+
+        const prodMap = {};
+        productos.forEach(p => {
+            prodMap[p.id] = p;
+        });
+
         const currentYear = new Date().getFullYear();
         const monthlyData = Array(12).fill(0);
 
-        /** Agrupar la suma de ingresos de cada venta por su mes correspondiente. @author RADJ */
+        /** Agrupar la suma de ganancias de cada venta por su mes correspondiente. @author RADJ */
         ventas.forEach(v => {
             if (v.fechaHora) {
                 const fecha = new Date(v.fechaHora);
                 if (fecha.getFullYear() === currentYear) {
                     const mesIndex = fecha.getMonth(); // 0-11
-                    /** Fallback para sumar detalles si valorTotal es 0. @author RADJ */
-                    let total = v.valorTotal || 0;
-                    if (!total && v.detalles && v.detalles.length > 0) {
-                        total = v.detalles.reduce((sum, d) => sum + (d.subtotal || 0), 0);
+
+                    let totalVenta = v.valorTotal || 0;
+                    if (!totalVenta && v.detalles && v.detalles.length > 0) {
+                        totalVenta = v.detalles.reduce((sum, d) => sum + (d.subtotal || 0), 0);
                     }
-                    monthlyData[mesIndex] += total;
+
+                    let costoVenta = 0;
+                    if (v.detalles) {
+                        v.detalles.forEach(d => {
+                            const prod = prodMap[d.idProducto];
+                            const precioCompra = prod ? (prod.precioCompra || 0) : 0;
+                            costoVenta += (d.cantidad || 0) * precioCompra;
+                        });
+                    }
+
+                    const gananciaVenta = totalVenta - costoVenta;
+                    monthlyData[mesIndex] += gananciaVenta;
                 }
             }
         });
@@ -1018,7 +1038,7 @@ async function loadReportesChart() {
             data: {
                 labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
                 datasets: [{
-                    label: 'Ventas Mensuales (' + currentYear + ')',
+                    label: 'Ganancias Mensuales (' + currentYear + ')',
                     data: monthlyData,
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -1052,7 +1072,7 @@ async function loadReportesChart() {
                         borderColor: 'rgba(255,255,255,0.1)',
                         borderWidth: 1,
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 let label = context.dataset.label || '';
                                 if (label) {
                                     label += ': ';
@@ -1097,7 +1117,8 @@ async function loadReportesChart() {
                             font: {
                                 family: 'Inter'
                             },
-                            callback: function(value) {
+                            padding: 10,
+                            callback: function (value) {
                                 return value.toLocaleString('es-CO');
                             }
                         }
@@ -1796,7 +1817,7 @@ function openMovimientoModal(idProducto, tipo) {
     const isEntrada = tipo === 'ENTRADA';
     const titleText = isEntrada ? '📥 Registrar Entrada' : '📤 Registrar Salida';
     const subtitleText = `Producto: <strong>${nombreProducto}</strong>`;
-    
+
     document.getElementById('mov-modal-title').textContent = titleText;
     document.getElementById('mov-modal-subtitle').innerHTML = subtitleText;
 
@@ -1815,7 +1836,7 @@ function closeMovimientoModal() {
 /** Maneja el envío del formulario de movimientos de inventario. @author RADJ */
 document.getElementById('mov-modal-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const idProducto = parseInt(document.getElementById('mov-id-producto').value);
     const tipo = document.getElementById('mov-tipo').value;
     const cantidad = parseInt(document.getElementById('mov-cantidad').value);
@@ -1834,7 +1855,7 @@ document.getElementById('mov-modal-form').addEventListener('submit', async (e) =
             try {
                 const u = JSON.parse(userStr);
                 if (u && u.id) idUsuario = u.id;
-            } catch (err) {}
+            } catch (err) { }
         }
 
         const payload = {
@@ -1863,18 +1884,18 @@ async function loadConfiguracion() {
         globalConfig = await apiRequest('/configuracion', 'GET');
         if (globalConfig) {
             const el = (id) => document.getElementById(id);
-            if(el('cfg-nombre-empresa')) el('cfg-nombre-empresa').value = globalConfig.nombreEmpresa || '';
-            if(el('cfg-idioma')) el('cfg-idioma').value = globalConfig.idioma || 'es';
-            if(el('cfg-moneda')) el('cfg-moneda').value = globalConfig.moneda || 'COP';
-            if(el('cfg-lector')) el('cfg-lector').value = globalConfig.lectorCodigoBarras || '';
-            if(el('cfg-impresora')) el('cfg-impresora').value = globalConfig.impresoraActiva || '';
-            if(el('cfg-ticket-logo')) el('cfg-ticket-logo').value = globalConfig.ticketLogotipo || '';
-            if(el('cfg-ticket-encabezado')) el('cfg-ticket-encabezado').value = globalConfig.ticketEncabezado || '';
-            if(el('cfg-ticket-pie')) el('cfg-ticket-pie').value = globalConfig.ticketPiePagina || '';
-            if(el('cfg-ticket-ancho')) el('cfg-ticket-ancho').value = globalConfig.ticketAnchoMm || 80;
-            if(el('cfg-ticket-alto')) el('cfg-ticket-alto').value = globalConfig.ticketAltoMm || 297;
-            if(el('cfg-ticket-margen-izq')) el('cfg-ticket-margen-izq').value = globalConfig.ticketMargenIzq || 5;
-            if(el('cfg-ticket-margen-der')) el('cfg-ticket-margen-der').value = globalConfig.ticketMargenDer || 5;
+            if (el('cfg-nombre-empresa')) el('cfg-nombre-empresa').value = globalConfig.nombreEmpresa || '';
+            if (el('cfg-idioma')) el('cfg-idioma').value = globalConfig.idioma || 'es';
+            if (el('cfg-moneda')) el('cfg-moneda').value = globalConfig.moneda || 'COP';
+            if (el('cfg-lector')) el('cfg-lector').value = globalConfig.lectorCodigoBarras || '';
+            if (el('cfg-impresora')) el('cfg-impresora').value = globalConfig.impresoraActiva || '';
+            if (el('cfg-ticket-logo')) el('cfg-ticket-logo').value = globalConfig.ticketLogotipo || '';
+            if (el('cfg-ticket-encabezado')) el('cfg-ticket-encabezado').value = globalConfig.ticketEncabezado || '';
+            if (el('cfg-ticket-pie')) el('cfg-ticket-pie').value = globalConfig.ticketPiePagina || '';
+            if (el('cfg-ticket-ancho')) el('cfg-ticket-ancho').value = globalConfig.ticketAnchoMm || 80;
+            if (el('cfg-ticket-alto')) el('cfg-ticket-alto').value = globalConfig.ticketAltoMm || 297;
+            if (el('cfg-ticket-margen-izq')) el('cfg-ticket-margen-izq').value = globalConfig.ticketMargenIzq || 5;
+            if (el('cfg-ticket-margen-der')) el('cfg-ticket-margen-der').value = globalConfig.ticketMargenDer || 5;
         }
     } catch (e) {
         console.error("Error cargando configuración", e);

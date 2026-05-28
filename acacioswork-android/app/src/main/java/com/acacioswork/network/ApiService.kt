@@ -83,4 +83,8 @@ interface ApiService {
 
     @PUT("configuracion")
     suspend fun updateConfiguracion(@Body config: Configuracion): ApiResponse<Configuracion>
+
+    // Categorías
+    @GET("categorias")
+    suspend fun getCategorias(): ApiResponse<List<Categoria>>
 }

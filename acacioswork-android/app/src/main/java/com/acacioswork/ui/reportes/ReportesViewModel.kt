@@ -31,11 +31,13 @@ class ReportesViewModel : ViewModel() {
             _isLoading.value = true
             _errorMessage.value = null
             try {
-                val response = RetrofitClient.apiService.getVentas()
-                if (response.success && response.data != null) {
-                    procesarVentas(response.data)
+                val responseVentas = RetrofitClient.apiService.getVentas()
+                val responseProductos = RetrofitClient.apiService.getProductos()
+                
+                if (responseVentas.success && responseVentas.data != null && responseProductos.success && responseProductos.data != null) {
+                    procesarVentas(responseVentas.data, responseProductos.data)
                 } else {
-                    _errorMessage.value = response.message
+                    _errorMessage.value = responseVentas.message ?: responseProductos.message
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -47,10 +49,12 @@ class ReportesViewModel : ViewModel() {
     }
 
     /** Procesa y agrupa las ventas del año actual por mes. @author RADJ */
-    private fun procesarVentas(ventas: List<Venta>) {
+    private fun procesarVentas(ventas: List<Venta>, productos: List<Producto>) {
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
         val monthlyData = DoubleArray(12) { 0.0 }
+        
+        val prodMap = productos.associateBy { it.id }
 
         ventas.forEach { v ->
             v.fechaHora?.let { dateStr ->
@@ -69,7 +73,16 @@ class ReportesViewModel : ViewModel() {
                                 if (total == 0.0 && v.detalles.isNotEmpty()) {
                                     total = v.detalles.sumOf { it.cantidad * it.precioUnitario }
                                 }
-                                monthlyData[month] += total
+                                
+                                var cost = 0.0
+                                v.detalles.forEach { d ->
+                                    val prod = prodMap[d.idProducto]
+                                    val precioCompra = prod?.precioCompra ?: 0.0
+                                    cost += d.cantidad * precioCompra
+                                }
+                                
+                                val ganancia = total - cost
+                                monthlyData[month] += ganancia
                             }
                         }
                     }

@@ -1,0 +1,92 @@
+<!-- Componente gráfico de barras horizontales: Ventas por Categoría de Producto. @author RADJ -->
+<div th:fragment="grafico-categorias" class="chart-section" style="margin-top: 2.5rem; display: block;">
+    <div class="chart-container-wrapper" style="background: var(--bg-card); padding: 1.75rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);">
+
+        <!-- Encabezado del gráfico. @author RADJ -->
+        <h3 style="margin-top: 0; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 700;">
+            📊 Ventas por Categoría de Producto
+        </h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif;">
+            Compara el rendimiento de los diferentes tipos de productos que vendes. Identifica cuáles son tus categorías estrella y cuáles necesitan atención.
+        </p>
+
+        <!-- Estilos oscuros para los controles de filtro. @author RADJ -->
+        <style>
+            #catFilterMes, #catFilterAno {
+                background-color: #1e293b;
+                color: #f8fafc;
+                border: 1px solid rgba(255,255,255,0.15);
+                font-family: 'Inter', sans-serif;
+                font-size: 0.9rem;
+                padding: 0.45rem 0.75rem;
+                border-radius: 8px;
+                cursor: pointer;
+                outline: none;
+            }
+            #catFilterMes option {
+                background-color: #1e293b;
+                color: #f8fafc;
+            }
+            #catFilterMes:focus, #catFilterAno:focus {
+                border-color: #6366f1;
+                box-shadow: 0 0 0 2px rgba(99,102,241,0.3);
+            }
+            #catFilterAno {
+                cursor: text;
+                width: 90px;
+            }
+            #catFilterAno::-webkit-inner-spin-button,
+            #catFilterAno::-webkit-outer-spin-button { opacity: 0.4; }
+        </style>
+
+        <!-- Filtros de período: Mes (dropdown) + Año (input manual). @author RADJ -->
+        <div style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <label for="catFilterMes"
+                    style="font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">
+                    Mes
+                </label>
+                <select id="catFilterMes">
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <label for="catFilterAno"
+                    style="font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">
+                    Año
+                </label>
+                <!-- Año como input numérico manual; JS pone el año actual. @author RADJ -->
+                <input id="catFilterAno" type="number" min="2000" max="2100" placeholder="2025" />
+            </div>
+        </div>
+
+        <!-- Resumen del período seleccionado. @author RADJ -->
+        <div id="catPeriodoResumen"
+            style="margin-bottom: 1.5rem; padding: 0.85rem 1.1rem; background: rgba(99,102,241,0.08); border-left: 3px solid #6366f1; border-radius: 0 8px 8px 0;">
+            <p style="margin: 0 0 0.25rem 0; font-family: 'Outfit', sans-serif; font-size: 0.7rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.08em;">
+                Resumen del Período Seleccionado
+            </p>
+            <p id="catResumenTexto"
+                style="margin: 0; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text-main);">
+                Cargando...
+            </p>
+        </div>
+
+        <!-- Contenedor del canvas con altura dinámica. @author RADJ -->
+        <div id="categoryChartWrapper" style="position: relative; width: 100%;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+    </div>
+</div>

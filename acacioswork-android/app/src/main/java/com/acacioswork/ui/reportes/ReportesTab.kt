@@ -188,13 +188,13 @@ fun ReportesTab(
 
                             Column {
                                 Text(
-                                    text = "📈 Tendencia de Ventas Mensuales",
+                                    text = "📈 Tendencia de Ganancias Mensuales",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextLight
                                 )
                                 Text(
-                                    text = "Ingresos mensuales (año actual)",
+                                    text = "Ganancias mensuales (año actual)",
                                     fontSize = 12.sp,
                                     color = TextMuted
                                 )
@@ -232,6 +232,11 @@ fun ReportesTab(
                     }
                 }
             }
+
+            // Gráfico de Ventas por Categoría de Producto
+            item {
+                CategoriasChartCard()
+            }
         }
     }
 }
@@ -248,7 +253,7 @@ fun VentasLineChart(salesData: List<Double>) {
         val height = size.height
 
         // Márgenes en píxeles usando dp.toPx()
-        val paddingLeft = 70.dp.toPx()
+        val paddingLeft = 85.dp.toPx()
         val paddingRight = 15.dp.toPx()
         val paddingTop = 35.dp.toPx()
         val paddingBottom = 30.dp.toPx()
