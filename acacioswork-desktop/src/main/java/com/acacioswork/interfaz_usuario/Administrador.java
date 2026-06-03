@@ -77,6 +77,7 @@ public class Administrador extends JPanel {
             contentPanel.add(buildClientesPanel(), "clientes");
             contentPanel.add(buildUsuariosPanel(), "usuarios");
             contentPanel.add(buildReportesPanel(), "reportes");
+            contentPanel.add(buildPreguntasInteligentesPanel(), "preguntas-inteligentes");
             contentPanel.add(buildAlertasPanel(), "alertas");
             contentPanel.add(new GestionConfiguracion(), "configuracion");
 
@@ -149,6 +150,7 @@ public class Administrador extends JPanel {
                 { "Usuarios", "usuarios" },
                 { "Reportes", "reportes" },
                 { "⚠ Alertas Stock", "alertas" },
+                { "Preguntas Inteligentes", "preguntas-inteligentes" },
                 { "⚙ Configuración", "configuracion" }
         };
 
@@ -168,6 +170,9 @@ public class Administrador extends JPanel {
                 }
                 if (s[1].equals("alertas")) {
                     refreshAlertas();
+                }
+                if (s[1].equals("preguntas-inteligentes")) {
+                    clearIqCache();
                 }
                 if (s[1].equals("reportes")) {
                     refreshReportesChart();
@@ -2345,6 +2350,559 @@ public class Administrador extends JPanel {
                 }
             }
         }.execute();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════════
+    // 🤖 MÓDULO PREGUNTAS INTELIGENTES — Lógica de análisis de datos de negocio
+    // @author RADJ
+    // ══════════════════════════════════════════════════════════════════════════════
+
+    private javax.swing.JComboBox<String> comboMes;
+    private javax.swing.JComboBox<String> comboAnio;
+    private JLabel lblIqStatus;
+    private java.util.List<PulsingAnswerLabel> pulsingLabels = new java.util.ArrayList<>();
+
+    private java.util.List<com.acacioswork.model.Venta> iqCacheVentas = null;
+    private com.acacioswork.model.Producto[] iqCacheProductos = null;
+    private com.acacioswork.model.Proveedor[] iqCacheProveedores = null;
+    private com.acacioswork.model.Cliente[] iqCacheClientes = null;
+
+    private static class PulsingAnswerLabel extends JLabel {
+        private static final Color ORANGE_MAIN = new Color(249, 115, 22);
+        private static final Color ORANGE_DIM = new Color(154, 52, 18);
+        private double factor = 0.0;
+
+        public PulsingAnswerLabel() {
+            setForeground(ORANGE_MAIN);
+            setFont(new Font("Inter", Font.BOLD, 13));
+        }
+
+        public void setFactor(double f) {
+            this.factor = f;
+            int r = (int) (ORANGE_DIM.getRed() + factor * (ORANGE_MAIN.getRed() - ORANGE_DIM.getRed()));
+            int g = (int) (ORANGE_DIM.getGreen() + factor * (ORANGE_MAIN.getGreen() - ORANGE_DIM.getGreen()));
+            int b = (int) (ORANGE_DIM.getBlue() + factor * (ORANGE_MAIN.getBlue() - ORANGE_DIM.getBlue()));
+            setForeground(new Color(r, g, b));
+        }
+    }
+
+    private void clearIqCache() {
+        iqCacheVentas = null;
+        iqCacheProductos = null;
+        iqCacheProveedores = null;
+        iqCacheClientes = null;
+        for (PulsingAnswerLabel l : pulsingLabels) {
+            l.setText("");
+        }
+    }
+
+    private void ejecutarPreguntaInteligente(String tipo, PulsingAnswerLabel label) {
+        label.setText("<html><font color='#94a3b8'>Analizando datos...</font></html>");
+        int mes = comboMes.getSelectedIndex() + 1;
+        int anio = Integer.parseInt((String) comboAnio.getSelectedItem());
+
+        new SwingWorker<String, Void>() {
+            @Override
+            protected String doInBackground() throws Exception {
+                if (iqCacheVentas == null) {
+                    com.acacioswork.model.Venta[] v = ApiClient.get("/ventas", com.acacioswork.model.Venta[].class);
+                    iqCacheVentas = v != null ? java.util.Arrays.asList(v) : new java.util.ArrayList<>();
+                }
+                if (iqCacheProductos == null) {
+                    iqCacheProductos = ApiClient.get("/productos", com.acacioswork.model.Producto[].class);
+                }
+                if (iqCacheProveedores == null) {
+                    iqCacheProveedores = ApiClient.get("/proveedores", com.acacioswork.model.Proveedor[].class);
+                }
+                if (iqCacheClientes == null) {
+                    iqCacheClientes = ApiClient.get("/clientes", com.acacioswork.model.Cliente[].class);
+                }
+
+                java.util.List<com.acacioswork.model.Venta> ventasFiltradas = new java.util.ArrayList<>();
+                for (com.acacioswork.model.Venta v : iqCacheVentas) {
+                    if (v.getFechaHora() != null) {
+                        if (v.getFechaHora().getYear() == anio && v.getFechaHora().getMonthValue() == mes) {
+                            ventasFiltradas.add(v);
+                        }
+                    }
+                }
+
+                switch (tipo) {
+                    case "rentables":
+                        return iqAnalizarRentables(ventasFiltradas);
+                    case "baja-rotacion":
+                        return iqAnalizarBajaRotacion(ventasFiltradas);
+                    case "reabastecer":
+                        return iqAnalizarReabastecer();
+                    case "proveedor-caro":
+                        return iqAnalizarProveedorCaro();
+                    case "top-clientes":
+                        return iqAnalizarTopClientes(ventasFiltradas);
+                    case "mejor-mes":
+                        return iqAnalizarMejorMes();
+                    case "perdidas":
+                        return iqAnalizarPerdidas();
+                    case "sin-vender":
+                        return iqAnalizarSinVender(ventasFiltradas);
+                }
+                return "Pregunta no reconocida.";
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    String result = get();
+                    if (result == null || result.trim().isEmpty()) {
+                        label.setText("<html><font color='#94a3b8'>Sin datos para este periodo.</font></html>");
+                    } else {
+                        label.setText("<html>" + result.replace("\n", "<br>") + "</html>");
+                    }
+                } catch (Exception e) {
+                    label.setText("<html><font color='#ef4444'>Error al analizar: " + e.getMessage() + "</font></html>");
+                }
+            }
+        }.execute();
+    }
+
+    private String iqAnalizarRentables(java.util.List<com.acacioswork.model.Venta> ventas) {
+        if (iqCacheProductos == null || ventas.isEmpty()) return "No se registraron ventas en este periodo.";
+        java.util.Map<Long, com.acacioswork.model.Producto> prodMap = new java.util.HashMap<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) prodMap.put(p.getId(), p);
+
+        java.util.Map<Long, Double> gananciaPorProducto = new java.util.HashMap<>();
+        for (com.acacioswork.model.Venta v : ventas) {
+            if (v.getDetalles() != null) {
+                for (com.acacioswork.model.DetalleVenta d : v.getDetalles()) {
+                    com.acacioswork.model.Producto p = prodMap.get(d.getIdProducto());
+                    if (p != null) {
+                        double margen = (d.getPrecioUnitario() - p.getPrecioCompra()) * d.getCantidad();
+                        gananciaPorProducto.put(d.getIdProducto(), gananciaPorProducto.getOrDefault(d.getIdProducto(), 0.0) + margen);
+                    }
+                }
+            }
+        }
+
+        java.util.List<java.util.Map.Entry<Long, Double>> list = new java.util.ArrayList<>(gananciaPorProducto.entrySet());
+        list.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        if (list.isEmpty()) return "No se registraron ventas en este periodo.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (java.util.Map.Entry<Long, Double> entry : list) {
+            if (count > 3) break;
+            com.acacioswork.model.Producto p = prodMap.get(entry.getKey());
+            String name = p != null ? p.getNombre() : "Producto #" + entry.getKey();
+            sb.append(count).append(". ").append(name)
+              .append(" → Ganancia: $").append(String.format("%,.0f", entry.getValue())).append("\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarBajaRotacion(java.util.List<com.acacioswork.model.Venta> ventas) {
+        if (iqCacheProductos == null) return "Sin catálogo de productos.";
+        java.util.Map<Long, Integer> cantidadPorProducto = new java.util.HashMap<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) {
+            if (p.getEstado() == 1) cantidadPorProducto.put(p.getId(), 0);
+        }
+
+        for (com.acacioswork.model.Venta v : ventas) {
+            if (v.getDetalles() != null) {
+                for (com.acacioswork.model.DetalleVenta d : v.getDetalles()) {
+                    if (cantidadPorProducto.containsKey(d.getIdProducto())) {
+                        cantidadPorProducto.put(d.getIdProducto(), cantidadPorProducto.get(d.getIdProducto()) + d.getCantidad());
+                    }
+                }
+            }
+        }
+
+        java.util.List<java.util.Map.Entry<Long, Integer>> list = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<Long, Integer> entry : cantidadPorProducto.entrySet()) {
+            if (entry.getValue() > 0) list.add(entry);
+        }
+        list.sort((a, b) -> Integer.compare(a.getValue(), b.getValue()));
+
+        if (list.isEmpty()) return "No hay productos con ventas en este periodo.";
+
+        java.util.Map<Long, com.acacioswork.model.Producto> prodMap = new java.util.HashMap<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) prodMap.put(p.getId(), p);
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (java.util.Map.Entry<Long, Integer> entry : list) {
+            if (count > 3) break;
+            com.acacioswork.model.Producto p = prodMap.get(entry.getKey());
+            String name = p != null ? p.getNombre() : "Producto #" + entry.getKey();
+            sb.append(count).append(". ").append(name)
+              .append(" → Solo ").append(entry.getValue()).append(" uds vendidas\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarReabastecer() {
+        if (iqCacheProductos == null) return "Sin catálogo de productos.";
+        java.util.List<com.acacioswork.model.Producto> ranking = new java.util.ArrayList<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) {
+            int min = p.getStockMinimo() != null ? p.getStockMinimo() : 5;
+            if (p.getEstado() == 1 && p.getStockActual() <= min) {
+                ranking.add(p);
+            }
+        }
+
+        ranking.sort((a, b) -> {
+            int minA = a.getStockMinimo() != null ? a.getStockMinimo() : 5;
+            int minB = b.getStockMinimo() != null ? b.getStockMinimo() : 5;
+            return Integer.compare(a.getStockActual() - minA, b.getStockActual() - minB);
+        });
+
+        if (ranking.isEmpty()) return "¡Excelente! Todos los productos tienen stock suficiente.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (com.acacioswork.model.Producto p : ranking) {
+            if (count > 3) break;
+            int min = p.getStockMinimo() != null ? p.getStockMinimo() : 5;
+            sb.append(count).append(". ").append(p.getNombre())
+              .append(" → Stock: ").append(p.getStockActual()).append(" uds (mín: ").append(min).append(")\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarProveedorCaro() {
+        if (iqCacheProductos == null || iqCacheProveedores == null) return "Sin datos suficientes.";
+        class Stats { double total = 0; int count = 0; }
+        java.util.Map<Long, Stats> provStats = new java.util.HashMap<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) {
+            if (p.getIdProveedor() != null) {
+                Stats s = provStats.computeIfAbsent(p.getIdProveedor(), k -> new Stats());
+                s.total += p.getPrecioCompra();
+                s.count++;
+            }
+        }
+
+        java.util.Map<Long, com.acacioswork.model.Proveedor> provMap = new java.util.HashMap<>();
+        for (com.acacioswork.model.Proveedor pr : iqCacheProveedores) provMap.put(pr.getId(), pr);
+
+        java.util.List<java.util.Map.Entry<Long, Stats>> list = new java.util.ArrayList<>(provStats.entrySet());
+        list.sort((a, b) -> Double.compare(b.getValue().total / b.getValue().count, a.getValue().total / a.getValue().count));
+
+        if (list.isEmpty()) return "No hay proveedores con productos asignados.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (java.util.Map.Entry<Long, Stats> entry : list) {
+            if (count > 3) break;
+            com.acacioswork.model.Proveedor pr = provMap.get(entry.getKey());
+            String name = pr != null ? pr.getNombre() : "Proveedor #" + entry.getKey();
+            double avg = entry.getValue().total / entry.getValue().count;
+            sb.append(count).append(". ").append(name)
+              .append(" → Promedio: $").append(String.format("%,.0f", avg)).append("\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarTopClientes(java.util.List<com.acacioswork.model.Venta> ventas) {
+        if (iqCacheClientes == null || ventas.isEmpty()) return "No hay compras con cliente asignado en este periodo.";
+        java.util.Map<Long, Double> compraPorCliente = new java.util.HashMap<>();
+        for (com.acacioswork.model.Venta v : ventas) {
+            if (v.getIdCliente() != null) {
+                compraPorCliente.put(v.getIdCliente(), compraPorCliente.getOrDefault(v.getIdCliente(), 0.0) + v.getValorTotal());
+            }
+        }
+
+        java.util.Map<Long, com.acacioswork.model.Cliente> cliMap = new java.util.HashMap<>();
+        for (com.acacioswork.model.Cliente c : iqCacheClientes) cliMap.put(c.getId(), c);
+
+        java.util.List<java.util.Map.Entry<Long, Double>> list = new java.util.ArrayList<>(compraPorCliente.entrySet());
+        list.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        if (list.isEmpty()) return "No hay ventas con cliente asignado en este periodo.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (java.util.Map.Entry<Long, Double> entry : list) {
+            if (count > 3) break;
+            com.acacioswork.model.Cliente c = cliMap.get(entry.getKey());
+            String name = c != null ? c.getNombre() : "Cliente #" + entry.getKey();
+            sb.append(count).append(". ").append(name)
+              .append(" → Total: $").append(String.format("%,.0f", entry.getValue())).append("\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarMejorMes() {
+        if (iqCacheProductos == null || iqCacheVentas == null || iqCacheVentas.isEmpty()) return "No hay historial de ventas para analizar.";
+        java.util.Map<Long, com.acacioswork.model.Producto> prodMap = new java.util.HashMap<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) prodMap.put(p.getId(), p);
+
+        class MesGanancia {
+            String label;
+            double ganancia = 0;
+            MesGanancia(String l) { this.label = l; }
+        }
+
+        String[] monthNames = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+
+        java.util.Map<String, MesGanancia> gananciasPorMes = new java.util.HashMap<>();
+
+        for (com.acacioswork.model.Venta v : iqCacheVentas) {
+            if (v.getFechaHora() == null || v.getDetalles() == null) continue;
+            java.time.LocalDateTime date = v.getFechaHora();
+            String key = date.getYear() + "-" + String.format("%02d", date.getMonthValue());
+            String label = monthNames[date.getMonthValue() - 1] + " " + date.getYear();
+
+            MesGanancia mg = gananciasPorMes.computeIfAbsent(key, k -> new MesGanancia(label));
+
+            for (com.acacioswork.model.DetalleVenta d : v.getDetalles()) {
+                com.acacioswork.model.Producto p = prodMap.get(d.getIdProducto());
+                double costo = p != null ? p.getPrecioCompra() : 0.0;
+                mg.ganancia += (d.getPrecioUnitario() - costo) * d.getCantidad();
+            }
+        }
+
+        java.util.List<MesGanancia> list = new java.util.ArrayList<>(gananciasPorMes.values());
+        list.sort((a, b) -> Double.compare(b.ganancia, a.ganancia));
+
+        if (list.isEmpty()) return "No hay historial de ventas para analizar.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (MesGanancia mg : list) {
+            if (count > 3) break;
+            sb.append(count).append(". ").append(mg.label)
+              .append(" → Ganancia: $").append(String.format("%,.0f", mg.ganancia)).append("\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarPerdidas() {
+        if (iqCacheProductos == null) return "Sin catálogo de productos.";
+        java.util.List<com.acacioswork.model.Producto> ranking = new java.util.ArrayList<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) {
+            if (p.getEstado() == 1 && p.getPrecioCompra() > 0 && p.getPrecioVenta() < p.getPrecioCompra()) {
+                ranking.add(p);
+            }
+        }
+
+        ranking.sort((a, b) -> Double.compare(a.getPrecioVenta() - a.getPrecioCompra(), b.getPrecioVenta() - b.getPrecioCompra()));
+
+        if (ranking.isEmpty()) return "¡Bien! Ningún producto tiene precio de venta inferior al costo.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (com.acacioswork.model.Producto p : ranking) {
+            if (count > 3) break;
+            double loss = p.getPrecioCompra() - p.getPrecioVenta();
+            sb.append(count).append(". ").append(p.getNombre())
+              .append(" → Pérdida: $").append(String.format("%,.0f", loss)).append(" por unidad\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private String iqAnalizarSinVender(java.util.List<com.acacioswork.model.Venta> ventas) {
+        if (iqCacheProductos == null) return "Sin catálogo de productos.";
+        java.util.Set<Long> vendidos = new java.util.HashSet<>();
+        for (com.acacioswork.model.Venta v : ventas) {
+            if (v.getDetalles() != null) {
+                for (com.acacioswork.model.DetalleVenta d : v.getDetalles()) {
+                    vendidos.add(d.getIdProducto());
+                }
+            }
+        }
+
+        java.util.List<com.acacioswork.model.Producto> sinVender = new java.util.ArrayList<>();
+        for (com.acacioswork.model.Producto p : iqCacheProductos) {
+            if (p.getEstado() == 1 && !vendidos.contains(p.getId())) {
+                sinVender.add(p);
+            }
+        }
+
+        if (sinVender.isEmpty()) return "¡Excelente! Todos los productos activos tuvieron ventas en este periodo.";
+
+        StringBuilder sb = new StringBuilder();
+        int count = 1;
+        for (com.acacioswork.model.Producto p : sinVender) {
+            if (count > 3) break;
+            sb.append(count).append(". ").append(p.getNombre())
+              .append(" → Stock: ").append(p.getStockActual()).append(" uds sin movimiento\n");
+            count++;
+        }
+        return sb.toString().trim();
+    }
+
+    private JPanel buildPreguntasInteligentesPanel() {
+        JPanel panel = createContentPanel();
+        panel.add(buildSectionHeader("🤖 Preguntas Inteligentes", "Análisis automático del estado de tu negocio", (JButton) null), BorderLayout.NORTH);
+
+        JPanel body = new JPanel(new BorderLayout(0, 16));
+        body.setOpaque(false);
+
+        JPanel filterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 8)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(BG_CARD);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                g2.setColor(new Color(255, 255, 255, 13));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+                g2.dispose();
+            }
+        };
+        filterBar.setOpaque(false);
+        filterBar.setBorder(new EmptyBorder(12, 16, 12, 16));
+
+        JLabel lblFilter = new JLabel("📅 Periodo de Análisis: ");
+        lblFilter.setForeground(TEXT_MAIN);
+        lblFilter.setFont(new Font("Inter", Font.BOLD, 14));
+        filterBar.add(lblFilter);
+
+        String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+        comboMes = new javax.swing.JComboBox<>(meses);
+        comboMes.setBackground(BG_DARK);
+        comboMes.setForeground(TEXT_MAIN);
+        comboMes.setFont(new Font("Inter", Font.PLAIN, 13));
+
+        String[] anios = {"2024", "2025", "2026", "2027", "2028", "2029", "2030"};
+        comboAnio = new javax.swing.JComboBox<>(anios);
+        comboAnio.setBackground(BG_DARK);
+        comboAnio.setForeground(TEXT_MAIN);
+        comboAnio.setFont(new Font("Inter", Font.PLAIN, 13));
+
+        java.time.LocalDate today = java.time.LocalDate.now();
+        comboMes.setSelectedIndex(today.getMonthValue() - 1);
+        comboAnio.setSelectedItem(String.valueOf(today.getYear()));
+
+        lblIqStatus = new JLabel("Analizando: " + meses[today.getMonthValue() - 1] + " " + today.getYear());
+        lblIqStatus.setForeground(ACCENT);
+        lblIqStatus.setFont(new Font("Inter", Font.BOLD, 13));
+
+        java.awt.event.ActionListener filterListener = e -> {
+            int m = comboMes.getSelectedIndex();
+            String y = (String) comboAnio.getSelectedItem();
+            lblIqStatus.setText("Analizando: " + meses[m] + " " + y);
+            clearIqCache();
+        };
+
+        comboMes.addActionListener(filterListener);
+        comboAnio.addActionListener(filterListener);
+
+        filterBar.add(comboMes);
+        filterBar.add(new JLabel("  "));
+        filterBar.add(comboAnio);
+        filterBar.add(new JLabel("    "));
+        filterBar.add(lblIqStatus);
+
+        body.add(filterBar, BorderLayout.NORTH);
+
+        JPanel grid = new JPanel(new GridLayout(0, 2, 16, 16));
+        grid.setOpaque(false);
+
+        grid.add(buildQuestionCard("📊 Rentabilidad", "¿Cuáles fueron los productos más rentables?", "rentables"));
+        grid.add(buildQuestionCard("🔄 Rotación", "¿Qué productos tienen baja rotación?", "baja-rotacion"));
+        grid.add(buildQuestionCard("📦 Stock", "¿Qué productos debo reabastecer?", "reabastecer"));
+        grid.add(buildQuestionCard("🏭 Costos", "¿Cuál proveedor vende más caro?", "proveedor-caro"));
+        grid.add(buildQuestionCard("👥 Clientes", "¿Qué clientes compran más?", "top-clientes"));
+        grid.add(buildQuestionCard("📈 Historial", "¿Cuál fue el mes con mayores ganancias?", "mejor-mes"));
+        grid.add(buildQuestionCard("⚠️ Margen", "¿Qué productos me están generando pérdidas?", "perdidas"));
+        grid.add(buildQuestionCard("💤 Inactivos", "¿Qué productos llevan más tiempo sin venderse?", "sin-vender"));
+
+        JScrollPane scroll = new JScrollPane(grid);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
+
+        body.add(scroll, BorderLayout.CENTER);
+        panel.add(body, BorderLayout.CENTER);
+
+        final long startTime = System.currentTimeMillis();
+        javax.swing.Timer iqPulseTimer = new javax.swing.Timer(50, e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            double progress = (elapsed % 2000) / 2000.0;
+            double sinVal = Math.sin(progress * 2.0 * Math.PI);
+            double factor = (sinVal + 1.0) / 2.0;
+            for (PulsingAnswerLabel l : pulsingLabels) {
+                l.setFactor(factor);
+            }
+        });
+        iqPulseTimer.start();
+
+        return panel;
+    }
+
+    private JPanel buildQuestionCard(String badgeText, String questionText, String iqType) {
+        JPanel c = new JPanel(new BorderLayout(0, 10)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(BG_CARD);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                g2.setPaint(new GradientPaint(0, 0, new Color(249, 115, 22), getWidth(), 0, new Color(239, 68, 68)));
+                g2.fillRect(0, 0, getWidth(), 4);
+                g2.setColor(new Color(255, 255, 255, 10));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+                g2.dispose();
+            }
+        };
+        c.setOpaque(false);
+        c.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(255, 255, 255, 0), 1),
+                new EmptyBorder(14, 16, 14, 16)));
+
+        JLabel badge = new JLabel(badgeText);
+        badge.setForeground(new Color(129, 140, 248));
+        badge.setFont(new Font("Inter", Font.BOLD, 11));
+
+        JLabel qText = new JLabel(questionText);
+        qText.setForeground(TEXT_MAIN);
+        qText.setFont(new Font("Inter", Font.BOLD, 14));
+
+        JPanel topPanel = new JPanel(new GridLayout(2, 1, 0, 4));
+        topPanel.setOpaque(false);
+        topPanel.add(badge);
+        topPanel.add(qText);
+
+        PulsingAnswerLabel ansLabel = new PulsingAnswerLabel();
+        pulsingLabels.add(ansLabel);
+
+        JButton btnAnalizar = new JButton("Analizar 🤖") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(new GradientPaint(0, 0, new Color(249, 115, 22), 0, getHeight(), new Color(239, 68, 68)));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        btnAnalizar.setForeground(Color.WHITE);
+        btnAnalizar.setFont(new Font("Inter", Font.BOLD, 11));
+        btnAnalizar.setBorder(new EmptyBorder(6, 14, 6, 14));
+        btnAnalizar.setFocusPainted(false);
+        btnAnalizar.setContentAreaFilled(false);
+        btnAnalizar.setOpaque(false);
+        btnAnalizar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnAnalizar.addActionListener(e -> ejecutarPreguntaInteligente(iqType, ansLabel));
+
+        c.add(topPanel, BorderLayout.NORTH);
+        c.add(ansLabel, BorderLayout.CENTER);
+
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        bottom.setOpaque(false);
+        bottom.add(btnAnalizar);
+        c.add(bottom, BorderLayout.SOUTH);
+
+        return c;
     }
 
     /** Panel de gráfico personalizado que dibuja la tendencia de ventas mensuales. @author RADJ */

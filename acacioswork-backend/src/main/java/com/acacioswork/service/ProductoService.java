@@ -4,7 +4,6 @@ package com.acacioswork.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +15,13 @@ import com.acacioswork.repository.ProductoRepository;
 @Transactional
 public class ProductoService {
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    public ProductoService(ProductoRepository productoRepository) {
+        this.productoRepository = productoRepository;
+    }
+
+
+
+private final ProductoRepository productoRepository;
 
     /** Obtiene todos los productos. @author RADJ */
     public List<Producto> findAll() {

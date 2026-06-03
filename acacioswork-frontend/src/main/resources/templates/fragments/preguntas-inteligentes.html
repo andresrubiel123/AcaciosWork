@@ -1,0 +1,87 @@
+<!-- Módulo de Preguntas Inteligentes para análisis automático de datos del negocio. @author RADJ -->
+<div th:fragment="preguntas-inteligentes" id="sec-preguntas-inteligentes" class="section" style="display:none">
+    <div class="section-header">
+        <div>
+            <h1>🤖 Preguntas Inteligentes</h1>
+            <p>Análisis automático de tu negocio — selecciona un mes y haz clic en cada pregunta</p>
+        </div>
+    </div>
+
+    <div class="iq-container">
+        <!-- Filtro de mes y año. @author RADJ -->
+        <div class="iq-filter">
+            <label for="iq-month-filter">
+                📅 Periodo de análisis:
+            </label>
+            <input type="month" id="iq-month-filter" onchange="onIqFilterChange()">
+            <span class="iq-filter-hint" id="iq-filter-status">Selecciona un mes para activar las preguntas</span>
+        </div>
+
+        <!-- Grid de tarjetas-pregunta. @author RADJ -->
+        <div class="iq-grid">
+            <!-- Pregunta 1: Productos más rentables. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-rentables" onclick="ejecutarPreguntaInteligente('rentables')">
+                <span class="iq-badge">Rentabilidad</span>
+                <span class="iq-card-icon">💰</span>
+                <div class="iq-card-question">¿Cuáles fueron los productos más rentables?</div>
+                <div id="iq-answer-rentables"></div>
+            </div>
+
+            <!-- Pregunta 2: Productos con baja rotación. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-baja-rotacion" onclick="ejecutarPreguntaInteligente('baja-rotacion')">
+                <span class="iq-badge">Rotación</span>
+                <span class="iq-card-icon">🐌</span>
+                <div class="iq-card-question">¿Qué productos tienen baja rotación?</div>
+                <div id="iq-answer-baja-rotacion"></div>
+            </div>
+
+            <!-- Pregunta 3: Productos a reabastecer. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-reabastecer" onclick="ejecutarPreguntaInteligente('reabastecer')">
+                <span class="iq-badge">Stock</span>
+                <span class="iq-card-icon">📦</span>
+                <div class="iq-card-question">¿Qué productos debo reabastecer?</div>
+                <div id="iq-answer-reabastecer"></div>
+            </div>
+
+            <!-- Pregunta 4: Proveedor más caro. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-proveedor-caro" onclick="ejecutarPreguntaInteligente('proveedor-caro')">
+                <span class="iq-badge">Proveedores</span>
+                <span class="iq-card-icon">🏭</span>
+                <div class="iq-card-question">¿Cuál proveedor vende más caro?</div>
+                <div id="iq-answer-proveedor-caro"></div>
+            </div>
+
+            <!-- Pregunta 5: Clientes que más compran. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-top-clientes" onclick="ejecutarPreguntaInteligente('top-clientes')">
+                <span class="iq-badge">Clientes</span>
+                <span class="iq-card-icon">👥</span>
+                <div class="iq-card-question">¿Qué clientes compran más?</div>
+                <div id="iq-answer-top-clientes"></div>
+            </div>
+
+            <!-- Pregunta 6: Mes con mayores ganancias. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-mejor-mes" onclick="ejecutarPreguntaInteligente('mejor-mes')">
+                <span class="iq-badge">Ganancias</span>
+                <span class="iq-card-icon">📈</span>
+                <div class="iq-card-question">¿Qué mes tuvo mayores ganancias?</div>
+                <div id="iq-answer-mejor-mes"></div>
+            </div>
+
+            <!-- Pregunta 7: Productos con pérdidas. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-perdidas" onclick="ejecutarPreguntaInteligente('perdidas')">
+                <span class="iq-badge">Pérdidas</span>
+                <span class="iq-card-icon">📉</span>
+                <div class="iq-card-question">¿Qué producto me está generando pérdidas?</div>
+                <div id="iq-answer-perdidas"></div>
+            </div>
+
+            <!-- Pregunta 8: Productos sin venderse. @author RADJ -->
+            <div class="iq-card disabled" id="iq-card-sin-vender" onclick="ejecutarPreguntaInteligente('sin-vender')">
+                <span class="iq-badge">Estancados</span>
+                <span class="iq-card-icon">🕸️</span>
+                <div class="iq-card-question">¿Qué productos llevan más tiempo sin venderse?</div>
+                <div id="iq-answer-sin-vender"></div>
+            </div>
+        </div>
+    </div>
+</div>

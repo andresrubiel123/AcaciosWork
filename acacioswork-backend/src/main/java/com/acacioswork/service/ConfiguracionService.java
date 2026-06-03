@@ -1,16 +1,21 @@
 package com.acacioswork.service;
 
-import com.acacioswork.model.Configuracion;
-import com.acacioswork.repository.ConfiguracionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.acacioswork.model.Configuracion;
+import com.acacioswork.repository.ConfiguracionRepository;
 
 @Service
 public class ConfiguracionService {
 
-    @Autowired
-    private ConfiguracionRepository configuracionRepository;
+    public ConfiguracionService(ConfiguracionRepository configuracionRepository) {
+        this.configuracionRepository = configuracionRepository;
+    }
+
+
+
+private final ConfiguracionRepository configuracionRepository;
 
     public Configuracion getConfiguracion() {
         return configuracionRepository.findById(1L).orElseGet(() -> {

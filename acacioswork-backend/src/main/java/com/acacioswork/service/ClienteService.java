@@ -3,7 +3,6 @@ package com.acacioswork.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +14,13 @@ import com.acacioswork.repository.ClienteRepository;
 @Transactional
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    public ClienteService(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
+
+
+
+private final ClienteRepository clienteRepository;
 
     /** Obtiene todos los clientes. @author RADJ */
     public List<Cliente> findAll() {

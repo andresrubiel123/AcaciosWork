@@ -1,13 +1,17 @@
 package com.acacioswork.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.acacioswork.model.AlertaStockMinimo;
 import com.acacioswork.service.InventarioService;
 import com.acacioswork.util.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /** Controlador REST para la gestión de alertas de inventario. @author RADJ */
 @RestController
@@ -15,8 +19,13 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class InventarioController {
 
-    @Autowired
-    private InventarioService inventarioService;
+    public InventarioController(InventarioService inventarioService) {
+        this.inventarioService = inventarioService;
+    }
+
+
+
+private final InventarioService inventarioService;
 
     /** Obtiene el listado de alertas por stock mínimo. @author RADJ */
     @GetMapping("/alertas")

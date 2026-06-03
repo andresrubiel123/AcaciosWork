@@ -2,7 +2,6 @@ package com.acacioswork.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +13,13 @@ import com.acacioswork.repository.ClienteRepository;
 @Transactional
 public class ClienteManager {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    public ClienteManager(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
+
+
+
+private final ClienteRepository clienteRepository;
 
     /** Crea un nuevo cliente. @author RADJ */
     public boolean crearCliente(Cliente cliente) {

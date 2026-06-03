@@ -1,36 +1,54 @@
-# AcaciosWork - Ecosistema de Gestión Empresarial (SaaS)
+# AcaciosWork - Plataforma Inteligente de Gestión Empresarial
 
-AcaciosWork es una solución integral multiplataforma diseñada para la gestión de tiendas y pequeñas empresas. El sistema se basa en una arquitectura **SaaS (Software as a Service)** con un núcleo API centralizado y múltiples interfaces de cliente optimizadas para diferentes entornos.
+AcaciosWork es una **plataforma inteligente de gestión empresarial para negocios físicos**, diseñada como un ecosistema multiplataforma que va más allá del inventario tradicional. Combina gestión operativa (inventarios, ventas, clientes) con **inteligencia de negocio automatizada** que analiza datos en tiempo real para tomar decisiones estratégicas. Arquitectura **SaaS (Software as a Service)** con un núcleo API centralizado y múltiples interfaces de cliente.
 
 ---
 
-##  Arquitectura del Sistema
+## 🏗 Arquitectura del Sistema
 
-###  [Core API (Backend)](file:///c:/AcaciosWork/acacioswork-backend)
+### 🧠 [Core API (Backend)](file:///c:/AcaciosWork/acacioswork-backend)
 El "cerebro" del sistema. Gestiona la persistencia de datos en MySQL, la lógica de negocio y la seguridad JWT.
 - **Stack**: Java 25, Spring Boot 4.0.6, JPA, JWT, MySQL 8.0.
 
-###  [Administración Desktop](file:///c:/AcaciosWork/acacioswork-desktop)
+### 🖥 [Administración Desktop](file:///c:/AcaciosWork/acacioswork-desktop)
 Interfaz robusta para la gestión pesada de inventarios, usuarios y Punto de Venta (POS).
 - **Stack**: Java 25, Swing, FlatLaf (UI Moderna), Jackson (JSON).
 
-###  [Dashboard Web](file:///c:/AcaciosWork/acacioswork-frontend)
-Acceso ligero y universal para supervisión y consultas rápidas desde cualquier navegador.
+### 🌐 [Dashboard Web](file:///c:/AcaciosWork/acacioswork-frontend)
+Acceso ligero y universal para supervisión, consultas rápidas e **inteligencia de negocio** desde cualquier navegador.
 - **Stack**: HTML5, CSS3, JavaScript (Vanilla ES6+).
+- **Módulo IA**: Preguntas Inteligentes — análisis automático de rentabilidad, rotación, proveedores, clientes y tendencias.
 
-###  [App Móvil](file:///c:/AcaciosWork/acacioswork-android)
+### 📱 [App Móvil](file:///c:/AcaciosWork/acacioswork-android)
 Gestión en movimiento para control de stock y alertas mediante dispositivos móviles.
 - **Stack**: Kotlin 2.x, Android SDK, MVVM, Retrofit.
 
 ---
 
-##  Mapa del Repositorio
+## 🤖 Inteligencia de Negocio
+
+AcaciosWork incluye un módulo de **Preguntas Inteligentes** que permite al usuario hacer preguntas predefinidas sobre su negocio y obtener respuestas automáticas basadas en el análisis de los datos reales del sistema:
+
+| Pregunta | Análisis |
+| :--- | :--- |
+| ¿Cuáles fueron los productos más rentables? | Margen × volumen vendido |
+| ¿Qué productos tienen baja rotación? | Menor cantidad vendida |
+| ¿Qué productos debo reabastecer? | Stock actual vs. stock mínimo |
+| ¿Cuál proveedor vende más caro? | Promedio de costo por proveedor |
+| ¿Qué clientes compran más? | Volumen total de compras |
+| ¿Qué mes tuvo mayores ganancias? | Ganancia neta mensual |
+| ¿Qué producto genera pérdidas? | Precio venta < precio costo |
+| ¿Qué productos llevan sin venderse? | Sin presencia en ventas recientes |
+
+---
+
+## 📁 Mapa del Repositorio
 
 ```text
 AcaciosWork/
 ├── acacioswork-backend/   # API REST (Spring Boot)
 ├── acacioswork-desktop/   # App Escritorio (Swing)
-├── acacioswork-frontend/  # App Web (HTML/JS)
+├── acacioswork-frontend/  # App Web (HTML/JS) + Inteligencia de Negocio
 ├── acacioswork-android/   # App Móvil (Kotlin)
 ├── database/              # Scripts SQL y esquemas
 ├── proyect-context/       # Contexto detallado para Agentes de IA

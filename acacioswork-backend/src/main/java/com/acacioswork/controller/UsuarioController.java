@@ -2,7 +2,6 @@ package com.acacioswork.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,8 +27,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @CrossOrigin(origins = "*")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    public UsuarioController(UsuarioService usuarioService, com.acacioswork.config.JwtUtil jwtUtil) {
+        this.usuarioService = usuarioService;
+        this.jwtUtil = jwtUtil;
+    }
+
+
+
+private final UsuarioService usuarioService;
 
     /** Obtiene el listado de todos los usuarios. @author RADJ */
     @GetMapping
@@ -85,8 +90,7 @@ public class UsuarioController {
                 .body(new ApiResponse<>(false, "No existe un usuario con esa identificación", null)));
     }
 
-    @Autowired
-    private com.acacioswork.config.JwtUtil jwtUtil;
+private final com.acacioswork.config.JwtUtil jwtUtil;
 
     /** Endpoint para la autenticación de usuarios. @author RADJ */
     @PostMapping("/login")

@@ -1,17 +1,23 @@
 package com.acacioswork.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.acacioswork.model.Categoria;
 import com.acacioswork.repository.CategoriaRepository;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /** Servicio para gestionar categorías. @author RADJ */
 @Service
 public class CategoriaManager {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    public CategoriaManager(CategoriaRepository categoriaRepository) {
+        this.categoriaRepository = categoriaRepository;
+    }
+
+
+
+private final CategoriaRepository categoriaRepository;
 
     /** Obtiene todas las categorías. @author RADJ */
     public List<Categoria> leerTodasCategorias() {

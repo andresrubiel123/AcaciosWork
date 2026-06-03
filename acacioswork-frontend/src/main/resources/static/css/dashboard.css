@@ -932,3 +932,232 @@ select:focus {
     border: 1px solid #ef4444;
     color: #fecaca;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   🤖 MÓDULO PREGUNTAS INTELIGENTES — Estilos premium con animaciones.
+   @author RADJ
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Contenedor principal del módulo. @author RADJ */
+.iq-container {
+    padding: 0.5rem 0;
+}
+
+/* Barra de filtro mes/año con efecto glassmorphism. @author RADJ */
+.iq-filter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(12px);
+    flex-wrap: wrap;
+}
+
+.iq-filter label {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.iq-filter input[type="month"] {
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    background: rgba(249, 115, 22, 0.08);
+    color: #fb923c;
+    font-size: 0.9rem;
+    font-weight: 600;
+    outline: none;
+    margin-bottom: 0;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    min-width: 180px;
+}
+
+.iq-filter input[type="month"]:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+.iq-filter input[type="month"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7) sepia(1) saturate(5) hue-rotate(360deg);
+    cursor: pointer;
+}
+
+.iq-filter-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-left: auto;
+}
+
+/* Grid responsivo de tarjetas-pregunta. @author RADJ */
+.iq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+/* Tarjeta individual con efecto hover premium. @author RADJ */
+.iq-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.85rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.iq-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f97316, #fb923c, #f59e0b);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.iq-card:hover {
+    border-color: rgba(249, 115, 22, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -8px rgba(249, 115, 22, 0.2);
+}
+
+.iq-card:hover::before {
+    opacity: 1;
+}
+
+.iq-card:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -4px rgba(249, 115, 22, 0.2);
+}
+
+/* Icono de la pregunta. @author RADJ */
+.iq-card-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.6rem;
+    display: block;
+}
+
+/* Texto de la pregunta como botón. @author RADJ */
+.iq-card-question {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+/* Texto de respuesta naranja con animación palpitante. @author RADJ */
+.iq-answer {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fb923c;
+    line-height: 1.65;
+    padding: 0.75rem;
+    background: rgba(249, 115, 22, 0.06);
+    border-radius: 0.5rem;
+    border-left: 3px solid #f97316;
+    margin-top: auto;
+    white-space: pre-line;
+}
+
+/* Animación de palpitación cada 2 segundos para las respuestas. @author RADJ */
+.iq-answer.pulsing {
+    animation: iq-pulse 2s ease-in-out infinite;
+}
+
+@keyframes iq-pulse {
+    0%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 0 transparent;
+    }
+    50% {
+        opacity: 0.7;
+        text-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+    }
+}
+
+/* Spinner de carga dentro de la tarjeta. @author RADJ */
+.iq-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 0.75rem;
+    margin-top: auto;
+}
+
+.iq-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(249, 115, 22, 0.2);
+    border-top-color: #f97316;
+    border-radius: 50%;
+    animation: iq-spin 0.6s linear infinite;
+}
+
+@keyframes iq-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Estado inactivo de la tarjeta (sin filtro seleccionado). @author RADJ */
+.iq-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Efecto shimmer decorativo en hover. @author RADJ */
+.iq-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.02) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    transition: 0.75s;
+}
+
+.iq-card:hover::after {
+    left: 120%;
+}
+
+/* Badge indicador dentro de la tarjeta. @author RADJ */
+.iq-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.1);
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    width: fit-content;
+}

@@ -3,7 +3,6 @@ package com.acacioswork.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +14,13 @@ import com.acacioswork.repository.CategoriaRepository;
 @Transactional
 public class CategoriaService {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    public CategoriaService(CategoriaRepository categoriaRepository) {
+        this.categoriaRepository = categoriaRepository;
+    }
+
+
+
+private final CategoriaRepository categoriaRepository;
 
     /** Obtiene todas las categorías. @author RADJ */
     public List<Categoria> findAll() {

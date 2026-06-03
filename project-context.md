@@ -192,9 +192,7 @@ graph LR
 ---
 ## ESTÁNDAR DE DOCUMENTACIÓN Y COMENTARIOS
 
-Todo bloque de código generado debe incluir una descripción en español
-funcional breve y la firma del autor, adaptándose a la sintaxis 
-de cada tecnología según los siguientes tres formatos obligatorios: 
+Todo bloque de código generado debe incluir una descripción en español funcional breve y la firma del autor, adaptándose a la sintaxis de cada tecnología según los siguientes tres formatos obligatorios: 
 
 Para Java, Kotlin y JavaScript (JS):
 "/** Descripción breve. @author RADJ */"

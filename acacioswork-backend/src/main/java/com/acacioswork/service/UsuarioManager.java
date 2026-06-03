@@ -2,7 +2,6 @@ package com.acacioswork.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,16 @@ import com.acacioswork.repository.UsuarioRepository;
 @Transactional
 public class UsuarioManager {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    public UsuarioManager(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+
+
+private final UsuarioRepository usuarioRepository;
+
+private final BCryptPasswordEncoder passwordEncoder;
 
     /** Realiza el login de un usuario */
     public Usuario login(String usuario, String clave) {

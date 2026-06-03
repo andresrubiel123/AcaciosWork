@@ -21,18 +21,64 @@ Este módulo permite a los administradores y gerentes consultar el estado del ne
 ## Estructura de Carpetas
 La estructura de este módulo sigue el estándar de recursos de un proyecto Spring Boot:
 
-- `src/main/resources/templates/`: Vistas y plantillas HTML del sistema (Thymeleaf).
-  - `login.html`: Interfaz de acceso al sistema.
-  - `administrador-dashboard.html`: Panel principal para el administrador.
-  - `auxiliar-dashboard.html`: Panel principal para el auxiliar de tienda.
-  - `fragments/`: Fragmentos Thymeleaf reutilizables (`navbar.html`, `stats-cards.html`, `products-table.html`, etc.).
-- `src/main/resources/static/`: Recursos estáticos de la web.
-  - `css/`: Estilos CSS.
-    - `styles.css`: Estilos globales y variables de diseño.
-    - `dashboard.css`: Estilos específicos para la visualización de los paneles de control.
-  - `js/`: Scripts JavaScript.
-    - `api.js`: Núcleo de comunicación API con el backend.
-    - `dashboard.js`: Lógica interactiva para la carga dinámica de fragmentos y control del dashboard.
+```
+acacioswork-frontend/
+├── .github/
+│   └── java-upgrade/
+│       ├── .gitignore
+│       └── 20260501074435/
+│           └── logs/
+│               └── 0.log
+├── src/
+│   └── main/
+│       └── resources/
+│           ├── static/
+│           │   ├── css/
+│           │   │   ├── dashboard.css
+│           │   │   └── styles.css
+│           │   └── js/
+│           │       ├── api.js
+│           │       ├── dashboard.js
+│           │       └── grafico-categorias.js
+│           └── templates/
+│               ├── administrador-dashboard.html
+│               ├── auxiliar-dashboard.html
+│               ├── login.html
+│               └── fragments/
+│                   ├── alertas.html
+│                   ├── clientes.html
+│                   ├── configuracion.html
+│                   ├── grafico-categorias.html
+│                   ├── grafico-ventas.html
+│                   ├── home-products-table.html
+│                   ├── modals.html
+│                   ├── navbar.html
+│                   ├── preguntas-inteligentes.html
+│                   ├── products-table.html
+│                   ├── proveedores.html
+│                   ├── reportes.html
+│                   ├── stats-cards.html
+│                   ├── usuarios.html
+│                   └── vender.html
+├── package.json
+├── package-lock.json
+└── README.md
+```
+
+### Descripción de Archivos Principales
+
+| Archivo | Descripción |
+|---------|-------------|
+| `src/main/resources/templates/login.html` | Interfaz de acceso al sistema |
+| `src/main/resources/templates/administrador-dashboard.html` | Panel principal para el administrador |
+| `src/main/resources/templates/auxiliar-dashboard.html` | Panel principal para el auxiliar de tienda |
+| `src/main/resources/templates/fragments/` | Fragmentos Thymeleaf reutilizables (navbar, stats-cards, products-table, etc.) |
+| `src/main/resources/static/css/styles.css` | Estilos globales y variables de diseño |
+| `src/main/resources/static/css/dashboard.css` | Estilos específicos para los paneles de control |
+| `src/main/resources/static/js/api.js` | Núcleo de comunicación API con el backend |
+| `src/main/resources/static/js/dashboard.js` | Lógica interactiva para la carga dinámica de fragmentos |
+| `src/main/resources/static/js/grafico-categorias.js` | Lógica para gráficos de categorías |
+| `.github/java-upgrade/logs/` | Logs de sesiones de actualización de Java |
 
 ---
 

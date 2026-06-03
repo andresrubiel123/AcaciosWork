@@ -1,26 +1,32 @@
 /** Servicio de lógica de negocio para movimientos de inventario. @author RADJ */
 package com.acacioswork.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.acacioswork.model.MovimientoInventario;
 import com.acacioswork.model.Producto;
 import com.acacioswork.model.TipoMovimiento;
 import com.acacioswork.repository.MovimientoInventarioRepository;
 import com.acacioswork.repository.ProductoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 /** Servicio para gestionar las operaciones de entradas, salidas y auditoría de stock. @author RADJ */
 @Service
 @Transactional
 public class MovimientoInventarioService {
 
-    @Autowired
-    private MovimientoInventarioRepository movimientoRepository;
+    public MovimientoInventarioService(MovimientoInventarioRepository movimientoRepository, ProductoRepository productoRepository) {
+        this.movimientoRepository = movimientoRepository;
+        this.productoRepository = productoRepository;
+    }
 
-    @Autowired
-    private ProductoRepository productoRepository;
+
+
+private final MovimientoInventarioRepository movimientoRepository;
+
+private final ProductoRepository productoRepository;
 
     /** Registra un movimiento y actualiza el stock del producto de manera transaccional. @author RADJ */
     public MovimientoInventario registrarMovimiento(MovimientoInventario movimiento) {

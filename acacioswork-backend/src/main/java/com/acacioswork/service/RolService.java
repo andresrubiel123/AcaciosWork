@@ -2,7 +2,6 @@ package com.acacioswork.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +13,13 @@ import com.acacioswork.repository.RolRepository;
 @Transactional
 public class RolService {
 
-    @Autowired
-    private RolRepository rolRepository;
+    public RolService(RolRepository rolRepository) {
+        this.rolRepository = rolRepository;
+    }
+
+
+
+private final RolRepository rolRepository;
 
     /** Recupera todos los roles del sistema. @author RADJ */
     public List<Rol> findAll() {

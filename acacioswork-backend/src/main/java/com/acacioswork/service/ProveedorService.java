@@ -3,7 +3,6 @@ package com.acacioswork.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +14,13 @@ import com.acacioswork.repository.ProveedorRepository;
 @Transactional
 public class ProveedorService {
 
-    @Autowired
-    private ProveedorRepository proveedorRepository;
+    public ProveedorService(ProveedorRepository proveedorRepository) {
+        this.proveedorRepository = proveedorRepository;
+    }
+
+
+
+private final ProveedorRepository proveedorRepository;
 
     /** Obtiene todos los proveedores registrados. @author RADJ */
     public List<Proveedor> findAll() {

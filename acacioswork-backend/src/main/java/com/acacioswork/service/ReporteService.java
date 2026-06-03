@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +16,16 @@ import com.acacioswork.repository.VentaRepository;
 @Transactional
 public class ReporteService {
 
-    @Autowired
-    private VentaRepository ventaRepository;
+    public ReporteService(VentaRepository ventaRepository, InventarioService inventarioService) {
+        this.ventaRepository = ventaRepository;
+        this.inventarioService = inventarioService;
+    }
 
-    @Autowired
-    private InventarioService inventarioService;
+
+
+private final VentaRepository ventaRepository;
+
+private final InventarioService inventarioService;
 
     /** Registra una venta en el sistema. @author RADJ */
     public Venta saveVenta(Venta venta) {

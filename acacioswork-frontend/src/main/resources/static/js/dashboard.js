@@ -108,6 +108,7 @@ function showSection(name, btn) {
     if (name === 'alertas') loadAlertas();
     if (name === 'vender') loadVenderSection();
     if (name === 'reportes') { loadReportesChart(); loadCategoriasChart(); }
+    if (name === 'preguntas-inteligentes') loadPreguntasInteligentes();
 }
 
 /** Actualiza la interfaz gráfica de las tarjetas de estadísticas con los productos proporcionados. @author RADJ */
@@ -1936,3 +1937,357 @@ function switchConfigTab(tabName) {
 }
 
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   🤖 MÓDULO PREGUNTAS INTELIGENTES — Lógica de análisis de datos del negocio.
+   Todas las preguntas se resuelven en frontend usando los endpoints existentes.
+   @author RADJ
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/** Cache temporal de datos para evitar múltiples peticiones al API. @author RADJ */
+let iqCache = { ventas: null, productos: null, proveedores: null, clientes: null };
+
+/** Inicializa el módulo al entrar en la sección. @author RADJ */
+function loadPreguntasInteligentes() {
+    /** Establecer el mes actual como valor por defecto si no hay filtro. @author RADJ */
+    const monthInput = document.getElementById('iq-month-filter');
+    if (monthInput && !monthInput.value) {
+        const now = new Date();
+        monthInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        onIqFilterChange();
+    }
+    /** Limpiar cache para forzar datos frescos. @author RADJ */
+    iqCache = { ventas: null, productos: null, proveedores: null, clientes: null };
+}
+
+/** Maneja el cambio de filtro de mes/año y habilita/deshabilita tarjetas. @author RADJ */
+function onIqFilterChange() {
+    const monthInput = document.getElementById('iq-month-filter');
+    const status = document.getElementById('iq-filter-status');
+    const cards = document.querySelectorAll('.iq-card');
+
+    if (monthInput && monthInput.value) {
+        /** Formatear mes seleccionado para mostrar en el indicador. @author RADJ */
+        const [year, month] = monthInput.value.split('-');
+        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        status.textContent = `Analizando: ${monthNames[parseInt(month) - 1]} ${year}`;
+        status.style.color = '#10b981';
+        /** Habilitar todas las tarjetas para consultas. @author RADJ */
+        cards.forEach(c => c.classList.remove('disabled'));
+    } else {
+        status.textContent = 'Selecciona un mes para activar las preguntas';
+        status.style.color = '';
+        cards.forEach(c => c.classList.add('disabled'));
+    }
+    /** Limpiar respuestas anteriores al cambiar el filtro. @author RADJ */
+    document.querySelectorAll('[id^="iq-answer-"]').forEach(el => el.innerHTML = '');
+    /** Invalidar cache para forzar recarga con nuevo filtro. @author RADJ */
+    iqCache = { ventas: null, productos: null, proveedores: null, clientes: null };
+}
+
+/** Obtiene datos de la API con cache para evitar peticiones duplicadas. @author RADJ */
+async function iqFetchData() {
+    if (!iqCache.ventas) iqCache.ventas = await apiRequest('/ventas') || [];
+    if (!iqCache.productos) iqCache.productos = await apiRequest('/productos') || [];
+    if (!iqCache.proveedores) iqCache.proveedores = await apiRequest('/proveedores') || [];
+    if (!iqCache.clientes) iqCache.clientes = await apiRequest('/clientes') || [];
+    return iqCache;
+}
+
+/** Filtra ventas por el mes y año seleccionados en el filtro. @author RADJ */
+function iqFiltrarVentasPorMes(ventas, monthValue) {
+    if (!monthValue) return ventas;
+    const [year, month] = monthValue.split('-').map(Number);
+    return ventas.filter(v => {
+        if (!v.fechaHora) return false;
+        const fecha = new Date(v.fechaHora);
+        return fecha.getFullYear() === year && (fecha.getMonth() + 1) === month;
+    });
+}
+
+/** Muestra spinner de carga dentro de una tarjeta de respuesta. @author RADJ */
+function iqShowLoading(answerId) {
+    const el = document.getElementById(answerId);
+    if (el) el.innerHTML = '<div class="iq-loading"><div class="iq-spinner"></div>Analizando datos...</div>';
+}
+
+/** Muestra la respuesta con animación palpitante en color naranja. @author RADJ */
+function iqShowAnswer(answerId, text) {
+    const el = document.getElementById(answerId);
+    if (el) {
+        el.innerHTML = `<div class="iq-answer pulsing">${text}</div>`;
+    }
+}
+
+/** Muestra mensaje cuando no hay datos suficientes para responder. @author RADJ */
+function iqShowEmpty(answerId, msg) {
+    const el = document.getElementById(answerId);
+    if (el) {
+        el.innerHTML = `<div class="iq-answer" style="color: var(--text-muted); border-left-color: var(--text-muted);">${msg || 'Sin datos suficientes para este periodo.'}</div>`;
+    }
+}
+
+/** Función principal que ejecuta la pregunta inteligente según su tipo. @author RADJ */
+async function ejecutarPreguntaInteligente(tipo) {
+    const monthValue = document.getElementById('iq-month-filter')?.value;
+    if (!monthValue) return;
+
+    const answerId = `iq-answer-${tipo}`;
+    iqShowLoading(answerId);
+
+    try {
+        const data = await iqFetchData();
+        const ventasFiltradas = iqFiltrarVentasPorMes(data.ventas, monthValue);
+
+        /** Despachar según el tipo de pregunta. @author RADJ */
+        switch (tipo) {
+            case 'rentables':
+                iqAnalizarRentables(data, ventasFiltradas, answerId);
+                break;
+            case 'baja-rotacion':
+                iqAnalizarBajaRotacion(data, ventasFiltradas, answerId);
+                break;
+            case 'reabastecer':
+                iqAnalizarReabastecer(data, answerId);
+                break;
+            case 'proveedor-caro':
+                iqAnalizarProveedorCaro(data, answerId);
+                break;
+            case 'top-clientes':
+                iqAnalizarTopClientes(data, ventasFiltradas, answerId);
+                break;
+            case 'mejor-mes':
+                iqAnalizarMejorMes(data, answerId);
+                break;
+            case 'perdidas':
+                iqAnalizarPerdidas(data, answerId);
+                break;
+            case 'sin-vender':
+                iqAnalizarSinVender(data, ventasFiltradas, answerId);
+                break;
+            default:
+                iqShowEmpty(answerId, 'Pregunta no reconocida.');
+        }
+    } catch (e) {
+        iqShowEmpty(answerId, `Error al analizar: ${e.message}`);
+        console.error('Error en pregunta inteligente:', e);
+    }
+}
+
+/** P1: Productos más rentables — margen × cantidad vendida en periodo. @author RADJ */
+function iqAnalizarRentables(data, ventasFiltradas, answerId) {
+    const prodMap = {};
+    data.productos.forEach(p => { prodMap[p.id] = p; });
+
+    /** Acumular ganancia por producto vendido en el periodo. @author RADJ */
+    const gananciaPorProducto = {};
+    ventasFiltradas.forEach(v => {
+        if (!v.detalles) return;
+        v.detalles.forEach(d => {
+            const prod = prodMap[d.idProducto];
+            if (!prod) return;
+            const margen = (d.precioUnitario - (prod.precioCompra || 0)) * d.cantidad;
+            gananciaPorProducto[d.idProducto] = (gananciaPorProducto[d.idProducto] || 0) + margen;
+        });
+    });
+
+    const ranking = Object.entries(gananciaPorProducto)
+        .map(([id, ganancia]) => ({ nombre: prodMap[id]?.nombre || `Producto #${id}`, ganancia }))
+        .sort((a, b) => b.ganancia - a.ganancia)
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, 'No se registraron ventas en este periodo.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.nombre} → Ganancia: $${Math.round(r.ganancia).toLocaleString()}`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P2: Productos con baja rotación — menor cantidad vendida en el periodo. @author RADJ */
+function iqAnalizarBajaRotacion(data, ventasFiltradas, answerId) {
+    /** Contabilizar cantidad vendida por producto. @author RADJ */
+    const cantidadPorProducto = {};
+    data.productos.filter(p => p.estado === 1).forEach(p => { cantidadPorProducto[p.id] = 0; });
+
+    ventasFiltradas.forEach(v => {
+        if (!v.detalles) return;
+        v.detalles.forEach(d => {
+            if (cantidadPorProducto[d.idProducto] !== undefined) {
+                cantidadPorProducto[d.idProducto] += d.cantidad;
+            }
+        });
+    });
+
+    const prodMap = {};
+    data.productos.forEach(p => { prodMap[p.id] = p; });
+
+    const ranking = Object.entries(cantidadPorProducto)
+        .filter(([id, qty]) => qty > 0)
+        .map(([id, qty]) => ({ nombre: prodMap[id]?.nombre || `Producto #${id}`, cantidad: qty }))
+        .sort((a, b) => a.cantidad - b.cantidad)
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, 'No hay productos con ventas en este periodo.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.nombre} → Solo ${r.cantidad} uds vendidas`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P3: Productos a reabastecer — stock actual ≤ stock mínimo. @author RADJ */
+function iqAnalizarReabastecer(data, answerId) {
+    const ranking = data.productos
+        .filter(p => p.estado === 1 && p.stockActual <= (p.stockMinimo || 5))
+        .map(p => ({ nombre: p.nombre, stockActual: p.stockActual, stockMinimo: p.stockMinimo || 5 }))
+        .sort((a, b) => (a.stockActual - a.stockMinimo) - (b.stockActual - b.stockMinimo))
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, '¡Excelente! Todos los productos tienen stock suficiente.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.nombre} → Stock: ${r.stockActual} uds (mín: ${r.stockMinimo})`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P4: Proveedor que vende más caro — promedio de precioCompra por proveedor. @author RADJ */
+function iqAnalizarProveedorCaro(data, answerId) {
+    /** Agrupar productos por proveedor y calcular promedio de costo. @author RADJ */
+    const provStats = {};
+    data.productos.filter(p => p.idProveedor).forEach(p => {
+        if (!provStats[p.idProveedor]) provStats[p.idProveedor] = { total: 0, count: 0 };
+        provStats[p.idProveedor].total += p.precioCompra || 0;
+        provStats[p.idProveedor].count++;
+    });
+
+    const provMap = {};
+    data.proveedores.forEach(p => { provMap[p.id] = p; });
+
+    const ranking = Object.entries(provStats)
+        .map(([id, stats]) => ({
+            nombre: provMap[id]?.nombre || `Proveedor #${id}`,
+            promedio: stats.total / stats.count
+        }))
+        .sort((a, b) => b.promedio - a.promedio)
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, 'No hay proveedores con productos asignados.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.nombre} → Promedio: $${Math.round(r.promedio).toLocaleString()}`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P5: Clientes que más compran — total comprado en el periodo. @author RADJ */
+function iqAnalizarTopClientes(data, ventasFiltradas, answerId) {
+    /** Sumar el valor total de compras por cliente en el periodo. @author RADJ */
+    const compraPorCliente = {};
+    ventasFiltradas.forEach(v => {
+        if (!v.idCliente) return;
+        compraPorCliente[v.idCliente] = (compraPorCliente[v.idCliente] || 0) + (v.valorTotal || 0);
+    });
+
+    const cliMap = {};
+    data.clientes.forEach(c => { cliMap[c.id] = c; });
+
+    const ranking = Object.entries(compraPorCliente)
+        .map(([id, total]) => ({ nombre: cliMap[id]?.nombre || `Cliente #${id}`, total }))
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, 'No hay ventas con cliente asignado en este periodo.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.nombre} → Total: $${Math.round(r.total).toLocaleString()}`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P6: Mes con mayores ganancias — análisis histórico sin filtro de mes. @author RADJ */
+function iqAnalizarMejorMes(data, answerId) {
+    const prodMap = {};
+    data.productos.forEach(p => { prodMap[p.id] = p; });
+
+    /** Acumular ganancias netas por mes en todo el historial. @author RADJ */
+    const gananciasPorMes = {};
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    data.ventas.forEach(v => {
+        if (!v.fechaHora || !v.detalles) return;
+        const fecha = new Date(v.fechaHora);
+        const key = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+        const label = `${monthNames[fecha.getMonth()]} ${fecha.getFullYear()}`;
+
+        if (!gananciasPorMes[key]) gananciasPorMes[key] = { label, ganancia: 0 };
+
+        v.detalles.forEach(d => {
+            const prod = prodMap[d.idProducto];
+            const costo = prod ? (prod.precioCompra || 0) : 0;
+            gananciasPorMes[key].ganancia += (d.precioUnitario - costo) * d.cantidad;
+        });
+    });
+
+    const ranking = Object.values(gananciasPorMes)
+        .sort((a, b) => b.ganancia - a.ganancia)
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, 'No hay historial de ventas para analizar.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.label} → Ganancia: $${Math.round(r.ganancia).toLocaleString()}`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P7: Productos generando pérdidas — precioVenta < precioCompra. @author RADJ */
+function iqAnalizarPerdidas(data, answerId) {
+    const ranking = data.productos
+        .filter(p => p.estado === 1 && p.precioCompra > 0 && p.precioVenta < p.precioCompra)
+        .map(p => ({
+            nombre: p.nombre,
+            perdida: p.precioVenta - p.precioCompra
+        }))
+        .sort((a, b) => a.perdida - b.perdida)
+        .slice(0, 3);
+
+    if (ranking.length === 0) {
+        iqShowEmpty(answerId, '¡Bien! Ningún producto tiene precio de venta inferior al costo.');
+        return;
+    }
+
+    const text = ranking.map((r, i) => `${i + 1}. ${r.nombre} → Pérdida: $${Math.round(Math.abs(r.perdida)).toLocaleString()} por unidad`).join('\n');
+    iqShowAnswer(answerId, text);
+}
+
+/** P8: Productos que llevan más tiempo sin venderse — activos sin presencia en ventas del periodo. @author RADJ */
+function iqAnalizarSinVender(data, ventasFiltradas, answerId) {
+    /** Obtener IDs de productos que tuvieron ventas en el periodo. @author RADJ */
+    const vendidos = new Set();
+    ventasFiltradas.forEach(v => {
+        if (!v.detalles) return;
+        v.detalles.forEach(d => vendidos.add(d.idProducto));
+    });
+
+    /** Filtrar productos activos que no fueron vendidos en el periodo. @author RADJ */
+    const sinVender = data.productos
+        .filter(p => p.estado === 1 && !vendidos.has(p.id))
+        .slice(0, 3);
+
+    if (sinVender.length === 0) {
+        iqShowEmpty(answerId, '¡Excelente! Todos los productos activos tuvieron ventas en este periodo.');
+        return;
+    }
+
+    const text = sinVender.map((p, i) => `${i + 1}. ${p.nombre} → Stock: ${p.stockActual} uds sin movimiento`).join('\n');
+    iqShowAnswer(answerId, text);
+}

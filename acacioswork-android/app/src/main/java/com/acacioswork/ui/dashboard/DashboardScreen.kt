@@ -25,6 +25,7 @@ import com.acacioswork.ui.inventario.InventarioTab
 import com.acacioswork.ui.proveedores.ProveedoresTab
 import com.acacioswork.ui.reportes.ReportesTab
 import com.acacioswork.ui.ventas.VentasTab
+import com.acacioswork.ui.preguntas_ia.PreguntasIaScreen
 import com.acacioswork.ui.theme.*
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,7 @@ sealed class Pantalla(val ruta: String, val titulo: String, val icon: ImageVecto
     object Inventario : Pantalla("inventario", "Inventario", Icons.Default.ShoppingCart)
     object Vender : Pantalla("vender", "Vender", Icons.Default.AddCircle)
     object Reportes : Pantalla("reportes", "Reportes", Icons.Default.List)
+    object PreguntasIA : Pantalla("preguntas_ia", "Preguntas IA", Icons.Default.Info)
     object Clientes : Pantalla("clientes", "Clientes", Icons.Default.Person)
     object Proveedores : Pantalla("proveedores", "Proveedores", Icons.Default.Build)
     object Configuracion : Pantalla("configuracion", "Configuración", Icons.Default.Settings)
@@ -125,6 +127,7 @@ fun DashboardScreen(
                     Pantalla.Inventario,
                     Pantalla.Vender,
                     Pantalla.Reportes,
+                    Pantalla.PreguntasIA,
                     Pantalla.Clientes,
                     Pantalla.Proveedores,
                     Pantalla.Configuracion
@@ -406,6 +409,7 @@ fun DashboardScreen(
                 Pantalla.Inventario -> InventarioTab(viewModel = inventarioViewModel)
                 Pantalla.Vender -> VentasTab()
                 Pantalla.Reportes -> ReportesTab()
+                Pantalla.PreguntasIA -> PreguntasIaScreen()
                 Pantalla.Clientes -> ClientesTab()
                 Pantalla.Proveedores -> ProveedoresTab()
                 Pantalla.Configuracion -> com.acacioswork.ui.configuracion.ConfiguracionScreen()

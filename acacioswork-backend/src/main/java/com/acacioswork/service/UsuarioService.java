@@ -4,7 +4,6 @@ package com.acacioswork.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +15,16 @@ import com.acacioswork.repository.UsuarioRepository;
 @Transactional
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    public UsuarioService(UsuarioRepository usuarioRepository, org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    @Autowired
-    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+
+private final UsuarioRepository usuarioRepository;
+
+private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     /** Obtiene todos los usuarios. @author RADJ */
     public List<Usuario> findAll() {

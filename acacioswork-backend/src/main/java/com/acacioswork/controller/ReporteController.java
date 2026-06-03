@@ -1,6 +1,5 @@
 package com.acacioswork.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +15,13 @@ import com.acacioswork.util.ApiResponse;
 @CrossOrigin(origins = "*")
 public class ReporteController {
 
-    @Autowired
-    private ReporteService reporteService;
+    public ReporteController(ReporteService reporteService) {
+        this.reporteService = reporteService;
+    }
+
+
+
+private final ReporteService reporteService;
 
     /** Obtiene el total de ventas del día actual. @author RADJ */
     @GetMapping("/ventas-diarias")

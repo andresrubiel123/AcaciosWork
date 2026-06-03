@@ -2,7 +2,6 @@ package com.acacioswork.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +13,13 @@ import com.acacioswork.repository.ProveedorRepository;
 @Transactional
 public class ProveedorManager {
 
-    @Autowired
-    private ProveedorRepository proveedorRepository;
+    public ProveedorManager(ProveedorRepository proveedorRepository) {
+        this.proveedorRepository = proveedorRepository;
+    }
+
+
+
+private final ProveedorRepository proveedorRepository;
 
     /** Crea un nuevo proveedor. @author RADJ */
     public boolean crearProveedor(Proveedor proveedor) {

@@ -1,16 +1,16 @@
 package com.acacioswork.controller;
 
-import com.acacioswork.model.Rol;
-import com.acacioswork.service.RolService;
-import com.acacioswork.util.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.acacioswork.model.Rol;
+import com.acacioswork.service.RolService;
+import com.acacioswork.util.ApiResponse;
 
 /** Controlador REST estandarizado para la gestión de roles. @author RADJ */
 @RestController
@@ -18,8 +18,13 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class RolController {
 
-    @Autowired
-    private RolService rolService;
+    public RolController(RolService rolService) {
+        this.rolService = rolService;
+    }
+
+
+
+private final RolService rolService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Rol>>> getAll() {

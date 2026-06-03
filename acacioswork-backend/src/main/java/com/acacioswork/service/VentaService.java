@@ -3,9 +3,10 @@ package com.acacioswork.service;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.acacioswork.model.DetalleVenta;
 import com.acacioswork.model.Producto;
 import com.acacioswork.model.Venta;
@@ -16,11 +17,16 @@ import com.acacioswork.repository.VentaRepository;
 @Transactional
 public class VentaService {
 
-    @Autowired
-    private VentaRepository ventaRepository;
+    public VentaService(VentaRepository ventaRepository, ProductoRepository productoRepository) {
+        this.ventaRepository = ventaRepository;
+        this.productoRepository = productoRepository;
+    }
 
-    @Autowired
-    private ProductoRepository productoRepository;
+
+
+private final VentaRepository ventaRepository;
+
+private final ProductoRepository productoRepository;
 
     /** Recupera todas las ventas. @author RADJ */
     public List<Venta> findAll() {

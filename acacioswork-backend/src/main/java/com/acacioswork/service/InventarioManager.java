@@ -3,7 +3,6 @@ package com.acacioswork.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +15,13 @@ import com.acacioswork.repository.ProductoRepository;
 @Transactional
 public class InventarioManager {
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    public InventarioManager(ProductoRepository productoRepository) {
+        this.productoRepository = productoRepository;
+    }
+
+
+
+private final ProductoRepository productoRepository;
 
     private static final List<AlertaStockMinimo> alertas = new ArrayList<>();
 

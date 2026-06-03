@@ -1,19 +1,29 @@
 package com.acacioswork.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.acacioswork.model.Configuracion;
 import com.acacioswork.service.ConfiguracionService;
 import com.acacioswork.util.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/configuracion")
 @CrossOrigin(origins = "*")
 public class ConfiguracionController {
 
-    @Autowired
-    private ConfiguracionService configuracionService;
+    public ConfiguracionController(ConfiguracionService configuracionService) {
+        this.configuracionService = configuracionService;
+    }
+
+
+
+private final ConfiguracionService configuracionService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<Configuracion>> getConfiguracion() {
