@@ -1,191 +1,177 @@
 # Buenas Prácticas de Desarrollo de Software
-## Proyecto AcaciosWork
-
-**Programa:** Tecnólogo en Análisis y Desarrollo de Software | SENA – Ficha 3118313
-**Autor:** Rubiel Andrés Díaz Jiménez
-**Fecha:** Julio 2026
+## Ecosistema de Software AcaciosWork
 
 ---
 
-## 1. Empresa
+### Presentación del Documento
+
+* **Institución:** Servicio Nacional de Aprendizaje (SENA)
+* **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO)
+* **Ficha:** 3118313
+* **Autor / Desarrollador:** Rubiel Andrés Díaz Jiménez
+* **Proyecto:** AcaciosWork — Sistema ERP/POS Multiplataforma
+* **Organización Beneficiaria:** Tienda Los Acacios
+* **Lugar y Fecha:** Colombia, Julio de 2026
+
+---
+
+## Tabla de Contenido
+
+- [1. Introducción](#1-introducción)
+- [2. Objetivos](#2-objetivos)
+  - [2.1. Objetivo General](#21-objetivo-general)
+  - [2.2. Objetivos Específicos](#22-objetivos-específicos)
+- [3. Perfil de la Empresa](#3-perfil-de-la-empresa)
+  - [3.1. Identificación y Descripción](#31-identificación-y-descripción)
+  - [3.2. Misión, Visión y Objetivos Organizacionales](#32-misión-visión-y-objetivos-organizacionales)
+  - [3.3. Ventajas Competitivas](#33-ventajas-competitivas)
+- [4. Descripción del Proyecto de Software](#4-descripción-del-proyecto-de-software)
+  - [4.1. Alcance del Sistema](#41-alcance-del-sistema)
+  - [4.2. Propuesta de Valor](#42-propuesta-de-valor)
+- [5. Proceso y Ciclo de Vida del Desarrollo](#5-proceso-y-ciclo-de-vida-del-desarrollo)
+  - [5.1. Fases del Ciclo de Vida](#51-fases-del-ciclo-de-vida)
+  - [5.2. Metodología de Trabajo](#52-metodología-de-trabajo)
+- [6. Stack Tecnológico](#6-stack-tecnológico)
+  - [6.1. Componentes del Núcleo y Clientes](#61-componentes-del-núcleo-y-clientes)
+  - [6.2. Herramientas de Desarrollo y Gestión](#62-herramientas-de-desarrollo-y-gestión)
+- [7. Arquitectura y Modelo del Sistema](#7-arquitectura-y-modelo-del-sistema)
+  - [7.1. Principios Arquitectónicos](#71-principios-arquitectónicos)
+  - [7.2. Estructura Multicapa del Repositorio](#72-estructura-multicapa-del-repositorio)
+  - [7.3. Diagramas del Sistema](#73-diagramas-del-sistema)
+    - [7.3.1. Arquitectura General](#731-arquitectura-general)
+    - [7.3.2. Interfaz de Usuario Web](#732-interfaz-de-usuario-web)
+    - [7.3.3. Flujo de Datos Transaccional](#733-flujo-de-datos-transaccional)
+    - [7.3.4. Modelo de Datos (ERD)](#734-modelo-de-datos-erd)
+- [8. Estándares de Codificación y Calidad](#8-estándares-de-codificación-y-calidad)
+  - [8.1. Convenciones de Nomenclatura](#81-convenciones-de-nomenclatura)
+  - [8.2. Documentación e Identificación de Código](#82-documentación-e-identificación-de-código)
+  - [8.3. Patrones de Codificación y Modularidad](#83-patrones-de-codificación-y-modularidad)
+  - [8.4. Alineación con Normas Internacionales](#84-alineación-con-normas-internacionales)
+- [9. Seguridad y Protección de Datos](#9-seguridad-y-protección-de-datos)
+  - [9.1. Autenticación y Autorización](#91-autenticación-y-autorización)
+  - [9.2. Aislamiento de Capas](#92-aislamiento-de-capas)
+- [10. Aseguramiento de Calidad y Pruebas](#10-aseguramiento-de-calidad-y-pruebas)
+  - [10.1. Tipos de Pruebas Ejecutadas](#101-tipos-de-pruebas-ejecutadas)
+  - [10.2. Ciclo de Gestión de Incidencias](#102-ciclo-de-gestión-de-incidencias)
+  - [10.3. Procesos de Construcción (Build)](#103-procesos-de-construcción-build)
+- [11. Mantenimiento y Refactorización](#11-mantenimiento-y-refactorización)
+  - [11.1. Historial de Refactorizaciones Relevantes](#111-historial-de-refactorizaciones-relevantes)
+  - [11.2. Estado Actual del Proyecto](#112-estado-actual-del-proyecto)
+- [12. Conclusiones](#12-conclusiones)
+
+---
+
+## 1. Introducción
+
+El presente documento recopila los lineamientos técnicos, estándares de ingeniería y buenas prácticas aplicados en el diseño, desarrollo e implementación del ecosistema **AcaciosWork**. Este proyecto surge ante la necesidad de modernizar la gestión operativa y comercial de **Tienda Los Acacios**, una microempresa del sector minorista de abarrotes.
+
+A lo largo del proceso formativo en Análisis y Desarrollo de Software (SENA), se ha concebido una solución multiplataforma que adopta una arquitectura orientada a servicios (SaaS), garantizando la centralización de los datos, el aislamiento de la base de datos MySQL y la interoperabilidad entre aplicaciones Web, Escritorio y Móviles. El cumplimiento de estándares como ISO/IEC 25000 (SQuaRE), CMMI Nivel 2 y prácticas de codificación limpia ha permitido estructurar una plataforma robusta, escalable y mantenible.
+
+---
+
+## 2. Objetivos
+
+### 2.1. Objetivo General
+
+Consolidar e implementar las buenas prácticas de ingeniería de software en el desarrollo del sistema ERP/POS multiplataforma **AcaciosWork**, optimizando la administración de inventario, ventas, clientes y toma de decisiones en la Tienda Los Acacios.
+
+### 2.2. Objetivos Específicos
+
+- **Establecer una arquitectura sólida y segura:** Implementar un núcleo centralizado con Spring Boot y autenticación JWT que actúe como único punto de acceso a la persistencia en MySQL.
+- **Estandarizar el desarrollo de código:** Aplicar convenciones estricta de nomenclatura, patrones de diseño (MVVM, Layered Architecture) y firma documental de código (`@author RADJ`).
+- **Garantizar la calidad del producto:** Estructurar planes de pruebas unitarias, de integración y funcionales bajo los marcos de calidad ISO/IEC 25000 e ISO/IEC 9126.
+- **Facilitar la mantenibilidad y escalabilidad:** Organizar modularmente los componentes del frontend y backend para permitir la refactorización continua y la adición de nuevas funcionalidades sin afectar la estabilidad del sistema.
+
+---
+
+## 3. Perfil de la Empresa
+
+### 3.1. Identificación y Descripción
 
 | Campo | Detalle |
 | :--- | :--- |
 | **Nombre** | Tienda Los Acacios |
-| **Tipo de negocio** | Comercio minorista (tienda de barrio) |
-| **Descripción** | Tienda de barrio dedicada a la comercialización de abarrotes, frutas, verduras, bebidas y productos de primera necesidad. |
-| **Público objetivo** | Habitantes del barrio y sectores cercanos que buscan productos de primera necesidad de forma rápida y económica. |
+| **Tipo de negocio** | Comercio minorista (tienda de barrio / abarrotes) |
+| **Descripción** | Tienda dedicada a la comercialización de abarrotes, frutas, verduras, bebidas y productos de primera necesidad. |
+| **Público objetivo** | Habitantes del sector urbano local que requieren abastecimiento rápido, cercano y económico. |
 
-**Misión:** Brindar atención amable y ofrecer productos de calidad a precios accesibles para satisfacer las necesidades diarias de la comunidad.
+### 3.2. Misión, Visión y Objetivos Organizacionales
 
-**Visión:** Modernizar la administración del negocio mediante herramientas tecnológicas para mejorar el servicio, fidelizar clientes y aumentar las ventas.
+- **Misión:** Brindar atención amable y ofrecer productos de primera necesidad de alta calidad a precios accesibles para satisfacer las demandas diarias de la comunidad.
+- **Visión:** Modernizar la administración del negocio mediante herramientas tecnológicas de vanguardia para mejorar el servicio, fidelizar clientes y maximizar la rentabilidad operativa.
+- **Objetivo:** Garantizar la disponibilidad constante de productos esenciales con precios competitivos mediante un control eficiente de inventarios.
 
-**Objetivo:** Ofrecer productos de primera necesidad con calidad, disponibilidad y precios competitivos.
+### 3.3. Ventajas Competitivas
 
-**Ventajas competitivas:**
-- Atención personalizada y cercana al cliente.
-- Productos frescos y de calidad con precios competitivos.
-- Servicio rápido y confiable con conocimiento de las necesidades del barrio.
-
----
-
-## 2. Proyecto de Software
-
-**Nombre del Proyecto:** AcaciosWork
-**Descripción:** Plataforma inteligente de gestión empresarial (ERP/POS) multiplataforma para la Tienda Los Acacios. Combina gestión operativa (inventarios, ventas, clientes) con inteligencia de negocio automatizada. Arquitectura **SaaS** con un núcleo API centralizado y múltiples interfaces de cliente.
+- Atención personalizada y cercanía con la comunidad local.
+- Disponibilidad constante de productos frescos con rotación optimizada.
+- Agilidad en el servicio de caja y atención al cliente.
 
 ---
 
-## 3. Proceso de Desarrollo de Software
+## 4. Descripción del Proyecto de Software
 
-El ciclo de vida del proyecto siguió las fases estándar de la ingeniería de software:
+### 4.1. Alcance del Sistema
+
+**AcaciosWork** es una plataforma integral de gestión empresarial (ERP/POS) multiplataforma. Permite administrar de manera centralizada catálogos de productos, inventario con cálculo de stock crítico y óptimo, ventas en punto de pago, registro de clientes, proveedores y usuarios con permisos basados en roles.
+
+### 4.2. Propuesta de Valor
+
+Además del control operativo tradicional, AcaciosWork integra un **Módulo de Inteligencia de Negocio ("Preguntas Inteligentes")** que procesa métricas financieras y comerciales en tiempo real, permitiendo al comerciante identificar productos de alta/baja rotación, estimar rentabilidad neta y predecir desabastecimientos desde cualquier dispositivo.
+
+---
+
+## 5. Proceso y Ciclo de Vida del Desarrollo
+
+### 5.1. Fases del Ciclo de Vida
+
+El ciclo de vida del software se estructuró en cinco fases fundamentales:
 
 | Fase | Actividad Principal |
 | :--- | :--- |
-| **Análisis** | Levantamiento de requisitos funcionales y no funcionales, viabilidad técnica. |
-| **Diseño** | Arquitectura del sistema, modelo de datos ERD, diseño de interfaces. |
-| **Implementación** | Codificación por módulos con estándares de nomenclatura y documentación. |
-| **Pruebas** | Pruebas funcionales por módulo y pruebas de integración API-cliente. |
-| **Mantenimiento** | Correctivo (bugs), adaptativo (nuevos entornos) y perfectivo (nuevas funciones). |
+| **Análisis** | Levantar requisitos funcionales/no funcionales y validar la viabilidad operativa en tienda. |
+| **Diseño** | Definir arquitectura multiplataforma, modelo entidad-relación (ERD) e interfaces de usuario. |
+| **Implementación** | Codificar módulos backend y frontend bajo estándares de calidad y control de versiones. |
+| **Pruebas** | Ejecutar pruebas de API con Postman, validación de UI y pruebas unitarias aisladas. |
+| **Mantenimiento** | Aplicar refactorización correctiva y perfectiva sobre módulos existentes. |
+
+### 5.2. Metodología de Trabajo
+
+Se implementó un marco **ágil iterativo e incremental** adaptado para desarrollo personal (PSP - Personal Software Process) con sprints enfocados en componentes específicos (Autenticación → Inventario → Ventas POS → Reportes e Inteligencia).
 
 ---
 
-## 4. Tecnologías
+## 6. Stack Tecnológico
 
-| Módulo | Stack Tecnológico |
+### 6.1. Componentes del Núcleo y Clientes
+
+| Módulo / Capa | Tecnologías Seleccionadas |
 | :--- | :--- |
-| **Backend (Core API)** | Java 25 · Spring Boot 4.0.6 · Spring Security · JPA/Hibernate · MySQL 8.0 |
-| **Frontend Web** | HTML5 · CSS3 · JavaScript Vanilla ES6+ · Thymeleaf |
-| **App Desktop** | Java 25 · Swing · FlatLaf · Jackson |
-| **App Móvil** | Kotlin 2.x · Android SDK · Jetpack Compose · MVVM · Retrofit |
-| **Base de Datos** | MySQL 8.0 — esquema `tienda_acacios` |
-| **Seguridad** | JSON Web Token (JWT) |
-| **Construcción** | Maven (`pom.xml`) |
-| **Documentación** | Markdown · Mermaid Diagrams |
+| **Backend (Core API)** | Java 25 · Spring Boot 4.0.6 · Spring Security · JPA / Hibernate |
+| **Frontend Web** | HTML5 · CSS3 Vanilla · JavaScript ES6+ · Thymeleaf Template Engine |
+| **App Desktop** | Java 25 · Swing Framework · FlatLaf Look & Feel · Jackson JSON |
+| **App Móvil** | Kotlin 2.x · Android SDK · Jetpack Compose · Architecture MVVM · Retrofit |
+| **Base de Datos** | MySQL 8.0 (Esquema `tienda_acacios`) |
+| **Seguridad** | JSON Web Token (JWT) con encriptación de claves |
+
+### 6.2. Herramientas de Desarrollo y Gestión
+
+- **IDE / Editores:** VS Code, IntelliJ IDEA, Android Studio.
+- **Control de Versiones y Build:** Git, GitHub, Apache Maven.
+- **Pruebas de API y BD:** Postman, MySQL Workbench.
+- **Documentación y Diagramado:** Markdown, Mermaid Diagrams.
 
 ---
 
-## 5. Diagramas
+## 7. Arquitectura y Modelo del Sistema
 
-### 5.1 Arquitectura General del Sistema
+### 7.1. Principios Arquitectónicos
 
-```mermaid
-graph TD
-    subgraph Clientes
-        Web["Dashboard Web (HTML/JS)"]
-        Desk["Admin Desktop (Swing)"]
-        Andr["App Movil (Kotlin)"]
-    end
+1. **Aislamiento Total de Persistencia:** Únicamente el Backend Core tiene permiso para conectarse a la base de datos MySQL.
+2. **Single Source of Truth (Fuente Única de Verdad):** Todos los clientes (Web, Desktop, Móvil) consumen la misma API REST.
+3. **Desacoplamiento Client-Server:** La lógica de negocio reside exclusivamente en los servicios Java del Backend.
 
-    subgraph Backend_Core ["Nucleo del Sistema"]
-        API["Core API (Spring Boot 4)"]
-        Auth["Seguridad JWT"]
-        Logic["Logica de Negocio"]
-    end
-
-    subgraph Persistencia
-        DB[("MySQL (tienda_acacios)")]
-    end
-
-    Web <-->|HTTP/JSON + JWT| API
-    Desk <-->|HTTP/JSON + JWT| API
-    Andr <-->|HTTP/JSON + JWT| API
-    API <--> Logic
-    API <--> Auth
-    Logic <--> DB
-```
-
-### 5.2 Diagrama de UI — Versión Web (Dashboard)
-
-```mermaid
-graph TD
-    subgraph UI_Web ["Dashboard Web — AcaciosWork"]
-        Login["Pantalla de Login\n(email + contraseña)"]
-
-        Login -->|JWT valido| Dashboard
-
-        subgraph Dashboard ["Panel Principal"]
-            Nav["Barra Lateral\n(Navegacion por modulos)"]
-            Header["Cabecera\n(Usuario / Notificaciones / Cerrar sesion)"]
-
-            Nav --> M1["Inventario\n(Stock actual / Alertas minimas)"]
-            Nav --> M2["Ventas\n(POS / Historial / Devoluciones)"]
-            Nav --> M3["Clientes y Proveedores\n(CRUD)"]
-            Nav --> M4["Reportes\n(Graficos interactivos)"]
-            Nav --> M5["Inteligencia de Negocio\n(Preguntas Inteligentes)"]
-            Nav --> M6["Configuracion\n(Usuarios / Categorias / Roles)"]
-
-            M4 --> Export["Exportar PDF / Imprimir"]
-            M5 --> BI["Analisis Automatico\n(Rentabilidad / Rotacion / Tendencias)"]
-        end
-    end
-```
-
-### 5.3 Flujo de Datos
-
-```mermaid
-sequenceDiagram
-    participant User as Usuario
-    participant Client as Cliente (Web/Desktop/Android)
-    participant API as Core API (Backend)
-    participant DB as MySQL DB
-
-    User->>Client: Realiza accion (Ej: Registrar Venta)
-    Client->>API: HTTP POST (JSON + JWT)
-    API->>API: Valida Token y Reglas de Negocio
-    API->>DB: Ejecuta Transaccion SQL
-    DB-->>API: Confirma Persistencia
-    API-->>Client: ApiResponse (exito/datos)
-    Client->>User: Muestra confirmacion en UI
-```
-
-### 5.4 Modelo de Datos (ERD Simplificado)
-
-```mermaid
-erDiagram
-    ROL ||--o{ USUARIO : "asigna"
-    USUARIO ||--o{ VENTA : "vende"
-    CLIENTE ||--o{ VENTA : "compra"
-    CATEGORIA ||--o{ PRODUCTO : "contiene"
-    PRODUCTO ||--o{ DETALLE_VENTA : "se vende en"
-    VENTA ||--|{ DETALLE_VENTA : "desglosa"
-    PROVEEDOR ||--o{ PRODUCTO : "provee"
-    PRODUCTO ||--|| INVENTARIO : "se almacena"
-    PRODUCTO ||--o{ ALERTA_STOCK : "genera"
-```
-
----
-
-## 6. Metodología
-
-Se adoptó un enfoque **ágil iterativo** inspirado en **Scrum**, adaptado a un equipo unipersonal:
-
-| Práctica | Aplicación en AcaciosWork |
-| :--- | :--- |
-| **Sprints** | Incrementos funcionales por módulo (auth → inventario → ventas → BI). |
-| **Product Backlog** | Requisitos priorizados registrados en `project-context.md`. |
-| **Revisión continua** | Validación funcional al finalizar cada módulo antes de continuar. |
-| **PSP (Personal Software Process)** | Registro de tiempo por tarea y log de defectos personales. |
-
----
-
-## 7. Herramientas
-
-| Categoría | Herramientas |
-| :--- | :--- |
-| **IDE / Edición** | VS Code · IntelliJ IDEA |
-| **Control de Versiones** | Git · GitHub |
-| **Construcción** | Apache Maven |
-| **Pruebas API** | Postman |
-| **Base de Datos** | MySQL Workbench |
-| **Documentación** | Markdown · Mermaid |
-| **IA / Asistencia** | Antigravity IDE (Google DeepMind) · Graphify |
-
----
-
-## 8. Arquitectura
-
-Arquitectura **multicapa y multi-cliente** con un Backend centralizado como único punto de verdad:
+### 7.2. Estructura Multicapa del Repositorio
 
 ```
 AcaciosWork/
@@ -203,146 +189,191 @@ AcaciosWork/
 └── acacioswork-android/    # App Móvil (Kotlin / Jetpack Compose)
 ```
 
-**Principios de arquitectura:**
-- **Aislamiento total:** Solo el Backend accede a MySQL. Los clientes son 100% dependientes de la API.
-- **Single Source of Truth:** Un solo esquema de datos para todos los clientes.
-- **Escalabilidad:** Diseñado como SaaS para servir múltiples plataformas simultáneamente.
+### 7.3. Diagramas del Sistema
+
+#### 7.3.1. Arquitectura General
+
+```mermaid
+graph TD
+    subgraph Clientes ["Clientes del Sistema"]
+        Web["Dashboard Web (HTML/JS)"]
+        Desk["Admin Desktop (Swing)"]
+        Andr["App Móvil (Kotlin)"]
+    end
+
+    subgraph Backend_Core ["Núcleo del Sistema"]
+        API["Core API (Spring Boot 4)"]
+        Auth["Seguridad JWT"]
+        Logic["Lógica de Negocio"]
+    end
+
+    subgraph Persistencia ["Capa de Datos"]
+        DB[("MySQL (tienda_acacios)")]
+    end
+
+    Web <-->|HTTP/JSON + JWT| API
+    Desk <-->|HTTP/JSON + JWT| API
+    Andr <-->|HTTP/JSON + JWT| API
+    API <--> Logic
+    API <--> Auth
+    Logic <--> DB
+```
+
+#### 7.3.2. Interfaz de Usuario Web
+
+```mermaid
+graph TD
+    subgraph UI_Web ["Dashboard Web — AcaciosWork"]
+        Login["Pantalla de Login\n(usuario + contraseña)"]
+
+        Login -->|JWT válido| Dashboard
+
+        subgraph Dashboard ["Panel Principal"]
+            Nav["Barra Lateral\n(Navegación por módulos)"]
+            Header["Cabecera\n(Usuario / Notificaciones / Cerrar sesión)"]
+
+            Nav --> M1["Inventario\n(Stock actual / Alertas mínimas)"]
+            Nav --> M2["Ventas\n(POS / Historial / Devoluciones)"]
+            Nav --> M3["Clientes y Proveedores\n(CRUD)"]
+            Nav --> M4["Reportes\n(Gráficos interactivos)"]
+            Nav --> M5["Inteligencia de Negocio\n(Preguntas Inteligentes)"]
+            Nav --> M6["Configuración\n(Usuarios / Categorías / Roles)"]
+
+            M4 --> Export["Exportar PDF / Imprimir"]
+            M5 --> BI["Análisis Automático\n(Rentabilidad / Rotación)"]
+        end
+    end
+```
+
+#### 7.3.3. Flujo de Datos Transaccional
+
+```mermaid
+sequenceDiagram
+    participant User as Usuario
+    participant Client as Cliente (Web/Desktop/Android)
+    participant API as Core API (Backend)
+    participant DB as MySQL DB
+
+    User->>Client: Realiza acción (Ej: Registrar Venta)
+    Client->>API: HTTP POST (JSON + JWT)
+    API->>API: Valida Token y Reglas de Negocio
+    API->>DB: Ejecuta Transacción SQL
+    DB-->>API: Confirma Persistencia
+    API-->>Client: ApiResponse (éxito/datos)
+    Client->>User: Muestra confirmación en UI
+```
+
+#### 7.3.4. Modelo de Datos (ERD)
+
+```mermaid
+erDiagram
+    ROL ||--o{ USUARIO : "asigna"
+    USUARIO ||--o{ VENTA : "vende"
+    CLIENTE ||--o{ VENTA : "compra"
+    CATEGORIA ||--o{ PRODUCTO : "contiene"
+    PRODUCTO ||--o{ DETALLE_VENTA : "se vende en"
+    VENTA ||--|{ DETALLE_VENTA : "desglosa"
+    PROVEEDOR ||--o{ PRODUCTO : "provee"
+    PRODUCTO ||--|| INVENTARIO : "se almacena"
+    PRODUCTO ||--o{ ALERTA_STOCK : "genera"
+```
 
 ---
 
-## 9. Buenas Prácticas Aplicadas
+## 8. Estándares de Codificación y Calidad
 
-### Nomenclatura (Naming Conventions)
+### 8.1. Convenciones de Nomenclatura
 
-| Convención | Uso | Ejemplo |
+| Caso de Uso | Convención | Ejemplo |
 | :--- | :--- | :--- |
-| `camelCase` | Variables, métodos, funciones JS/Java/Kotlin | `stockActual`, `registrarVenta()` |
-| `PascalCase` | Clases, interfaces, componentes | `AlertaStockMinimo`, `UsuarioController` |
-| `snake_case` | Tablas y columnas MySQL | `alertas_stock_minimo`, `id_producto` |
-| `kebab-case` | Clases CSS, archivos HTML/JS | `btn-primary`, `administrador-dashboard.html` |
-| `UPPER_SNAKE_CASE` | Constantes globales | `MAX_RETRY_ATTEMPTS` |
+| **Variables y Métodos** | `camelCase` | `stockActual`, `calcularTotalVenta()` |
+| **Clases e Interfaces** | `PascalCase` | `ProductoController`, `VentaService` |
+| **Base de Datos** | `snake_case` | `alertas_stock`, `fecha_hora` |
+| **Archivos HTML / CSS** | `kebab-case` | `administrador-dashboard.html`, `main-styles.css` |
+| **Constantes** | `UPPER_SNAKE_CASE` | `DEFAULT_TAX_RATE` |
 
-### Documentación de Código
+### 8.2. Documentación e Identificación de Código
 
-Todo bloque de código incluye descripción funcional y firma de autor:
+Cada clase, método relevante o archivo script debe llevar documentación explícita y la firma del autor:
 
 ```java
-/** Registra una nueva venta y actualiza el stock. @author RADJ */
-```
-```css
-/* Estilos del panel principal del dashboard. @author RADJ */
-```
-```html
-<!-- Fragmento de cabecera compartida. @author RADJ -->
+/** Registra una nueva venta validando disponibilidad de stock. @author RADJ */
 ```
 
----
+### 8.3. Patrones de Codificación y Modularidad
 
-## 10. Codificación
+- **Inyección de Dependencias:** Uso de anotaciones Spring (`@Service`, `@RestController`, `@Autowired`).
+- **Lombok Integration:** Reducción de código repetitivo en modelos Java.
+- **JavaScript Modular:** Organización estricta en carpetas `core/` (servicios base), `modules/` (lógica de vistas) y `shared/` (componentes globales).
 
-- **Separación de responsabilidades:** Lógica de negocio en `Service`, nunca en `Controller`.
-- **Entidades limpias:** Uso de **Lombok** para eliminar boilerplate (getters, setters, constructores).
-- **Frontend modular:** Scripts JS organizados en `core/`, `modules/` y `shared/` para máxima reutilización.
-- **Modelo homogéneo:** Campos de datos consistentes en todas las capas (`stockActual`, `stockMinimo`, `stockOptimo`, `unidadMedida`).
+### 8.4. Alineación con Normas Internacionales
 
----
-
-## 11. Estándares de Calidad
-
-El proyecto se alinea con los siguientes marcos:
-
-| Estándar | Aplicación |
-| :--- | :--- |
-| **ISO/IEC 25000 (SQuaRE)** | Evaluación de calidad del producto: funcionalidad, fiabilidad, mantenibilidad. |
-| **ISO/IEC 9126** | Corrección, eficiencia, portabilidad e interoperabilidad como criterios de diseño. |
-| **CMMI Nivel 2** | Procesos planificados y monitoreados; desarrollo repetible y estable. |
-| **Estándar de código** | Todo código documentado con descripción funcional y firma de autor. |
-| **IDs estandarizados** | `BIGINT UNSIGNED` en MySQL <-> `Long` en Java, en todas las capas. |
+- **ISO/IEC 25000 (SQuaRE):** Criterios de evaluación de calidad en mantenibilidad, seguridad y adecuación funcional.
+- **ISO/IEC 9126:** Aseguramiento de atributos de usabilidad, eficiencia y portabilidad.
+- **CMMI Nivel 2:** Gestión de configuración y trazabilidad de cambios en desarrollo.
 
 ---
 
-## 12. Seguridad
+## 9. Seguridad y Protección de Datos
 
-| Mecanismo | Detalle |
-| :--- | :--- |
-| **Autenticación JWT** | Token Bearer obligatorio en todas las peticiones privadas. |
-| **Spring Security** | Control de acceso por roles (`ADMIN`, `AUXILIAR`) en el backend. |
-| **CORS configurado** | Solo orígenes autorizados pueden consumir la API. |
-| **Aislamiento de BD** | Ningún cliente accede directamente a MySQL; todo pasa por la API. |
-| **Credenciales externas** | Configuración sensible en `application.properties`, fuera del código fuente. |
+### 9.1. Autenticación y Autorización
+
+- Implementación de **JSON Web Tokens (JWT)** para la gestión de sesiones sin estado (stateless).
+- Restricción de acceso a endpoints basada en roles de usuario (`ADMINISTRADOR` y `AUXILIAR`).
+
+### 9.2. Aislamiento de Capas
+
+- Ningún cliente frontend o móvil posee credenciales de base de datos.
+- Configuración centralizada de políticas CORS para filtrar peticiones de orígenes no autorizados.
 
 ---
 
-## 13. Tipos de Pruebas
+## 10. Aseguramiento de Calidad y Pruebas
 
-| Tipo de Prueba | Descripción | Herramienta |
+### 10.1. Tipos de Pruebas Ejecutadas
+
+| Nivel de Prueba | Alcance | Herramienta / Método |
 | :--- | :--- | :--- |
-| **Pruebas unitarias** | Validación de lógica aislada por método/servicio. | JUnit (Java) |
-| **Pruebas de integración** | Verificación de la comunicación entre capas (API <-> BD). | Spring Boot Test |
-| **Pruebas de API (Caja negra)** | Validación de endpoints REST con datos reales. | Postman |
-| **Pruebas funcionales (UAT)** | Validación de flujos completos: login → venta → reporte. | Manual |
-| **Pruebas de regresión** | Re-verificación de módulos anteriores tras nuevos cambios. | Manual + Postman |
-| **Pruebas de interfaz** | Validación de responsividad y consistencia visual del dashboard web. | Manual (Chrome DevTools) |
+| **Pruebas Unitarias** | Validación lógica de métodos de negocio aislados. | JUnit / Mockito |
+| **Pruebas de Integración** | Comunicación entre Controladores, Servicios y Repositorios JPA. | Spring Boot Test |
+| **Pruebas de API** | Verificación de respuestas JSON, códigos HTTP y payloads. | Postman Collections |
+| **Pruebas de UI y UAT** | Validación de usabilidad y flujo continuo en navegadores y dispositivos. | Manual / Chrome DevTools |
+
+### 10.2. Ciclo de Gestión de Incidencias
+
+Flujo estandarizado conforme a ISO/IEC/IEEE 29119-3:
+
+`Detectado → Reportado (BUG) → Asignado → Corregido → Re-Test → Cerrado`
+
+### 10.3. Procesos de Construcción (Build)
+
+Uso de **Apache Maven** para la gestión automatizada de dependencias y empaquetado JAR ejecutable del backend (`mvn clean package`).
 
 ---
 
-## 14. Procesos de Construcción
+## 11. Mantenimiento y Refactorización
 
-1. **Gestión de dependencias:** Maven centraliza librerías del backend (`pom.xml`). Gradle en Android.
-2. **Construcción del backend:** `mvn spring-boot:run` — incluye compilación, empaquetado y arranque del servidor.
-3. **Frontend integrado:** Las vistas web (Thymeleaf) son servidas directamente por el backend desde `localhost:8081`.
-4. **Base de datos:** Importación del script `database/tienda_acacios.sql` para inicializar el esquema.
-5. **Control de versiones:** Cada módulo funcional se desarrolla y consolida con commits descriptivos en Git/GitHub.
+### 11.1. Historial de Refactorizaciones Relevantes
 
----
+| Fecha | Descripción de Cambio | Impacto |
+| :--- | :--- | :--- |
+| **2026-05-22** | Estandarización del campo `stockActual` en todas las capas del sistema. | Eliminó inconsistencias entre capas de datos. |
+| **2026-06-04** | Modularización completa de scripts JS en el frontend web (`core/`, `modules/`, `shared/`). | Eliminó la dependencia de scripts globales gigantes. |
+| **2026-07-26** | Depuración de archivos legacy (`dashboard.js` de 1800 líneas) y corrección de referencias en `login.html`. | Reducción de 86 KB de código muerto e independización modular. |
 
-## 15. Pruebas y Calidad
+### 11.2. Estado Actual del Proyecto
 
-Ciclo de vida de un bug detectado (basado en ISO/IEC/IEEE 29119-3):
-
-```
-Nuevo → Asignado → Corregido → Re-Test → Cerrado
-```
-
-Los artefactos de calidad generados son:
-- **Plan de Pruebas** — alcance, criterios de entrada/salida y riesgos.
-- **Casos de Prueba (CP)** — condición, precondición y resultado esperado por escenario.
-- **Scripts de Prueba (SCR)** — pasos detallados de ejecución manual.
-- **Reporte de Incidencias (BUG)** — severidad, prioridad, pasos de reproducción y estado.
+El sistema se encuentra en **Fase de Estabilización y Despliegue**, con los módulos principales (Autenticación, Inventario, POS Ventas, Clientes, Proveedores, Inteligencia de Negocio y Reportes) totalmente funcionales e integrados.
 
 ---
 
-## 16. Refactorización
+## 12. Conclusiones
 
-Hitos de refactorización registrados en el historial del proyecto:
-
-| Fecha | Cambio Realizado |
-| :--- | :--- |
-| 2026-05-22 | Renombrado `cantidad` → `stockActual` en todas las capas (BD, Backend, Desktop, Web, Android). |
-| 2026-05-22 | Adición de `stockOptimo` y `unidadMedida` al modelo de `Producto` en todo el ecosistema. |
-| 2026-05-23 | Migración del frontend estático a Thymeleaf integrado en Spring Boot. Eliminación de HTML/CSS/JS huérfanos. |
-| 2026-06-04 | Extracción de scripts embebidos en HTML hacia archivos JS externos en `core/`, `modules/` y `shared/`. |
+1. **Eficiencia Arquitectónica:** La adopción de una arquitectura centrada en una API REST uniforme demostró ser la estrategia adecuada para escalar la solución a múltiples plataformas (Web, Desktop y Móvil) manteniendo una única fuente de verdad.
+2. **Impacto de las Buenas Prácticas:** La aplicación rigurosa de estándares de codificación, convenciones de nombres y modularidad facilitó el mantenimiento, permitiendo refactorizaciones profundas (como la eliminación del código legacy `dashboard.js`) sin interrumpir la operación del sistema.
+3. **Valor para el Negocio:** AcaciosWork no solo resuelve los problemas de gestión operativa de Tienda Los Acacios, sino que aporta un valor diferenciador mediante la analítica de datos en tiempo real, transformando el control tradicional de existencias en una herramienta estratégica.
 
 ---
 
-## 17. Etapa Actual del Proyecto
-
-**Estado:** `DESARROLLO ACTIVO — FASE DE ESTABILIZACIÓN Y ESCALADO`
-
-### Completado
-- Autenticación JWT en todas las plataformas (Web, Desktop, Android).
-- CRUDs operativos: Usuarios, Clientes, Proveedores, Categorías, Productos e Inventario.
-- Módulo de Ventas y DetalleVenta con persistencia atómica.
-- Inteligencia de Negocio: módulo de "Preguntas Inteligentes" y gráficos interactivos en la web.
-- Exportación a PDF e impresión de comprobantes en el dashboard web.
-- App Android funcional: Login, Dashboard, Clientes, Inventario, Proveedores.
-
-### En Proceso
-- Sistema de alertas en tiempo real para stock crítico.
-- Reportes con gráficos en la app Desktop y Android.
-- Módulo de Cierre de Caja (balance diario).
-
----
-
-*Documento generado como parte del proceso formativo del SENA — Ficha 3118313.*
-*Autor: Rubiel Andrés Díaz Jiménez | AcaciosWork © 2026*
+*Documento elaborado conforme a los requerimientos del programa ADSO — SENA.*  
+*AcaciosWork © 2026 | Desarrollado por Rubiel Andrés Díaz Jiménez*
