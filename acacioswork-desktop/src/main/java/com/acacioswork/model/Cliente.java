@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Modelo de Cliente para el cliente de escritorio. @author RADJ */
+/** modelo de cliente para el cliente de escritorio. @author RADJ */
 public class Cliente {
     private Long id;
     private Long idTipoDocumento;

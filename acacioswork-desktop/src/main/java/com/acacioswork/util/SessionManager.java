@@ -2,7 +2,7 @@ package com.acacioswork.util;
 
 import com.acacioswork.model.Usuario;
 
-/** Gestiona la sesión del usuario y el token JWT en la aplicación de escritorio. @author RADJ */
+/** gestiona la sesión del usuario y el token jwt en la aplicación de escritorio. @author RADJ */
 public class SessionManager {
     private static Usuario usuarioActual;
     private static String token;

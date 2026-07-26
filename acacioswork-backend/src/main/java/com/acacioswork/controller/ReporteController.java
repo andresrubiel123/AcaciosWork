@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.acacioswork.service.ReporteService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST para reportes y estadísticas. @author RADJ */
+/** controlador rest para reportes y estadísticas. @author RADJ */
 @RestController
 @RequestMapping("/api/reportes")
 @CrossOrigin(origins = "*")
@@ -23,21 +23,21 @@ public class ReporteController {
 
 private final ReporteService reporteService;
 
-    /** Obtiene el total de ventas del día actual. @author RADJ */
+    /** obtiene el total de ventas del día actual. @author RADJ */
     @GetMapping("/ventas-diarias")
     public ResponseEntity<ApiResponse<Double>> getVentasDiarias() {
         double total = reporteService.reporteVentasDiarias();
         return ResponseEntity.ok(new ApiResponse<>(true, "Total de ventas diarias obtenido con éxito", total));
     }
 
-    /** Obtiene el total de ganancias acumuladas. @author RADJ */
+    /** obtiene el total de ganancias acumuladas. @author RADJ */
     @GetMapping("/ganancias")
     public ResponseEntity<ApiResponse<Double>> getGanancias() {
         double total = reporteService.reporteGanancias();
         return ResponseEntity.ok(new ApiResponse<>(true, "Total de ganancias obtenido con éxito", total));
     }
 
-    /** Obtiene el listado de productos con existencias por debajo del mínimo. @author RADJ */
+    /** obtiene el listado de productos con existencias por debajo del mínimo. @author RADJ */
     @GetMapping("/stock-bajo")
     public ResponseEntity<ApiResponse<Object>> getProductosBajosStock() {
         return ResponseEntity.ok(new ApiResponse<>(true, "Productos con stock bajo obtenidos con éxito", reporteService.productosBajosEnStock()));

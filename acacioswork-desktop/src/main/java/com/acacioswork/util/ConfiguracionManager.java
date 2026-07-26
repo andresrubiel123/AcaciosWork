@@ -15,7 +15,8 @@ public class ConfiguracionManager {
             configuracionGlobal = ApiClient.get("/configuracion", Configuracion.class);
         } catch (Exception e) {
             System.err.println("Error al cargar la configuración global: " + e.getMessage());
-            // Fallback default config
+           
+/** fallback default config. @author RADJ */
             configuracionGlobal = new Configuracion();
             configuracionGlobal.setMoneda("COP");
         }

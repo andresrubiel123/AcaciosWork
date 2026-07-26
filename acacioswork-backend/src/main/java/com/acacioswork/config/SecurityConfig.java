@@ -18,20 +18,22 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/** Configuración de seguridad y CORS del sistema. @author RADJ */
+/** configuración de seguridad y cors del sistema. @author RADJ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /** Define la cadena de filtros de seguridad. @author RADJ */
+    /** define la cadena de filtros de seguridad. @author RADJ */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable()) // Desactivado para facilitar pruebas REST
+            .csrf(csrf -> csrf.disable())
+/** desactivado para facilitar pruebas rest. @author RADJ */
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // ACCESO TOTAL: Ya no se requiere Token
+                .anyRequest().permitAll()
+/** acceso total: ya no se requiere token. @author RADJ */
             )
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable());
@@ -39,13 +41,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** Configura el gestor de autenticación. @author RADJ */
+    /** configura el gestor de autenticación. @author RADJ */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    /** Configuración de CORS permitiendo orígenes y métodos específicos. @author RADJ */
+    /** configuración de cors permitiendo orígenes y métodos específicos. @author RADJ */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -56,11 +58,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    /** Define el codificador de contraseñas (BCrypt). @author RADJ */
+        source.registerCorsConfiguration("/** ", configuration); return source; } /** define el codificador de contraseñas (bcrypt). @author RADJ */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

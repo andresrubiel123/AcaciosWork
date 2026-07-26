@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa una venta en el sistema. @author RADJ */
+/** entidad que representa una venta en el sistema. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -42,7 +42,7 @@ public class Venta {
     @Column(name = "valor_total", nullable = false)
     private double valorTotal;
 
-    /** Configura la fecha y vincula los detalles antes de persistir. @author RADJ */
+    /** configura la fecha y vincula los detalles antes de persistir. @author RADJ */
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         if (this.fechaHora == null) {
@@ -54,7 +54,7 @@ public class Venta {
         calcularTotal();
     }
 
-    /** Agrega un detalle de venta y recalcula el total. @author RADJ */
+    /** agrega un detalle de venta y recalcula el total. @author RADJ */
     public void agregarDetalle(DetalleVenta detalle) {
         if (detalles == null) {
             detalles = new ArrayList<>();
@@ -64,7 +64,7 @@ public class Venta {
         calcularTotal();
     }
 
-    /** Calcula el valor total de la venta sumando sus detalles. @author RADJ */
+    /** calcula el valor total de la venta sumando sus detalles. @author RADJ */
     public void calcularTotal() {
         valorTotal = 0;
         if (detalles != null) {

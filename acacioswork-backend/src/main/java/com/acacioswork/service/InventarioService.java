@@ -10,7 +10,7 @@ import com.acacioswork.model.AlertaStockMinimo;
 import com.acacioswork.model.Producto;
 import com.acacioswork.repository.ProductoRepository;
 
-/** Servicio para gestionar el inventario de productos. @author RADJ */
+/** servicio para gestionar el inventario de productos. @author RADJ */
 @Service
 @Transactional
 public class InventarioService {
@@ -25,19 +25,19 @@ private final ProductoRepository productoRepository;
 
     private static final List<AlertaStockMinimo> alertas = new ArrayList<>();
 
-    /** Guarda un producto y verifica alertas de stock. @author RADJ */
+    /** guarda un producto y verifica alertas de stock. @author RADJ */
     public Producto save(Producto producto) {
         Producto saved = productoRepository.save(producto);
         verificarAlerta(saved);
         return saved;
     }
 
-    /** Obtiene todos los productos del inventario. @author RADJ */
+    /** obtiene todos los productos del inventario. @author RADJ */
     public List<Producto> findAll() {
         return productoRepository.findAll();
     }
 
-    /** Verifica si un producto ha alcanzado su stock mínimo y genera alerta. @author RADJ */
+    /** verifica si un producto ha alcanzado su stock mínimo y genera alerta. @author RADJ */
     private void verificarAlerta(Producto producto) {
         if (producto.getStockMinimo() > 0 && producto.getStockActual() <= producto.getStockMinimo()) {
             AlertaStockMinimo alerta = new AlertaStockMinimo();
@@ -49,12 +49,12 @@ private final ProductoRepository productoRepository;
         }
     }
 
-    /** Obtiene las alertas de stock mínimo. @author RADJ */
+    /** obtiene las alertas de stock mínimo. @author RADJ */
     public List<AlertaStockMinimo> obtenerAlertas() {
         return new ArrayList<>(alertas);
     }
 
-    /** Limpia las alertas acumuladas. @author RADJ */
+    /** limpia las alertas acumuladas. @author RADJ */
     public void limpiarAlertas() {
         alertas.clear();
     }

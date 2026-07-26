@@ -1,4 +1,4 @@
-<!-- Fragmento para la ventana de Configuración. @author RADJ -->
+<!-- fragmento para la ventana de configuración. @author RADJ -->
 <div th:fragment="configuracion">
     <div id="sec-configuracion" class="section" style="display:none">
         <div class="section-header">
@@ -6,55 +6,171 @@
                 <h1>Configuración del Sistema</h1>
                 <p>Ajustes globales, hardware y diseño del ticket de venta</p>
             </div>
-            <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar Configuración</button>
+            <button class="btn btn-success" onclick="guardarConfiguracion()">💾 Guardar Configuración</button>
         </div>
 
         <div class="card" style="margin-top: 1rem;">
-            <!-- Tabs Navigation -->
+            <!-- tabs navigation. @author RADJ -->
             <div style="display: flex; gap: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; padding-bottom: 0.5rem;">
-                <button class="btn btn-secondary config-tab-btn active" onclick="switchConfigTab('general')">General</button>
-                <button class="btn btn-secondary config-tab-btn" onclick="switchConfigTab('hardware')">Hardware</button>
-                <button class="btn btn-secondary config-tab-btn" onclick="switchConfigTab('ticket')">Control del Ticket</button>
+                <button class="btn btn-pdf config-tab-btn active" onclick="switchConfigTab('general')">General</button>
+                <button class="btn btn-pdf config-tab-btn" onclick="switchConfigTab('hardware')">Hardware</button>
+                <button class="btn btn-pdf config-tab-btn" onclick="switchConfigTab('ticket')">Control del Ticket</button>
             </div>
 
-            <!-- Tab: General -->
+            <!-- tab: general. @author RADJ -->
             <div id="config-tab-general" class="config-tab-content">
                 <h3>Información General</h3>
                 <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column: span 2;">
                         <label>Nombre de la Empresa</label>
                         <input type="text" id="cfg-nombre-empresa" class="form-control">
                     </div>
-                    <div class="form-group">
-                        <label>Idioma</label>
-                        <select id="cfg-idioma" class="form-control">
-                            <option value="es">Español</option>
-                            <option value="en">Inglés</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Moneda</label>
-                        <input type="text" id="cfg-moneda" class="form-control" placeholder="Ej. COP, USD, EUR">
-                    </div>
                 </div>
             </div>
 
-            <!-- Tab: Hardware -->
+            <!-- tab: hardware. @author RADJ -->
             <div id="config-tab-hardware" class="config-tab-content" style="display: none;">
-                <h3>Configuración de Hardware</h3>
-                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                    <div class="form-group">
-                        <label>Lector de Código de Barras (Prefijo/Sufijo)</label>
-                        <input type="text" id="cfg-lector" class="form-control" placeholder="Configuración especial o puerto">
+                <h3>Configuración de Hardware POS</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+                    
+                    <!-- Lector -->
+                    <div class="hardware-box" style="border: 1px solid rgba(255, 255, 255, 0.08); padding: 1.25rem; border-radius: 0.5rem; background: rgba(255, 255, 255, 0.02);">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🏷️</span> Lector de Código de Barras
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 0.85rem;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Modo de Conexión</label>
+                                <select id="cfg-barcode-mode" class="form-control" onchange="toggleHardwareFields()">
+                                    <option value="KEYBOARD">Emulación de Teclado (USB HID)</option>
+                                    <option value="SERIAL">Puerto Serial / COM Virtual</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-barcode-port" style="margin-bottom:0;">
+                                <label>Puerto Serial COM</label>
+                                <input type="text" id="cfg-barcode-port" class="form-control" placeholder="Ej. COM3">
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Impresora Activa (Nombre en Windows)</label>
-                        <input type="text" id="cfg-impresora" class="form-control" placeholder="Ej. EPSON TM-T20II">
+
+                    <!-- Balanza -->
+                    <div class="hardware-box" style="border: 1px solid rgba(255, 255, 255, 0.08); padding: 1.25rem; border-radius: 0.5rem; background: rgba(255, 255, 255, 0.02);">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>⚖️</span> Báscula / Balanza
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 0.85rem;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Estado de la Báscula</label>
+                                <select id="cfg-scale-enabled" class="form-control" onchange="toggleHardwareFields()">
+                                    <option value="false">Desactivada (No pesar automáticamente)</option>
+                                    <option value="true">Habilitada</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-scale-protocol" style="margin-bottom:0;">
+                                <label>Protocolo de Comunicación</label>
+                                <select id="cfg-scale-protocol" class="form-control">
+                                    <option value="CAS">CAS ER-Plus / AP-1</option>
+                                    <option value="TOLEDO">Toledo / Systel</option>
+                                    <option value="DIBAL">Dibal / Kretz</option>
+                                    <option value="CONTINUOUS">Transmisión Continua Genérica</option>
+                                    <option value="BARCODE">Código de Barras Embebido en Ticket</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-scale-port" style="margin-bottom:0;">
+                                <label>Puerto COM de la Báscula</label>
+                                <input type="text" id="cfg-scale-port" class="form-control" placeholder="Ej. COM4">
+                            </div>
+                            <div class="form-group" id="group-scale-baudrate" style="margin-bottom:0;">
+                                <label>Velocidad de Puerto (Baudios)</label>
+                                <select id="cfg-scale-baudrate" class="form-control">
+                                    <option value="9600">9600 bps (Estándar)</option>
+                                    <option value="4800">4800 bps</option>
+                                    <option value="19200">19200 bps</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impresora -->
+                    <div class="hardware-box" style="border: 1px solid rgba(255, 255, 255, 0.08); padding: 1.25rem; border-radius: 0.5rem; background: rgba(255, 255, 255, 0.02);">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🖨️</span> Impresora Térmica
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 0.85rem;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Impresora en Windows (Cola del Driver)</label>
+                                <input type="text" id="cfg-impresora" class="form-control" placeholder="Ej. EPSON TM-T20II">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Interfaz de Conectividad</label>
+                                <select id="cfg-printer-interface" class="form-control" onchange="toggleHardwareFields()">
+                                    <option value="SYSTEM">Diálogo del Sistema (HTML / Impresora de Windows)</option>
+                                    <option value="ESC_POS_RAW">Directo ESC/POS (Puerto Local / Driver Genérico)</option>
+                                    <option value="NETWORK">Directo ESC/POS sobre Red (TCP/IP)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-printer-port" style="margin-bottom:0;">
+                                <label>Puerto o Dirección IP</label>
+                                <input type="text" id="cfg-printer-port" class="form-control" placeholder="Ej. 192.168.1.100 o LPT1 / USB001">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cajon Monedero -->
+                    <div class="hardware-box" style="border: 1px solid rgba(255, 255, 255, 0.08); padding: 1.25rem; border-radius: 0.5rem; background: rgba(255, 255, 255, 0.02);">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>💵</span> Cajón Monedero
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 0.85rem;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Modo de Conexión del Cajón</label>
+                                <select id="cfg-cajon-conectado" class="form-control" onchange="toggleHardwareFields()">
+                                    <option value="true">Conectado a la Impresora de Tickets (Puerto RJ11/RJ12)</option>
+                                    <option value="false">Conectado Directo por Puerto Serial/COM</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-cajon-comando" style="margin-bottom:0;">
+                                <label>Secuencia de Apertura ESC/POS (Decimal)</label>
+                                <input type="text" id="cfg-cajon-comando" class="form-control" placeholder="Ej. 27,112,0,25,250">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datafono -->
+                    <div class="hardware-box" style="border: 1px solid rgba(255, 255, 255, 0.08); padding: 1.25rem; border-radius: 0.5rem; background: rgba(255, 255, 255, 0.02); grid-column: span 2;">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>💳</span> Datáfono Integrado (POS-Link)
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Integración con Datáfono</label>
+                                <select id="cfg-datafono-integracion" class="form-control" onchange="toggleHardwareFields()">
+                                    <option value="false">Desactivada (Registro manual en pantalla)</option>
+                                    <option value="true">Habilitada (POS-Link activo)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-datafono-proveedor" style="margin-bottom:0;">
+                                <label>Proveedor / Protocolo</label>
+                                <select id="cfg-datafono-proveedor" class="form-control">
+                                    <option value="REDEBAN">Redeban (Colombia)</option>
+                                    <option value="CREDIBANCO">Credibanco (Colombia)</option>
+                                    <option value="GENERIC">Genérico TCP/IP POS-Link</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="group-datafono-puerto" style="margin-bottom:0;">
+                                <label>Puerto COM / IP del Datáfono</label>
+                                <input type="text" id="cfg-datafono-puerto" class="form-control" placeholder="Ej. COM5 o 192.168.1.150">
+                            </div>
+                            <div class="form-group" id="group-datafono-terminal" style="margin-bottom:0;">
+                                <label>ID del Terminal (Terminal ID)</label>
+                                <input type="text" id="cfg-datafono-terminal-id" class="form-control" placeholder="Ej. TML00912">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab: Ticket -->
+            <!-- tab: ticket. @author RADJ -->
             <div id="config-tab-ticket" class="config-tab-content" style="display: none;">
                 <h3>Diseño del Ticket</h3>
                 <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">

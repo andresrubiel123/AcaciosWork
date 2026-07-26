@@ -30,7 +30,8 @@ import com.acacioswork.util.ApiClient;
 
 public class UsuarioDialog extends JDialog {
     private final Frame owner;
-    private final Usuario usuario; // null means create, non-null means edit
+    private final Usuario usuario;
+/** null means create, non-null means edit. @author RADJ */
     private final Runnable onSuccess;
 
     private JTextField txtNom;
@@ -79,7 +80,8 @@ public class UsuarioDialog extends JDialog {
         cbTipo = new JComboBox<>(tipos);
         cbTipo.putClientProperty("JComponent.roundRect", true);
         
-        // Seleccionar por defecto Cédula (id = 1)
+       
+/** seleccionar por defecto cédula (id = 1). @author RADJ */
         for (int i = 0; i < cbTipo.getItemCount(); i++) {
             TipoDocumento td = cbTipo.getItemAt(i);
             if (td.getId().equals(1L) || td.getNombre().toLowerCase().contains("cedula")) {
@@ -131,7 +133,8 @@ public class UsuarioDialog extends JDialog {
             txtTel.setText(usuario.getTelefono());
             txtMail.setText(usuario.getEmail());
             txtUser.setText(usuario.getUsuario());
-            txtPass.setText(""); // clear by default for safety in edit
+            txtPass.setText("");
+/** clear by default for safety in edit. @author RADJ */
             
             if (usuario.getIdTipoDocumento() != null) {
                 for (int i = 0; i < cbTipo.getItemCount(); i++) {
@@ -154,8 +157,10 @@ public class UsuarioDialog extends JDialog {
 
             cbEstado.setSelectedItem(usuario.getActivo() != null && usuario.getActivo() == 1 ? "Activo" : "Inactivo");
             
-            // Identificación field is primary key in many backend operations, so keep it editable or disabled depending on need
-            // Let's keep it editable but we can make it disabled during edit if necessary. The original was editable.
+           
+/** identificación field is primary key in many backend operations, so keep it editable or disabled depending on need. @author RADJ */
+           
+/** let's keep it editable but we can make it disabled during edit if necessary. the original was editable. @author RADJ */
         }
 
         JPanel mainPanel = new JPanel();
@@ -229,7 +234,8 @@ public class UsuarioDialog extends JDialog {
             protected void paintComponent(java.awt.Graphics g) {
                 java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                 g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                // Degradado naranja a rojo del dashboard activo
+               
+/** degradado naranja a rojo del dashboard activo. @author RADJ */
                 g2.setPaint(new java.awt.GradientPaint(0, 0, new Color(249, 115, 22), 0, getHeight(), new Color(239, 68, 68)));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2.dispose();

@@ -29,7 +29,7 @@ import com.acacioswork.model.Rol;
 import com.acacioswork.model.Usuario;
 import com.acacioswork.util.ApiClient;
 
-/** Interfaz para gestión de usuarios vía API REST. @author RADJ */
+/** interfaz para gestión de usuarios vía api rest. @author RADJ */
 public class GestionUsuarios extends JPanel {
 
     private DefaultTableModel modeloTabla;
@@ -39,7 +39,8 @@ public class GestionUsuarios extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(15, 23, 42));
 
-        // Panel superior: Botón atrás
+       
+/** panel superior: botón atrás. @author RADJ */
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSuperior.setOpaque(false);
         GradientButton btnAtras = new GradientButton("‹ Volver", new Color(99, 102, 241), new Color(79, 70, 229));
@@ -55,7 +56,8 @@ public class GestionUsuarios extends JPanel {
 
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Tabla de usuarios
+       
+/** tabla de usuarios. @author RADJ */
         modeloTabla = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -83,7 +85,8 @@ public class GestionUsuarios extends JPanel {
         scrollPane.getViewport().setBackground(new Color(15, 23, 42));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel inferior: Botones CRUD
+       
+/** panel inferior: botones crud. @author RADJ */
         JPanel panelBotones = new JPanel();
         panelBotones.setOpaque(false);
         panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -133,7 +136,8 @@ public class GestionUsuarios extends JPanel {
         JTextField txtUsuario = new JTextField();
         JPasswordField txtClave = new JPasswordField();
 
-        // Cargar roles desde API
+       
+/** cargar roles desde api. @author RADJ */
         Vector<Rol> roles = new Vector<>();
         try {
             Rol[] rolesArr = ApiClient.get("/roles", Rol[].class);
@@ -193,7 +197,8 @@ public class GestionUsuarios extends JPanel {
             JTextField txtApellido = new JTextField(actual.getApellido());
             JTextField txtEmail = new JTextField(actual.getEmail());
             JTextField txtUsuario = new JTextField(actual.getUsuario());
-            JPasswordField txtClave = new JPasswordField(); // Opcional al editar
+            JPasswordField txtClave = new JPasswordField();
+/** opcional al editar. @author RADJ */
             JCheckBox chkActivo = new JCheckBox("Usuario activo", actual.getActivo() != null && actual.getActivo() == 1);
 
             Object[] message = {

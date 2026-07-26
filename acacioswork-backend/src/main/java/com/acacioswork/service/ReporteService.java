@@ -11,7 +11,7 @@ import com.acacioswork.model.Producto;
 import com.acacioswork.model.Venta;
 import com.acacioswork.repository.VentaRepository;
 
-/** Servicio para la generación de reportes y gestión de ventas. @author RADJ */
+/** servicio para la generación de reportes y gestión de ventas. @author RADJ */
 @Service
 @Transactional
 public class ReporteService {
@@ -27,7 +27,7 @@ private final VentaRepository ventaRepository;
 
 private final InventarioService inventarioService;
 
-    /** Registra una venta en el sistema. @author RADJ */
+    /** registra una venta en el sistema. @author RADJ */
     public Venta saveVenta(Venta venta) {
         if (venta.getFechaHora() == null) {
             venta.setFechaHora(LocalDateTime.now());
@@ -35,18 +35,18 @@ private final InventarioService inventarioService;
         return ventaRepository.save(venta);
     }
 
-    /** Calcula el total de ventas realizadas. @author RADJ */
+    /** calcula el total de ventas realizadas. @author RADJ */
     public double reporteVentasDiarias() {
         List<Venta> ventas = ventaRepository.findAll();
         return ventas.stream().mapToDouble(Venta::getValorTotal).sum();
     }
 
-    /** Reporte de ganancias brutas. @author RADJ */
+    /** reporte de ganancias brutas. @author RADJ */
     public double reporteGanancias() {
         return reporteVentasDiarias();
     }
 
-    /** Lista de productos con stock por debajo del mínimo. @author RADJ */
+    /** lista de productos con stock por debajo del mínimo. @author RADJ */
     public List<Producto> productosBajosEnStock() {
         List<Producto> bajos = new ArrayList<>();
         for (Producto p : inventarioService.findAll()) {
@@ -57,7 +57,7 @@ private final InventarioService inventarioService;
         return bajos;
     }
 
-    /** Recupera el historial completo de ventas. @author RADJ */
+    /** recupera el historial completo de ventas. @author RADJ */
     public List<Venta> findAllVentas() {
         return ventaRepository.findAll();
     }

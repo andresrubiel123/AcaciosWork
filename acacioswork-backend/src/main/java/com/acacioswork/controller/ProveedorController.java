@@ -17,7 +17,7 @@ import com.acacioswork.model.Proveedor;
 import com.acacioswork.service.ProveedorService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST para la gestión de proveedores. @author RADJ */
+/** controlador rest para la gestión de proveedores. @author RADJ */
 @RestController
 @RequestMapping("/api/proveedores")
 @CrossOrigin(origins = "*")
@@ -31,14 +31,14 @@ public class ProveedorController {
 
 private final ProveedorService proveedorService;
 
-    /** Obtiene la lista de todos los proveedores. @author RADJ */
+    /** obtiene la lista de todos los proveedores. @author RADJ */
     @GetMapping
     public ResponseEntity<ApiResponse<List<Proveedor>>> getAll() {
         List<Proveedor> proveedores = proveedorService.findAll();
         return ResponseEntity.ok(new ApiResponse<>(true, "Proveedores obtenidos con éxito", proveedores));
     }
 
-    /** Obtiene un proveedor por su ID. @author RADJ */
+    /** obtiene un proveedor por su id. @author RADJ */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Proveedor>> getById(@PathVariable Long id) {
         return proveedorService.findById(id)
@@ -46,14 +46,14 @@ private final ProveedorService proveedorService;
                 .orElse(ResponseEntity.status(404).body(new ApiResponse<>(false, "Proveedor no encontrado", null)));
     }
 
-    /** Registra un nuevo proveedor. @author RADJ */
+    /** registra un nuevo proveedor. @author RADJ */
     @PostMapping
     public ResponseEntity<ApiResponse<Proveedor>> create(@RequestBody Proveedor proveedor) {
         Proveedor saved = proveedorService.save(proveedor);
         return ResponseEntity.status(201).body(new ApiResponse<>(true, "Proveedor registrado con éxito", saved));
     }
 
-    /** Actualiza la información de un proveedor existente. @author RADJ */
+    /** actualiza la información de un proveedor existente. @author RADJ */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Proveedor>> update(@PathVariable Long id, @RequestBody Proveedor details) {
         return proveedorService.findById(id).map(p -> {
@@ -71,7 +71,7 @@ private final ProveedorService proveedorService;
                 .body(new ApiResponse<>(false, "Proveedor no encontrado para actualizar", null)));
     }
 
-    /** Elimina un proveedor del sistema por su ID. @author RADJ */
+    /** elimina un proveedor del sistema por su id. @author RADJ */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         return proveedorService.findById(id).map(p -> {

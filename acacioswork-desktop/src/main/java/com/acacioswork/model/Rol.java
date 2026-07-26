@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Modelo de Rol para el cliente de escritorio. @author RADJ */
+/** modelo de rol para el cliente de escritorio. @author RADJ */
 public class Rol {
     private Long id;
     private String nombre;

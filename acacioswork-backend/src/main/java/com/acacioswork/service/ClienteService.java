@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acacioswork.model.Cliente;
 import com.acacioswork.repository.ClienteRepository;
 
-/** Servicio para la gestión de clientes. @author RADJ */
+/** servicio para la gestión de clientes. @author RADJ */
 @Service
 @Transactional
 public class ClienteService {
@@ -22,22 +22,22 @@ public class ClienteService {
 
 private final ClienteRepository clienteRepository;
 
-    /** Obtiene todos los clientes. @author RADJ */
+    /** obtiene todos los clientes. @author RADJ */
     public List<Cliente> findAll() {
         return clienteRepository.findAll();
     }
 
-    /** Busca un cliente por ID. @author RADJ */
+    /** busca un cliente por id. @author RADJ */
     public Optional<Cliente> findById(Long id) {
         return clienteRepository.findById(id);
     }
 
-    /** Guarda un cliente. @author RADJ */
+    /** guarda un cliente. @author RADJ */
     public Cliente save(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
-    /** Elimina un cliente por ID. @author RADJ */
+    /** elimina un cliente por id. @author RADJ */
     public void deleteById(Long id) {
         clienteRepository.deleteById(id);
     }

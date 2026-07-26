@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Venta. @author RADJ */
+/** repositorio jpa para la entidad venta. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.List;

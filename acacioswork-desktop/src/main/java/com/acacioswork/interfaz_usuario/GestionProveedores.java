@@ -22,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import com.acacioswork.model.Proveedor;
 import com.acacioswork.util.ApiClient;
 
-/** Interfaz para gestión de proveedores conectada a la API. @author RADJ */
+/** interfaz para gestión de proveedores conectada a la api. @author RADJ */
 public class GestionProveedores extends JPanel {
 
     private DefaultTableModel modeloTabla;

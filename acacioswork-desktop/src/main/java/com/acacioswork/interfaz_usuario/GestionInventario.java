@@ -31,7 +31,7 @@ import com.acacioswork.model.Producto;
 import com.acacioswork.model.Proveedor;
 import com.acacioswork.util.ApiClient;
 
-/** Interfaz de gestión de inventario con CRUD completo. @author RADJ */
+/** interfaz de gestión de inventario con crud completo. @author RADJ */
 public class GestionInventario extends JPanel {
 
     private DefaultTableModel modeloTabla;
@@ -44,7 +44,8 @@ public class GestionInventario extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(15, 23, 42));
 
-        // Panel superior: Título y Volver
+       
+/** panel superior: título y volver. @author RADJ */
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSuperior.setOpaque(false);
         panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -58,12 +59,14 @@ public class GestionInventario extends JPanel {
         lblTitle.setForeground(Color.WHITE);
         panelSuperior.add(lblTitle);
 
-        // Contenedor superior: título + estadísticas
+       
+/** contenedor superior: título + estadísticas. @author RADJ */
         JPanel topContainer = new JPanel(new BorderLayout());
         topContainer.setOpaque(false);
         topContainer.add(panelSuperior, BorderLayout.NORTH);
 
-        // Stats panel
+       
+/** stats panel. @author RADJ */
         JPanel statsPanel = new JPanel(new GridLayout(1, 3, 12, 0));
         statsPanel.setOpaque(false);
         statsPanel.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
@@ -94,7 +97,8 @@ public class GestionInventario extends JPanel {
 
         add(topContainer, BorderLayout.NORTH);
 
-        // Tabla de productos
+       
+/** tabla de productos. @author RADJ */
         modeloTabla = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -125,19 +129,31 @@ public class GestionInventario extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(new Color(15, 23, 42));
         add(scrollPane, BorderLayout.CENTER);
-        // Ajustar anchos de columnas (incluye nueva columna IVA)
-        tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
-        tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
-        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(300); // Nombre
-        tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(80); // Unidad
-        tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(100); // Stock
-        tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(110); // Precio Compra
-        tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(110); // Precio Venta
-        tablaProductos.getColumnModel().getColumn(7).setPreferredWidth(80); // IVA
-        tablaProductos.getColumnModel().getColumn(8).setPreferredWidth(80); // Estado
-        tablaProductos.getColumnModel().getColumn(9).setPreferredWidth(140); // Acciones
+       
+/** ajustar anchos de columnas (incluye nueva columna iva). @author RADJ */
+        tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(50);
+/** id. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(100);
+/** código. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(300);
+/** nombre. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(80);
+/** unidad. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(100);
+/** stock. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(110);
+/** precio compra. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(110);
+/** precio venta. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(7).setPreferredWidth(80);
+/** iva. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(8).setPreferredWidth(80);
+/** estado. @author RADJ */
+        tablaProductos.getColumnModel().getColumn(9).setPreferredWidth(140);
+/** acciones. @author RADJ */
 
-        // Renderer para la columna Stock: número coloreado según cantidad. @author RADJ
+       
+/** renderer para la columna stock: número coloreado según cantidad. @author RADJ */
         tablaProductos.getColumnModel().getColumn(4).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             @Override
             public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -156,7 +172,8 @@ public class GestionInventario extends JPanel {
                     int pct = Math.min(100, (int) Math.round((qty * 100.0) / stockOptimo));
 
                     if (isSelected) {
-                        // Mantiene colores de selección de la JTable
+                       
+/** mantiene colores de selección de la jtable. @author RADJ */
                     } else {
                         if (pct <= 30) {
                             label.setForeground(new Color(248, 113, 113));
@@ -173,7 +190,8 @@ public class GestionInventario extends JPanel {
             }
         });
 
-        // Columna Acciones: renderer simple y handler de clics
+       
+/** columna acciones: renderer simple y handler de clics. @author RADJ */
         tablaProductos.getColumnModel().getColumn(9).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             @Override
             public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -193,28 +211,33 @@ public class GestionInventario extends JPanel {
             }
         });
 
-        // Mouse listener para detectar clicks en 'Acciones'
+       
+/** mouse listener para detectar clicks en 'acciones'. @author RADJ */
         tablaProductos.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = tablaProductos.rowAtPoint(e.getPoint());
                 int col = tablaProductos.columnAtPoint(e.getPoint());
                 if (row == -1 || col == -1) return;
-                if (col == 9) { // Acciones
+                if (col == 9) {
+/** acciones. @author RADJ */
                     int cellX = e.getX() - tablaProductos.getCellRect(row, col, true).x;
                     int width = tablaProductos.getColumnModel().getColumn(col).getWidth();
                     if (cellX < width / 2) {
-                        // Edit
+                       
+/** edit. @author RADJ */
                         editarProducto();
                     } else {
-                        // Delete
+                       
+/** delete. @author RADJ */
                         eliminarProducto();
                     }
                 }
             }
         });
 
-        // Panel inferior: Botones de Acción
+       
+/** panel inferior: botones de acción. @author RADJ */
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setOpaque(false);
         panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -277,7 +300,8 @@ public class GestionInventario extends JPanel {
         JComboBox<Categoria> cbCat = new JComboBox<>(categorias);
         JComboBox<Proveedor> cbProv = new JComboBox<>(proveedores);
         JTextField txtUnidadMedida = new JTextField("");
-        JTextField txtIva = new JTextField("19"); // IVA default 19%
+        JTextField txtIva = new JTextField("19");
+/** iva default 19%. @author RADJ */
 
         Object[] message = {
                 "Código de Barras:", txtCodigo,

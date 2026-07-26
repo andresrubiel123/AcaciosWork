@@ -1,4 +1,4 @@
-/** Servicio de lógica de negocio para productos. @author RADJ */
+/** servicio de lógica de negocio para productos. @author RADJ */
 package com.acacioswork.service;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acacioswork.model.Producto;
 import com.acacioswork.repository.ProductoRepository;
 
-/** Servicio para la gestión de productos. @author RADJ */
+/** servicio para la gestión de productos. @author RADJ */
 @Service
 @Transactional
 public class ProductoService {
@@ -23,22 +23,22 @@ public class ProductoService {
 
 private final ProductoRepository productoRepository;
 
-    /** Obtiene todos los productos. @author RADJ */
+    /** obtiene todos los productos. @author RADJ */
     public List<Producto> findAll() {
         return productoRepository.findAll();
     }
 
-    /** Busca un producto por ID. @author RADJ */
+    /** busca un producto por id. @author RADJ */
     public Optional<Producto> findById(Long id) {
         return productoRepository.findById(id);
     }
 
-    /** Guarda un producto. @author RADJ */
+    /** guarda un producto. @author RADJ */
     public Producto save(Producto producto) {
         return productoRepository.save(producto);
     }
 
-    /** Elimina un producto por ID. @author RADJ */
+    /** elimina un producto por id. @author RADJ */
     public void deleteById(Long id) {
         productoRepository.deleteById(id);
     }

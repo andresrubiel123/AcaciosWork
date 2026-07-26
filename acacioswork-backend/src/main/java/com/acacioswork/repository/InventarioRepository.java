@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Inventario. @author RADJ */
+/** repositorio jpa para la entidad inventario. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.List;

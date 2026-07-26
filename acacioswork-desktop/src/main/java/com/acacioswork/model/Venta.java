@@ -2,7 +2,7 @@ package com.acacioswork.model;
 
 import java.util.List;
 
-/** Modelo de Venta para el cliente de escritorio. @author RADJ */
+/** modelo de venta para el cliente de escritorio. @author RADJ */
 public class Venta {
     private Long id;
     private java.time.LocalDateTime fechaHora;

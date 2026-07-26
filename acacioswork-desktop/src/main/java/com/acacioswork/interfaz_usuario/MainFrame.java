@@ -2,7 +2,7 @@ package com.acacioswork.interfaz_usuario;
 
 import javax.swing.*;
 
-/** Ventana principal del sistema para el cliente de escritorio. @author RADJ */
+/** ventana principal del sistema para el cliente de escritorio. @author RADJ */
 public class MainFrame extends JFrame {
 
     private static MainFrame instance;

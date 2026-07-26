@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Categoria. @author RADJ */
+/** repositorio jpa para la entidad categoria. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.Optional;

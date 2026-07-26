@@ -29,12 +29,7 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, "Error de integridad de datos. Posible duplicado.", null));
     }
 
-    // Comentamos el manejador general para depurar errores de Swagger (v3/api-docs)
-    /*
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>(false, "Error interno: " + ex.getMessage(), null));
-    }
-    */
+   
+/** comentamos el manejador general para depurar errores de swagger (v3/api-docs). @author RADJ */
+    /** @exceptionhandler(exception.class) public responseentity<apiresponse<void>> handlegeneralexception(exception ex) { return responseentity.status(httpstatus.internal_server_error) .body(new apiresponse<>(false, "error interno: " + ex.getmessage(), null)); }. @author RADJ */
 }

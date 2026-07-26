@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Modelo para alertas de stock mínimo en el cliente Desktop. @author RADJ */
+/** modelo para alertas de stock mínimo en el cliente desktop. @author RADJ */
 public class AlertaStockMinimo {
     private Long idAlerta;
     private Long idProducto;

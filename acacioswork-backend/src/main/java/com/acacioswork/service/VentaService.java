@@ -1,4 +1,4 @@
-/** Servicio de lógica de negocio para ventas. @author RADJ */
+/** servicio de lógica de negocio para ventas. @author RADJ */
 package com.acacioswork.service;
 
 import java.util.List;
@@ -28,23 +28,21 @@ private final VentaRepository ventaRepository;
 
 private final ProductoRepository productoRepository;
 
-    /** Recupera todas las ventas. @author RADJ */
+    /** recupera todas las ventas. @author RADJ */
     public List<Venta> findAll() {
         return ventaRepository.findAll();
     }
 
-    /** Busca una venta por ID. @author RADJ */
+    /** busca una venta por id. @author RADJ */
     public Optional<Venta> findById(Long id) {
         return ventaRepository.findById(id);
     }
 
-    /**
-     * Registra una venta, calcula el total, y descuenta el stock de cada producto vendido.
-     * Lanza IllegalStateException si no hay stock suficiente. @author RADJ
-     */
+    /** registra una venta, calcula el total, y descuenta el stock de cada producto vendido. lanza illegalstateexception si no hay stock suficiente. @author RADJ */
     public Venta save(Venta venta) {
         double totalVenta = 0;
-        // Validar y descontar stock para cada detalle de la venta
+       
+/** validar y descontar stock para cada detalle de la venta. @author RADJ */
         if (venta.getDetalles() != null) {
             for (DetalleVenta detalle : venta.getDetalles()) {
                 Producto producto = productoRepository.findById(detalle.getIdProducto())
@@ -61,7 +59,7 @@ private final ProductoRepository productoRepository;
                 producto.setStockActual(nuevoStock);
                 productoRepository.save(producto);
 
-                /** Calcular subtotal en el detalle de venta. @author RADJ */
+                /** calcular subtotal en el detalle de venta. @author RADJ */
                 detalle.calcularSubtotal();
                 totalVenta += detalle.getSubtotal();
             }
@@ -70,15 +68,12 @@ private final ProductoRepository productoRepository;
         return ventaRepository.save(venta);
     }
 
-    /**
-     * Guarda una venta directamente sin alterar el stock físico de los productos.
-     * @author RADJ
-     */
+    /** guarda una venta directamente sin alterar el stock físico de los productos. @author RADJ */
     public Venta saveOnly(Venta venta) {
         return ventaRepository.save(venta);
     }
 
-    /** Elimina una venta por ID. @author RADJ */
+    /** elimina una venta por id. @author RADJ */
     public void deleteById(Long id) {
         ventaRepository.deleteById(id);
     }

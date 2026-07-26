@@ -1,0 +1,192 @@
+/* estilos de distribución y layout. @author RADJ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+}
+
+/* layout con sidebar. @author RADJ */
+.main-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-sidebar);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar h2 {
+    margin-bottom: 3rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nav-item:hover, .nav-item.active {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+}
+
+.app-body {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.content-area {
+    flex: 1;
+    padding: 2rem;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
+/* encabezados de secciones con títulos y descripción. @author RADJ */
+.section-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h1 {
+    font-size: 1.6rem;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ==========================================
+   Responsive & Zoom-Resilient Layout Rules 
+   ========================================== */
+
+/* Ajuste general para el contenedor de tarjetas en pantallas reducidas */
+@media (max-width: 768px) {
+    .card {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+    }
+    
+    /* Forza a que grillas inline se conviertan en 1 sola columna vertical */
+    div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Transición de barra lateral a barra superior horizontal para evitar colisiones */
+@media (max-width: 850px) {
+    .app-body {
+        flex-direction: column !important;
+        min-height: 100vh;
+    }
+
+    .top-toolbar {
+        width: 100% !important;
+        min-width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        padding: 1rem 1.25rem 1rem 1.25rem !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 1rem !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .toolbar-brand {
+        margin-bottom: 0 !important;
+        text-align: left !important;
+        flex: 1;
+    }
+
+    .user-info {
+        margin-left: auto;
+    }
+
+    /* Lista de botones del menú en scroll horizontal (como pestañas deslizables) */
+    .toolbar-center {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        flex: none !important;
+        padding-bottom: 8px !important;
+        gap: 0.5rem !important;
+    }
+
+    .toolbar-btn {
+        width: auto !important;
+        display: inline-flex !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Sección de Salir y Copyright en fila horizontal en el extremo */
+    .toolbar-right {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+        padding-top: 0.75rem !important;
+        gap: 1.5rem !important;
+    }
+
+    .toolbar-right .btn-exit {
+        width: auto !important;
+        flex-shrink: 0;
+        margin-bottom: 0 !important;
+    }
+
+    .toolbar-right span {
+        margin-top: 0 !important;
+        text-align: right !important;
+    }
+}
+

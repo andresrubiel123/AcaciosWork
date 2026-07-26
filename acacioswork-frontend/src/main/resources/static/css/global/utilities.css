@@ -1,0 +1,392 @@
+/* componentes y utilidades comunes. @author RADJ */
+.card {
+    background: var(--bg-card);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    border-color: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.3);
+}
+
+/* tablas. @author RADJ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.9rem;
+}
+
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+    transform: translateX(4px);
+}
+
+/* botones. @author RADJ */
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger);
+    color: white;
+}
+
+.btn-success {
+    background: var(--accent);
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+    background: #334155;
+    color: white;
+    border-radius: 0.4rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-sm:hover {
+    background: #475569;
+}
+
+.btn-del {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.btn-del:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* formularios. @author RADJ */
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    margin-bottom: 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.6);
+    color: white;
+    outline: none;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--primary-color);
+}
+
+/* insignias. @author RADJ */
+.badge {
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+.badge-warn {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+/* ventanas modales. @author RADJ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: flex-start; /* Permite desplazar verticalmente si el modal es más alto que la pantalla. @author RADJ */
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    overflow-y: auto; /* Habilitar barra de desplazamiento vertical para pantallas pequeñas. @author RADJ */
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin: auto; /* Centrado automático flexbox compatible con desbordamiento. @author RADJ */
+}
+
+.modal-content h2 {
+    margin-bottom: 1.25rem;
+}
+
+/* notificaciones toast. @author RADJ */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    max-width: 360px;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    background: #065f46;
+    border: 1px solid #10b981;
+    color: #d1fae5;
+}
+
+.toast.error {
+    background: #7f1d1d;
+    border: 1px solid #ef4444;
+    color: #fecaca;
+}
+
+/* animaciones. @author RADJ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section {
+    animation: fadeIn 0.25s ease-out;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* scrollbars. @author RADJ */
+::-webkit-scrollbar {
+    width: 14px; /* Barra de desplazamiento más gruesa y fácil de arrastrar. @author RADJ */
+    height: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 7px;
+    border: 3px solid var(--bg-dark); /* Borde proporcional a la nueva anchura. @author RADJ */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* ═══ calendario inteligente popover ═══. @author RADJ */
+.smart-calendar-popover {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999;
+    width: 290px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    padding: 0.75rem;
+    margin-top: 0.35rem;
+    font-family: 'Inter', sans-serif;
+    color: #f8fafc;
+    user-select: none;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.smart-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.smart-calendar-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+.smart-calendar-nav-btn {
+    background: #334155;
+    border: none;
+    color: #cbd5e1;
+    border-radius: 0.35rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.smart-calendar-nav-btn:hover {
+    background: #475569;
+    color: #ffffff;
+}
+
+.smart-calendar-shortcuts {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+}
+
+.smart-calendar-shortcut-btn {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #818cf8;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.45rem;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.smart-calendar-shortcut-btn:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.smart-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    text-align: center;
+}
+
+.smart-calendar-day-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 0.25rem 0;
+}
+
+.smart-calendar-day-cell {
+    font-size: 0.8rem;
+    padding: 0.35rem 0;
+    border-radius: 0.35rem;
+    cursor: pointer;
+    color: #cbd5e1;
+    transition: all 0.15s;
+}
+
+.smart-calendar-day-cell:hover:not(.empty) {
+    background: #334155;
+    color: white;
+}
+
+.smart-calendar-day-cell.today {
+    border: 1px solid #6366f1;
+    font-weight: 600;
+}
+
+.smart-calendar-day-cell.selected {
+    background: #6366f1 !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+.smart-calendar-day-cell.empty {
+    cursor: default;
+    opacity: 0.15;
+}
+

@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Producto. @author RADJ */
+/** repositorio jpa para la entidad producto. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.Optional;

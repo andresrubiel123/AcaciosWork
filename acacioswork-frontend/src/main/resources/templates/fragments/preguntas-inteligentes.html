@@ -1,25 +1,34 @@
-<!-- Módulo de Preguntas Inteligentes para análisis automático de datos del negocio. @author RADJ -->
+<!-- módulo de preguntas inteligentes para análisis automático de datos del negocio. @author RADJ -->
 <div th:fragment="preguntas-inteligentes" id="sec-preguntas-inteligentes" class="section" style="display:none">
     <div class="section-header">
         <div>
-            <h1>🤖 Preguntas Inteligentes</h1>
+            <h1>Preguntas Inteligentes</h1>
             <p>Análisis automático de tu negocio — selecciona un mes y haz clic en cada pregunta</p>
         </div>
     </div>
 
     <div class="iq-container">
-        <!-- Filtro de mes y año. @author RADJ -->
+        <!-- filtro de mes y año. @author RADJ -->
         <div class="iq-filter">
-            <label for="iq-month-filter">
-                📅 Periodo de análisis:
-            </label>
-            <input type="month" id="iq-month-filter" onchange="onIqFilterChange()">
-            <span class="iq-filter-hint" id="iq-filter-status">Selecciona un mes para activar las preguntas</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <label>📅 Desde:</label>
+                <div style="position: relative; display: inline-block; width: 140px; vertical-align: middle;">
+                    <input id="iq-date-from" type="text" placeholder="AAAA-MM-DD" readonly style="cursor:pointer; padding-right:2.2rem; width: 100%; box-sizing: border-box; margin-bottom: 0;" onclick="SmartCalendar.toggle('iq-date-from')">
+                    <span id="smart-calendar-icon-iq-date-from" onclick="SmartCalendar.toggle('iq-date-from')" style="position:absolute; right:0.6rem; top: 50%; transform: translateY(-50%); cursor:pointer; font-size:1rem; user-select:none;">📅</span>
+                </div>
+
+                <label style="margin-left: 0.75rem;">Hasta:</label>
+                <div style="position: relative; display: inline-block; width: 140px; vertical-align: middle;">
+                    <input id="iq-date-to" type="text" placeholder="AAAA-MM-DD" readonly style="cursor:pointer; padding-right:2.2rem; width: 100%; box-sizing: border-box; margin-bottom: 0;" onclick="SmartCalendar.toggle('iq-date-to')">
+                    <span id="smart-calendar-icon-iq-date-to" onclick="SmartCalendar.toggle('iq-date-to')" style="position:absolute; right:0.6rem; top: 50%; transform: translateY(-50%); cursor:pointer; font-size:1rem; user-select:none;">📅</span>
+                </div>
+            </div>
+            <span class="iq-filter-hint" id="iq-filter-status">Selecciona las fechas para activar el análisis</span>
         </div>
 
-        <!-- Grid de tarjetas-pregunta. @author RADJ -->
+        <!-- grid de tarjetas-pregunta. @author RADJ -->
         <div class="iq-grid">
-            <!-- Pregunta 1: Productos más rentables. @author RADJ -->
+            <!-- pregunta 1: productos más rentables. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-rentables" onclick="ejecutarPreguntaInteligente('rentables')">
                 <span class="iq-badge">Rentabilidad</span>
                 <span class="iq-card-icon">💰</span>
@@ -27,7 +36,7 @@
                 <div id="iq-answer-rentables"></div>
             </div>
 
-            <!-- Pregunta 2: Productos con baja rotación. @author RADJ -->
+            <!-- pregunta 2: productos con baja rotación. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-baja-rotacion" onclick="ejecutarPreguntaInteligente('baja-rotacion')">
                 <span class="iq-badge">Rotación</span>
                 <span class="iq-card-icon">🐌</span>
@@ -35,7 +44,7 @@
                 <div id="iq-answer-baja-rotacion"></div>
             </div>
 
-            <!-- Pregunta 3: Productos a reabastecer. @author RADJ -->
+            <!-- pregunta 3: productos a reabastecer. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-reabastecer" onclick="ejecutarPreguntaInteligente('reabastecer')">
                 <span class="iq-badge">Stock</span>
                 <span class="iq-card-icon">📦</span>
@@ -43,7 +52,7 @@
                 <div id="iq-answer-reabastecer"></div>
             </div>
 
-            <!-- Pregunta 4: Proveedor más caro. @author RADJ -->
+            <!-- pregunta 4: proveedor más caro. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-proveedor-caro" onclick="ejecutarPreguntaInteligente('proveedor-caro')">
                 <span class="iq-badge">Proveedores</span>
                 <span class="iq-card-icon">🏭</span>
@@ -51,7 +60,7 @@
                 <div id="iq-answer-proveedor-caro"></div>
             </div>
 
-            <!-- Pregunta 5: Clientes que más compran. @author RADJ -->
+            <!-- pregunta 5: clientes que más compran. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-top-clientes" onclick="ejecutarPreguntaInteligente('top-clientes')">
                 <span class="iq-badge">Clientes</span>
                 <span class="iq-card-icon">👥</span>
@@ -59,7 +68,7 @@
                 <div id="iq-answer-top-clientes"></div>
             </div>
 
-            <!-- Pregunta 6: Mes con mayores ganancias. @author RADJ -->
+            <!-- pregunta 6: mes con mayores ganancias. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-mejor-mes" onclick="ejecutarPreguntaInteligente('mejor-mes')">
                 <span class="iq-badge">Ganancias</span>
                 <span class="iq-card-icon">📈</span>
@@ -67,7 +76,7 @@
                 <div id="iq-answer-mejor-mes"></div>
             </div>
 
-            <!-- Pregunta 7: Productos con pérdidas. @author RADJ -->
+            <!-- pregunta 7: productos con pérdidas. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-perdidas" onclick="ejecutarPreguntaInteligente('perdidas')">
                 <span class="iq-badge">Pérdidas</span>
                 <span class="iq-card-icon">📉</span>
@@ -75,12 +84,20 @@
                 <div id="iq-answer-perdidas"></div>
             </div>
 
-            <!-- Pregunta 8: Productos sin venderse. @author RADJ -->
+            <!-- pregunta 8: productos sin venderse. @author RADJ -->
             <div class="iq-card disabled" id="iq-card-sin-vender" onclick="ejecutarPreguntaInteligente('sin-vender')">
                 <span class="iq-badge">Estancados</span>
                 <span class="iq-card-icon">🕸️</span>
                 <div class="iq-card-question">¿Qué productos llevan más tiempo sin venderse?</div>
                 <div id="iq-answer-sin-vender"></div>
+            </div>
+
+            <!-- pregunta 9: productos próximos a vencerse (siempre activo, ignora filtro). @author RADJ -->
+            <div class="iq-card" id="iq-card-proximos-vencer" onclick="ejecutarPreguntaInteligente('proximos-vencer')">
+                <span class="iq-badge" style="background-color: #ef4444; color: white;">Vencimiento</span>
+                <span class="iq-card-icon">📅</span>
+                <div class="iq-card-question">¿Cuáles son los productos más próximos a vencerse?</div>
+                <div id="iq-answer-proximos-vencer"></div>
             </div>
         </div>
     </div>

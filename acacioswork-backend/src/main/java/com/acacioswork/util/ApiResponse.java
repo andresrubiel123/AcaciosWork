@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Clase de utilidad para estandarizar las respuestas de la API. @author RADJ */
+/** clase de utilidad para estandarizar las respuestas de la api. @author RADJ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

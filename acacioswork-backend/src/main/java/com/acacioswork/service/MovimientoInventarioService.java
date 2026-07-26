@@ -1,4 +1,4 @@
-/** Servicio de lógica de negocio para movimientos de inventario. @author RADJ */
+/** servicio de lógica de negocio para movimientos de inventario. @author RADJ */
 package com.acacioswork.service;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import com.acacioswork.model.TipoMovimiento;
 import com.acacioswork.repository.MovimientoInventarioRepository;
 import com.acacioswork.repository.ProductoRepository;
 
-/** Servicio para gestionar las operaciones de entradas, salidas y auditoría de stock. @author RADJ */
+/** servicio para gestionar las operaciones de entradas, salidas y auditoría de stock. @author RADJ */
 @Service
 @Transactional
 public class MovimientoInventarioService {
@@ -28,18 +28,21 @@ private final MovimientoInventarioRepository movimientoRepository;
 
 private final ProductoRepository productoRepository;
 
-    /** Registra un movimiento y actualiza el stock del producto de manera transaccional. @author RADJ */
+    /** registra un movimiento y actualiza el stock del producto de manera transaccional. @author RADJ */
     public MovimientoInventario registrarMovimiento(MovimientoInventario movimiento) {
-        // Validar cantidad
+       
+/** validar cantidad. @author RADJ */
         if (movimiento.getCantidad() == null || movimiento.getCantidad() <= 0) {
             throw new RuntimeException("La cantidad de unidades debe ser mayor a cero.");
         }
 
-        // Buscar producto asociado
+       
+/** buscar producto asociado. @author RADJ */
         Producto producto = productoRepository.findById(movimiento.getIdProducto())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + movimiento.getIdProducto()));
 
-        // Calcular nuevo stock
+       
+/** calcular nuevo stock. @author RADJ */
         int stockActual = producto.getStockActual() != null ? producto.getStockActual() : 0;
         int nuevoStock;
 
@@ -56,20 +59,22 @@ private final ProductoRepository productoRepository;
             throw new RuntimeException("Tipo de movimiento no válido: " + movimiento.getTipoMovimiento());
         }
 
-        // Actualizar el stock del producto
+       
+/** actualizar el stock del producto. @author RADJ */
         producto.setStockActual(nuevoStock);
         productoRepository.save(producto);
 
-        // Guardar el registro de movimiento
+       
+/** guardar el registro de movimiento. @author RADJ */
         return movimientoRepository.save(movimiento);
     }
 
-    /** Obtiene el listado completo de movimientos. @author RADJ */
+    /** obtiene el listado completo de movimientos. @author RADJ */
     public List<MovimientoInventario> findAll() {
         return movimientoRepository.findAll();
     }
 
-    /** Obtiene los movimientos asociados a un producto específico. @author RADJ */
+    /** obtiene los movimientos asociados a un producto específico. @author RADJ */
     public List<MovimientoInventario> findByIdProducto(Long idProducto) {
         return movimientoRepository.findByIdProducto(idProducto);
     }

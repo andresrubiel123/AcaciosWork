@@ -1,19 +1,23 @@
 package com.acacioswork.model;
 
-/** Entidad que representa un pago asociado a una venta. @author RADJ */
+/** entidad que representa un pago asociado a una venta. @author RADJ */
 public class Pago {
 
     private Long idPago;
     private Long idVenta;
-    private String metodoPago; // Efectivo, Crédito, Débito
+    private String metodoPago;
+/** efectivo, crédito, débito. @author RADJ */
     private double monto;
-    private double cambio; // Para efectivo
-    private String numeroTarjeta; // Para crédito/débito
+    private double cambio;
+/** para efectivo. @author RADJ */
+    private String numeroTarjeta;
+/** para crédito/débito. @author RADJ */
     private Long idCliente;
 
     public Pago() {}
 
-    // Getters y Setters
+   
+/** getters y setters. @author RADJ */
     public Long getIdPago() {
         return idPago;
     }

@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Pago. @author RADJ */
+/** repositorio jpa para la entidad pago. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.List;

@@ -198,6 +198,8 @@ CREATE TABLE IF NOT EXISTS productos (
 
     stock_optimo INT NOT NULL DEFAULT 200,
 
+    fecha_vencimiento VARCHAR(20) NULL,
+
     precio_compra DECIMAL(12,2) NOT NULL DEFAULT 0.00,
 
     precio_venta DECIMAL(12,2) NOT NULL DEFAULT 0.00,

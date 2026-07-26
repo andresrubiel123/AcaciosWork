@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa un rol. @author RADJ */
+/** entidad que representa un rol. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

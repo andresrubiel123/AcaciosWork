@@ -1,6 +1,6 @@
-<!-- Tabla y buscador de productos del inventario. @author RADJ -->
+<!-- tabla y buscador de productos del inventario. @author RADJ -->
 <div th:fragment="products-table">
-    <!-- Buscador de Inventario -->
+    <!-- buscador de inventario. @author RADJ -->
     <div class="search-container" style="position: relative; margin-bottom: 1rem;">
         <input type="text" id="inv-search-input" oninput="filterTable(this, 'inv-tbody')"
             placeholder="🔍 Buscar en la tabla..."
@@ -16,6 +16,7 @@
                     <th class="col-stock">Stock</th>
                     <th class="col-precio">P. Compra</th>
                     <th class="col-precio">P. Venta</th>
+                    <th class="col-vencimiento">Vencimiento</th>
                     <th class="col-iva">IVA</th>
                     <th class="col-estado">Estado</th>
                     <th class="col-movimientos">Movimientos</th>
@@ -24,7 +25,7 @@
             </thead>
             <tbody id="inv-tbody">
                 <tr>
-                    <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                    <td colspan="11" style="text-align:center;padding:2rem;color:var(--text-muted)">
                         Cargando...</td>
                 </tr>
             </tbody>

@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Modelo de Producto para el cliente de escritorio. @author RADJ */
+/** modelo de producto para el cliente de escritorio. @author RADJ */
 public class Producto {
     private Long id;
     private String codigoBarras;

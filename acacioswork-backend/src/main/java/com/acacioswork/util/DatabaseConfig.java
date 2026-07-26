@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/** Configuración de conexión a la base de datos MySQL. @author RADJ */
+/** configuración de conexión a la base de datos mysql. @author RADJ */
 public class DatabaseConfig {
 
     private static final String DB_URL = "jdbc:mysql://localhost:3306/tienda_acacios";
@@ -20,12 +20,12 @@ public class DatabaseConfig {
         }
     }
 
-    /** Obtiene una conexión a la base de datos. @author RADJ */
+    /** obtiene una conexión a la base de datos. @author RADJ */
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
 
-    /** Cierra la conexión a la base de datos. @author RADJ */
+    /** cierra la conexión a la base de datos. @author RADJ */
     public static void closeConnection(Connection conn) {
         if (conn != null) {
             try {

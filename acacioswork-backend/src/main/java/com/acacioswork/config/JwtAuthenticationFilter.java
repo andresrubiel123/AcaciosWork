@@ -15,11 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Filtro que se ejecuta en cada petición para validar el token JWT y establecer
- * la autenticación en el contexto de seguridad de Spring.
- * @author RADJ
- */
+/** filtro que se ejecuta en cada petición para validar el token jwt y establecer la autenticación en el contexto de seguridad de spring. @author RADJ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -59,7 +55,8 @@ private final UserDetailsService userDetailsService;
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Cargamos los detalles del usuario (incluyendo roles) para el contexto de Spring
+           
+/** cargamos los detalles del usuario (incluyendo roles) para el contexto de spring. @author RADJ */
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {

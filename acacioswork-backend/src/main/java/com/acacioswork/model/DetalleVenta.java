@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa el detalle de una línea dentro de una venta. @author RADJ */
+/** entidad que representa el detalle de una línea dentro de una venta. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -43,11 +43,12 @@ public class DetalleVenta {
     @Column(name = "valor_total")
     private Double valorTotal;
 
-    /** Calcula el subtotal y valor total multiplicando cantidad por precio unitario. @author RADJ */
+    /** calcula el subtotal y valor total multiplicando cantidad por precio unitario. @author RADJ */
     @jakarta.persistence.PrePersist
     @jakarta.persistence.PreUpdate
     public void calcularSubtotal() {
         this.subtotal = this.cantidad * this.precioUnitario;
-        this.valorTotal = this.subtotal; // En el detalle, subtotal y valor_total suelen ser lo mismo
+        this.valorTotal = this.subtotal;
+/** en el detalle, subtotal y valor_total suelen ser lo mismo. @author RADJ */
     }
 }

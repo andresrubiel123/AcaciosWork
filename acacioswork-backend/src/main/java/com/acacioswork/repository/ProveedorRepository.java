@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Proveedor. @author RADJ */
+/** repositorio jpa para la entidad proveedor. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.Optional;

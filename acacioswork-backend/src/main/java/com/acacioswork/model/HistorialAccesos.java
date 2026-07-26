@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa un registro en el historial de accesos al sistema. @author RADJ */
+/** entidad que representa un registro en el historial de accesos al sistema. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa un cierre de caja al final del día. @author RADJ */
+/** entidad que representa un cierre de caja al final del día. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

@@ -20,7 +20,7 @@ import com.acacioswork.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-/** Controlador para la gestión de usuarios. @author RADJ */
+/** controlador para la gestión de usuarios. @author RADJ */
 @RestController
 @RequestMapping("/api/usuarios")
 @Tag(name = "Usuarios", description = "Endpoints para la gestión de usuarios")
@@ -36,14 +36,14 @@ public class UsuarioController {
 
 private final UsuarioService usuarioService;
 
-    /** Obtiene el listado de todos los usuarios. @author RADJ */
+    /** obtiene el listado de todos los usuarios. @author RADJ */
     @GetMapping
     public ResponseEntity<ApiResponse<List<Usuario>>> getAll() {
         List<Usuario> usuarios = usuarioService.findAll();
         return ResponseEntity.ok(new ApiResponse<>(true, "Usuarios obtenidos con éxito", usuarios));
     }
 
-    /** Crea un nuevo usuario en el sistema. @author RADJ */
+    /** crea un nuevo usuario en el sistema. @author RADJ */
     @PostMapping
     public ResponseEntity<ApiResponse<Usuario>> create(@RequestBody Usuario usuario) {
         try {
@@ -55,7 +55,7 @@ private final UsuarioService usuarioService;
         }
     }
 
-    /** Actualiza la información de un usuario por identificación. @author RADJ */
+    /** actualiza la información de un usuario por identificación. @author RADJ */
     @PutMapping("/{numeroDocumento}")
     @Operation(summary = "Actualizar usuario por número de documento", description = "Busca al usuario por su número de documento para editarlo")
     public ResponseEntity<ApiResponse<Usuario>> update(@PathVariable String numeroDocumento,
@@ -78,7 +78,7 @@ private final UsuarioService usuarioService;
                 .body(new ApiResponse<>(false, "No existe un usuario con esa identificación", null)));
     }
 
-    /** Elimina un usuario por su número de documento. @author RADJ */
+    /** elimina un usuario por su número de documento. @author RADJ */
     @DeleteMapping("/{numeroDocumento}")
     @Operation(summary = "Eliminar usuario por número de documento", description = "Busca al usuario por su número de documento para borrarlo")
     public ResponseEntity<ApiResponse<String>> delete(@PathVariable String numeroDocumento) {
@@ -92,7 +92,7 @@ private final UsuarioService usuarioService;
 
 private final com.acacioswork.config.JwtUtil jwtUtil;
 
-    /** Endpoint para la autenticación de usuarios. @author RADJ */
+    /** endpoint para la autenticación de usuarios. @author RADJ */
     @PostMapping("/login")
     @Operation(summary = "Login de usuario", description = "Valida las credenciales del usuario y retorna un token JWT")
     public ResponseEntity<ApiResponse<com.acacioswork.model.LoginResponse>> login(

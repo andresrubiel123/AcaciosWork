@@ -22,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import com.acacioswork.model.Categoria;
 import com.acacioswork.util.ApiClient;
 
-/** Interfaz para gestión de categorías conectada a la API. @author RADJ */
+/** interfaz para gestión de categorías conectada a la api. @author RADJ */
 public class GestionCategorias extends JPanel {
 
     private DefaultTableModel modeloTabla;

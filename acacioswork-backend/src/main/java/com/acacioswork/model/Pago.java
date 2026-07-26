@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa un pago asociado a una venta. @author RADJ */
+/** entidad que representa un pago asociado a una venta. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -24,21 +24,25 @@ public class Pago {
     private Long idVenta;
     
     @Column(nullable = false)
-    private String metodoPago; // Efectivo, Crédito, Débito
+    private String metodoPago;
+/** efectivo, crédito, débito. @author RADJ */
     
     @Column(nullable = false)
     private double monto;
     
     @Column(nullable = false)
-    private double cambio; // Para efectivo
+    private double cambio;
+/** para efectivo. @author RADJ */
     
     @Column(name = "numero_tarjeta")
-    private String numeroTarjeta; // Para crédito/débito
+    private String numeroTarjeta;
+/** para crédito/débito. @author RADJ */
     
     @Column(nullable = false)
     private Long idCliente;
 
     public void registrarPago() {
-        // registrar pago en base de datos
+       
+/** registrar pago en base de datos. @author RADJ */
     }
 }

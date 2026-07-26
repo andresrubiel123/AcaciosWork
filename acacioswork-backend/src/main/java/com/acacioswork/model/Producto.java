@@ -1,4 +1,4 @@
-/** Entidad de Producto para persistencia en base de datos. @author RADJ */
+/** entidad de producto para persistencia en base de datos. @author RADJ */
 package com.acacioswork.model;
 
 import jakarta.persistence.Column;
@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-/** Entidad de Producto para persistencia en base de datos. @author RADJ */
+/** entidad de producto para persistencia en base de datos. @author RADJ */
 @Data
 @Entity
 @Table(name = "productos")
@@ -55,12 +55,15 @@ public class Producto {
     @Column(name = "unidad_medida", nullable = false)
     private String unidadMedida = "Unidad";
 
-    /** Verifica si el stock actual es menor o igual al mínimo. @author RADJ */
+    @Column(name = "fecha_vencimiento")
+    private String fechaVencimiento;
+
+    /** verifica si el stock actual es menor o igual al mínimo. @author RADJ */
     public boolean verificarStockMinimo() {
         return stockActual <= stockMinimo;
     }
 
-    /** Calcula el valor total de una cantidad dada basándose en el precio de venta. @author RADJ */
+    /** calcula el valor total de una cantidad dada basándose en el precio de venta. @author RADJ */
     public double calcularValorTotal(int cantidadCompra) {
         return precioVenta * cantidadCompra;
     }

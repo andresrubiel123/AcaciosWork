@@ -1,4 +1,4 @@
-<!-- Sección de proveedores para el dashboard. @author RADJ -->
+<!-- sección de proveedores para el dashboard. @author RADJ -->
 <div th:fragment="proveedores" id="sec-proveedores" class="section" style="display:none">
     <div class="section-header">
         <div>
@@ -7,7 +7,7 @@
         </div>
         <button class="btn btn-success" onclick="openModal('proveedor')">+ Nuevo Proveedor</button>
     </div>
-    <!-- Buscador de Proveedores -->
+    <!-- buscador de proveedores. @author RADJ -->
     <div class="search-container" style="position: relative; margin-bottom: 1rem;">
         <input type="text" id="prov-search-input" oninput="filterTable(this, 'prov-tbody')"
             placeholder="🔍 Buscar en la tabla..."

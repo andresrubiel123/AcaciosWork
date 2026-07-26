@@ -2,7 +2,7 @@ package com.acacioswork.model;
 
 
 
-/** Entidad que representa una alerta de stock mínimo alcanzado. @author RADJ */
+/** entidad que representa una alerta de stock mínimo alcanzado. @author RADJ */
 public class AletaStockMinimo {
     private Long idAlerta;
     private Long idProducto;

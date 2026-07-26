@@ -12,7 +12,7 @@ import com.acacioswork.model.TipoDocumento;
 import com.acacioswork.service.TipoDocumentoService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST estandarizado para tipos de documentos. @author RADJ */
+/** controlador rest estandarizado para tipos de documentos. @author RADJ */
 @RestController
 @RequestMapping("/api/tipos-documentos")
 @CrossOrigin(origins = "*")

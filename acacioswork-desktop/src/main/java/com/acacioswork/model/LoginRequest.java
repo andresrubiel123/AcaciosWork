@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** DTO para enviar las credenciales de login a la API. @author RADJ */
+/** dto para enviar las credenciales de login a la api. @author RADJ */
 public class LoginRequest {
     private String usuario;
     private String clave;

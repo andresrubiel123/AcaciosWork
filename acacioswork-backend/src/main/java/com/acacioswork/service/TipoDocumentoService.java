@@ -1,4 +1,4 @@
-/** Servicio de lógica de negocio para tipos de documentos. @author RADJ */
+/** servicio de lógica de negocio para tipos de documentos. @author RADJ */
 package com.acacioswork.service;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class TipoDocumentoService {
 
 private final TipoDocumentoRepository repository;
 
-    /** Recupera todos los tipos de documentos. @author RADJ */
+    /** recupera todos los tipos de documentos. @author RADJ */
     public List<TipoDocumento> findAll() {
         return repository.findAll();
     }

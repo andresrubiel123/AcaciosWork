@@ -96,7 +96,8 @@ public class Administrador extends JPanel {
         toolbar.setPreferredSize(new java.awt.Dimension(260, 0));
         toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(255, 255, 255, 15)));
 
-        // Top Section (Logo) - Vertically Centered using GridBagLayout
+       
+/** top section (logo) - vertically centered using gridbaglayout. @author RADJ */
         JPanel logoPanel = new JPanel(new java.awt.GridBagLayout());
         logoPanel.setOpaque(false);
         logoPanel.setBorder(BorderFactory.createEmptyBorder(24, 16, 24, 16));
@@ -109,7 +110,8 @@ public class Administrador extends JPanel {
         brand.setFont(new Font("Inter", Font.BOLD, 28));
         logoPanel.add(brand, gbcLogo);
 
-        // Nombre de la persona logueada debajo del título del programa
+       
+/** nombre de la persona logueada debajo del título del programa. @author RADJ */
         String userName = "Usuario";
         if (SessionManager.getUsuario() != null) {
             Usuario u = SessionManager.getUsuario();
@@ -127,11 +129,13 @@ public class Administrador extends JPanel {
 
         toolbar.add(logoPanel, BorderLayout.NORTH);
 
-        // Center container holding menu buttons (top) and user/exit section (bottom)
+       
+/** center container holding menu buttons (top) and user/exit section (bottom). @author RADJ */
         JPanel menuContainer = new JPanel(new BorderLayout());
         menuContainer.setOpaque(false);
 
-        // Center section (Navigation Buttons) - Vertically Centered using GridBagLayout
+       
+/** center section (navigation buttons) - vertically centered using gridbaglayout. @author RADJ */
         JPanel centerPanel = new JPanel(new java.awt.GridBagLayout());
         centerPanel.setOpaque(false);
         java.awt.GridBagConstraints gbcCenter = new java.awt.GridBagConstraints();
@@ -189,7 +193,8 @@ public class Administrador extends JPanel {
         }
         menuContainer.add(centerPanel, BorderLayout.NORTH);
 
-        // Bottom section (User Profile + Logout Button) - Vertically Centered using GridBagLayout
+       
+/** bottom section (user profile + logout button) - vertically centered using gridbaglayout. @author RADJ */
         JPanel rightPanel = new JPanel(new java.awt.GridBagLayout());
         rightPanel.setOpaque(false);
         rightPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 24, 16));
@@ -203,7 +208,8 @@ public class Administrador extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Red gradient matching var(--btn-exit)
+               
+/** red gradient matching var(--btn-exit). @author RADJ */
                 g2.setPaint(new GradientPaint(0, 0, new Color(255, 59, 48), 0, getHeight(), new Color(255, 45, 85)));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2.dispose();
@@ -226,16 +232,18 @@ public class Administrador extends JPanel {
         menuContainer.add(rightPanel, BorderLayout.SOUTH);
         toolbar.add(menuContainer, BorderLayout.CENTER);
 
-        /** Animación de pulsación de verde neón para la marca y el usuario. @author RADJ */
+        /** animación de pulsación de verde neón para la marca y el usuario. @author RADJ */
         final Color colorBright = new Color(57, 255, 20);
         final Color colorDim = new Color(20, 90, 7);
         final long startTime = System.currentTimeMillis();
 
         javax.swing.Timer pulseTimer = new javax.swing.Timer(50, e -> {
             long elapsed = System.currentTimeMillis() - startTime;
-            double progress = (elapsed % 2000) / 2000.0; // 2 seconds cycle
+            double progress = (elapsed % 2000) / 2000.0;
+/** 2 seconds cycle. @author RADJ */
             double sinVal = Math.sin(progress * 2.0 * Math.PI);
-            double factor = (sinVal + 1.0) / 2.0; // range 0.0 to 1.0
+            double factor = (sinVal + 1.0) / 2.0;
+/** range 0.0 to 1.0. @author RADJ */
 
             int r = (int) (colorDim.getRed() + factor * (colorBright.getRed() - colorDim.getRed()));
             int g = (int) (colorDim.getGreen() + factor * (colorBright.getGreen() - colorDim.getGreen()));
@@ -275,25 +283,30 @@ public class Administrador extends JPanel {
 
                 Color c1, c2;
                 if (active) {
-                    // Active style: Same orange gradient
+                   
+/** active style: same orange gradient. @author RADJ */
                     c1 = new Color(249, 115, 22);
                     c2 = new Color(239, 68, 68);
                     setForeground(Color.WHITE);
                 } else if ("alertas".equals(secName)) {
-                    // Alertas Stock button
+                   
+/** alertas stock button. @author RADJ */
                     if (Boolean.TRUE.equals(getClientProperty("pulsing"))) {
-                        // Pulsing / Red style
+                       
+/** pulsing / red style. @author RADJ */
                         c1 = new Color(255, 59, 48);
                         c2 = new Color(255, 45, 85);
                         setForeground(Color.WHITE);
                     } else {
-                        // Dark translucent style
+                       
+/** dark translucent style. @author RADJ */
                         c1 = new Color(30, 41, 59, 200);
                         c2 = new Color(30, 41, 59, 200);
                         setForeground(new Color(239, 68, 68));
                     }
                 } else {
-                    // Inactive nav style: Dark slate translucent
+                   
+/** inactive nav style: dark slate translucent. @author RADJ */
                     c1 = new Color(30, 41, 59, 120);
                     c2 = new Color(30, 41, 59, 120);
                     setForeground(TEXT_MUTED);
@@ -335,14 +348,22 @@ public class Administrador extends JPanel {
                 new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "P. Compra", "P. Venta", "IVA", "Estado",
                         "Acciones" });
         hideColumn(table, 0);
-        table.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
-        table.getColumnModel().getColumn(2).setPreferredWidth(350); // Nombre
-        table.getColumnModel().getColumn(3).setPreferredWidth(100); // Unidad
-        table.getColumnModel().getColumn(4).setPreferredWidth(110); // Stock
-        table.getColumnModel().getColumn(5).setPreferredWidth(110); // P. Compra
-        table.getColumnModel().getColumn(6).setPreferredWidth(110); // P. Venta
-        table.getColumnModel().getColumn(7).setPreferredWidth(80); // IVA
-        table.getColumnModel().getColumn(8).setPreferredWidth(100); // Estado
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+/** código. @author RADJ */
+        table.getColumnModel().getColumn(2).setPreferredWidth(350);
+/** nombre. @author RADJ */
+        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+/** unidad. @author RADJ */
+        table.getColumnModel().getColumn(4).setPreferredWidth(110);
+/** stock. @author RADJ */
+        table.getColumnModel().getColumn(5).setPreferredWidth(110);
+/** p. compra. @author RADJ */
+        table.getColumnModel().getColumn(6).setPreferredWidth(110);
+/** p. venta. @author RADJ */
+        table.getColumnModel().getColumn(7).setPreferredWidth(80);
+/** iva. @author RADJ */
+        table.getColumnModel().getColumn(8).setPreferredWidth(100);
+/** estado. @author RADJ */
         table.getColumnModel().getColumn(8).setCellRenderer(new EstadoCellRenderer());
         table.getColumnModel().getColumn(4).setCellRenderer(new StockNumberCellRenderer());
 
@@ -496,7 +517,7 @@ public class Administrador extends JPanel {
         scroll.getViewport().setOpaque(false);
         panel.add(scroll, BorderLayout.CENTER);
 
-        /** Inicializar y agregar los gráficos de reportes. @author RADJ */
+        /** inicializar y agregar los gráficos de reportes. @author RADJ */
         JPanel chartsContainer = new JPanel(new GridLayout(2, 1, 0, 16));
         chartsContainer.setOpaque(false);
 
@@ -544,7 +565,8 @@ public class Administrador extends JPanel {
                 new String[] { "ID", "Producto", "Stock Actual", "Mínimo", "Proveedor", "Acción" });
         hideColumn(tableAlertas, 0);
 
-        // Centrar y colorear columna Stock Actual
+       
+/** centrar y colorear columna stock actual. @author RADJ */
         tableAlertas.getColumnModel().getColumn(2).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             {
                 setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -565,11 +587,13 @@ public class Administrador extends JPanel {
                         if (val != null) {
                             int stock = Integer.parseInt(val.toString().replaceAll("[^0-9]", ""));
                             if (stock == 0) {
-                                comp.setBackground(new Color(239, 68, 68, 40)); // Rojo suave
+                                comp.setBackground(new Color(239, 68, 68, 40));
+/** rojo suave. @author RADJ */
                                 comp.setForeground(DANGER);
                                 comp.setFont(t.getFont().deriveFont(Font.BOLD));
                             } else {
-                                comp.setBackground(new Color(245, 158, 11, 40)); // Naranja suave
+                                comp.setBackground(new Color(245, 158, 11, 40));
+/** naranja suave. @author RADJ */
                                 comp.setForeground(new Color(245, 158, 11));
                                 comp.setFont(t.getFont().deriveFont(Font.BOLD));
                             }
@@ -581,7 +605,8 @@ public class Administrador extends JPanel {
             }
         });
 
-        // Centrar columna Mínimo
+       
+/** centrar columna mínimo. @author RADJ */
         tableAlertas.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             {
                 setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -602,7 +627,8 @@ public class Administrador extends JPanel {
             }
         });
 
-        // Diseñar botón Ver Proveedor en columna Acción
+       
+/** diseñar botón ver proveedor en columna acción. @author RADJ */
         tableAlertas.getColumnModel().getColumn(5).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
             {
                 setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -616,7 +642,8 @@ public class Administrador extends JPanel {
                     comp.setBackground(t.getSelectionBackground());
                     comp.setForeground(t.getSelectionForeground());
                 } else {
-                    comp.setBackground(new Color(99, 102, 241, 30)); // Indigo translúcido
+                    comp.setBackground(new Color(99, 102, 241, 30));
+/** indigo translúcido. @author RADJ */
                     comp.setForeground(PRIMARY);
                     comp.setFont(t.getFont().deriveFont(Font.BOLD));
                 }
@@ -633,13 +660,15 @@ public class Administrador extends JPanel {
 
         bPdf.addActionListener(e -> generarReporte("stock-bajo"));
 
-        // Botón Ver Proveedor
+       
+/** botón ver proveedor. @author RADJ */
         tableAlertas.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
                 int row = tableAlertas.rowAtPoint(e.getPoint());
                 int col = tableAlertas.columnAtPoint(e.getPoint());
-                if (col == 5 && row != -1) { // Columna Acción
+                if (col == 5 && row != -1) {
+/** columna acción. @author RADJ */
                     Administrador.this.mostrarInfoProveedor(tableAlertas.getValueAt(row, 0));
                 }
             }
@@ -662,7 +691,8 @@ public class Administrador extends JPanel {
             return;
         }
 
-        // Obtenemos el ID (columna 0, oculta)
+       
+/** obtenemos el id (columna 0, oculta). @author RADJ */
         Object idVal = table.getValueAt(row, 0);
         String nameVal = table.getValueAt(row, 1).toString();
 
@@ -1024,9 +1054,12 @@ public class Administrador extends JPanel {
         javax.swing.table.TableRowSorter<javax.swing.table.TableModel> sorter = new javax.swing.table.TableRowSorter<>(
                 table.getModel());
 
-        // Ensure actions column (the last one) is not sorted/filtered, or just let all
-        // columns be searched
-        // Since we are matching regex, it's fine to search all columns.
+       
+/** ensure actions column (the last one) is not sorted/filtered, or just let all. @author RADJ */
+       
+/** columns be searched. @author RADJ */
+       
+/** since we are matching regex, it's fine to search all columns. @author RADJ */
         table.setRowSorter(sorter);
 
         txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
@@ -1426,7 +1459,8 @@ public class Administrador extends JPanel {
                             ventasList.sort((a, b) -> {
                                 String fA = str(a, "fechaHora");
                                 String fB = str(b, "fechaHora");
-                                return fB.compareTo(fA); // Descending order
+                                return fB.compareTo(fA);
+/** descending order. @author RADJ */
                             });
 
                             for (java.util.Map<String, Object> v : ventasList) {
@@ -2014,7 +2048,8 @@ public class Administrador extends JPanel {
 
                 setText(String.valueOf(qty));
                 if (isSelected) {
-                    // Mantiene colores por defecto de la selección de Swing
+                   
+/** mantiene colores por defecto de la selección de swing. @author RADJ */
                 } else {
                     if (pct <= 30) {
                         setForeground(new Color(248, 113, 113));
@@ -2161,11 +2196,11 @@ public class Administrador extends JPanel {
         }
     }
 
-    /** Construye el panel de inicio (welcome panel) con estadísticas y tabla. @author RADJ */
+    /** construye el panel de inicio (welcome panel) con estadísticas y tabla. @author RADJ */
     private JPanel buildWelcomePanel() {
         JPanel panel = createContentPanel();
 
-        /** Añadir encabezado de sección alineado a la izquierda. @author RADJ */
+        /** añadir encabezado de sección alineado a la izquierda. @author RADJ */
         panel.add(buildSectionHeader("Resumen de Inventario", "Vista rápida del estado de existencias", (JButton) null), BorderLayout.NORTH);
         
         statsInventario = new JPanel(new GridLayout(1, 5, 12, 0));
@@ -2177,24 +2212,29 @@ public class Administrador extends JPanel {
         statsInventario.add(buildStatCard("Valor Costo", "$0", new Color(245, 158, 11)));
         statsInventario.add(buildStatCard("Utilidad Neta", "$0", ACCENT));
         
-        /** Inicializar tabla simplificada de productos para inicio. @author RADJ */
+        /** inicializar tabla simplificada de productos para inicio. @author RADJ */
         tableHome = buildStyledTable(new String[] { "ID", "Código", "Nombre", "Unidad", "Stock", "Estado" });
         hideColumn(tableHome, 0);
-        tableHome.getColumnModel().getColumn(1).setPreferredWidth(100); // Código
-        tableHome.getColumnModel().getColumn(2).setPreferredWidth(160); // Nombre
-        tableHome.getColumnModel().getColumn(3).setPreferredWidth(100); // Unidad
-        tableHome.getColumnModel().getColumn(4).setPreferredWidth(300); // Stock
-        tableHome.getColumnModel().getColumn(5).setPreferredWidth(100); // Estado
+        tableHome.getColumnModel().getColumn(1).setPreferredWidth(100);
+/** código. @author RADJ */
+        tableHome.getColumnModel().getColumn(2).setPreferredWidth(160);
+/** nombre. @author RADJ */
+        tableHome.getColumnModel().getColumn(3).setPreferredWidth(100);
+/** unidad. @author RADJ */
+        tableHome.getColumnModel().getColumn(4).setPreferredWidth(300);
+/** stock. @author RADJ */
+        tableHome.getColumnModel().getColumn(5).setPreferredWidth(100);
+/** estado. @author RADJ */
         tableHome.getColumnModel().getColumn(4).setCellRenderer(new StockBarCellRenderer());
         tableHome.getColumnModel().getColumn(5).setCellRenderer(new EstadoCellRenderer());
 
-        /** Construir el contenedor para la tabla y su buscador. @author RADJ */
+        /** construir el contenedor para la tabla y su buscador. @author RADJ */
         JPanel tableContainer = new JPanel(new BorderLayout(0, 8));
         tableContainer.setOpaque(false);
         tableContainer.add(buildSearchPanel(tableHome), BorderLayout.NORTH);
         tableContainer.add(wrapTable(tableHome), BorderLayout.CENTER);
 
-        /** Organizar estadísticas y tabla en el contenedor central. @author RADJ */
+        /** organizar estadísticas y tabla en el contenedor central. @author RADJ */
         JPanel centerContainer = new JPanel(new BorderLayout(0, 16));
         centerContainer.setOpaque(false);
         centerContainer.add(statsInventario, BorderLayout.NORTH);
@@ -2216,7 +2256,7 @@ public class Administrador extends JPanel {
                         double valor = 0;
                         double valorCosto = 0;
 
-                        /** Limpiar y preparar la tabla de productos de inicio. @author RADJ */
+                        /** limpiar y preparar la tabla de productos de inicio. @author RADJ */
                         DefaultTableModel model = (DefaultTableModel) tableHome.getModel();
                         model.setRowCount(0);
 
@@ -2238,7 +2278,7 @@ public class Administrador extends JPanel {
                                     ? str(p, "unidadMedida")
                                     : "Unidad";
 
-                            /** Agregar fila a la tabla simplificada de inicio. @author RADJ */
+                            /** agregar fila a la tabla simplificada de inicio. @author RADJ */
                             model.addRow(new Object[] {
                                     id,
                                     str(p, "codigoBarras"),
@@ -2271,10 +2311,7 @@ public class Administrador extends JPanel {
         }.execute();
     }
 
-    /**
-     * Consulta las ventas de la API en segundo plano, calcula la tendencia mensual del año actual,
-     * y actualiza el panel del gráfico. @author RADJ
-     */
+    /** consulta las ventas de la api en segundo plano, calcula la tendencia mensual del año actual, y actualiza el panel del gráfico. @author RADJ */
     private void refreshReportesChart() {
         if (chartPanel == null) return;
         new SwingWorker<double[], Void>() {
@@ -2302,10 +2339,12 @@ public class Administrador extends JPanel {
                             if (fechaRaw != null) {
                                 java.time.LocalDateTime ldt = java.time.LocalDateTime.parse(fechaRaw);
                                 if (ldt.getYear() == currentYear) {
-                                    int mes = ldt.getMonthValue() - 1; // 1-12 -> 0-11
+                                    int mes = ldt.getMonthValue() - 1;
+/** 1-12 -> 0-11. @author RADJ */
                                     double total = dbl(v, "valorTotal");
                                     if (total == 0.0 && v.get("detalles") != null) {
-                                        // Fallback sum of details
+                                       
+/** fallback sum of details. @author RADJ */
                                         java.util.List<?> detalles = (java.util.List<?>) v.get("detalles");
                                         for (Object detRaw : detalles) {
                                             java.util.Map<String, Object> d = (java.util.Map<String, Object>) detRaw;
@@ -2352,10 +2391,14 @@ public class Administrador extends JPanel {
         }.execute();
     }
 
-    // ══════════════════════════════════════════════════════════════════════════════
-    // 🤖 MÓDULO PREGUNTAS INTELIGENTES — Lógica de análisis de datos de negocio
-    // @author RADJ
-    // ══════════════════════════════════════════════════════════════════════════════
+   
+/** ══════════════════════════════════════════════════════════════════════════════. @author RADJ */
+   
+/** 🤖 módulo preguntas inteligentes — lógica de análisis de datos de negocio. @author RADJ */
+   
+/** @author RADJ */
+   
+/** ══════════════════════════════════════════════════════════════════════════════. @author RADJ */
 
     private javax.swing.JComboBox<String> comboMes;
     private javax.swing.JComboBox<String> comboAnio;
@@ -2905,7 +2948,7 @@ public class Administrador extends JPanel {
         return c;
     }
 
-    /** Panel de gráfico personalizado que dibuja la tendencia de ventas mensuales. @author RADJ */
+    /** panel de gráfico personalizado que dibuja la tendencia de ventas mensuales. @author RADJ */
     public static class VentasChartPanel extends JPanel {
         private double[] data = new double[12];
         private final String[] months = {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
@@ -2933,12 +2976,14 @@ public class Administrador extends JPanel {
             int width = getWidth();
             int height = getHeight();
 
-            // Dibujar título del gráfico
+           
+/** dibujar título del gráfico. @author RADJ */
             g2.setFont(new Font("Inter", Font.BOLD, 14));
             g2.setColor(TEXT_MAIN);
             g2.drawString("📈 Tendencia de Ganancias Mensuales", 20, 24);
 
-            // Márgenes del área de gráfico
+           
+/** márgenes del área de gráfico. @author RADJ */
             int paddingLeft = 90;
             int paddingRight = 30;
             int paddingTop = 60;
@@ -2947,24 +2992,29 @@ public class Administrador extends JPanel {
             int graphWidth = width - paddingLeft - paddingRight;
             int graphHeight = height - paddingTop - paddingBottom;
 
-            // Determinar valor máximo para escalar el eje Y
-            double maxVal = 50000; // Valor mínimo base
+           
+/** determinar valor máximo para escalar el eje y. @author RADJ */
+            double maxVal = 50000;
+/** valor mínimo base. @author RADJ */
             for (double val : data) {
                 if (val > maxVal) {
                     maxVal = val;
                 }
             }
 
-            // Redondear el máximo a un múltiplo limpio para las divisiones
+           
+/** redondear el máximo a un múltiplo limpio para las divisiones. @author RADJ */
             int numDivisions = 5;
             double divisionStepVal = maxVal / numDivisions;
 
-            // Dibujar "COP" una sola vez en la parte superior del eje Y. @author RADJ
+           
+/** dibujar "cop" una sola vez en la parte superior del eje y. @author RADJ */
             g2.setFont(new Font("Inter", Font.BOLD, 10));
             g2.setColor(TEXT_MUTED);
             g2.drawString("COP", paddingLeft - 10 - g2.getFontMetrics().stringWidth("COP"), paddingTop - 12);
 
-            // Dibujar rejilla horizontal y etiquetas del eje Y
+           
+/** dibujar rejilla horizontal y etiquetas del eje y. @author RADJ */
             java.text.NumberFormat nfY = java.text.NumberFormat.getNumberInstance(java.util.Locale.of("es", "CO"));
             nfY.setMaximumFractionDigits(0);
             g2.setFont(new Font("Inter", Font.PLAIN, 10));
@@ -2973,20 +3023,23 @@ public class Administrador extends JPanel {
                 double currentVal = i * divisionStepVal;
                 int y = paddingTop + graphHeight - (int) ((currentVal / maxVal) * graphHeight);
 
-                // Dibujar línea guía de rejilla
+               
+/** dibujar línea guía de rejilla. @author RADJ */
                 if (i > 0) {
                     g2.setColor(new Color(255, 255, 255, 10));
                     g2.drawLine(paddingLeft, y, paddingLeft + graphWidth, y);
                 }
 
-                // Etiqueta formateada con el valor real
+               
+/** etiqueta formateada con el valor real. @author RADJ */
                 String labelStr = nfY.format(currentVal);
 
                 g2.setColor(TEXT_MUTED);
                 g2.drawString(labelStr, paddingLeft - 10 - g2.getFontMetrics().stringWidth(labelStr), y + 4);
             }
 
-            // Dibujar rejilla vertical y etiquetas del eje X
+           
+/** dibujar rejilla vertical y etiquetas del eje x. @author RADJ */
             int stepX = graphWidth / 11;
             int[] pointXs = new int[12];
             int[] pointYs = new int[12];
@@ -2996,22 +3049,26 @@ public class Administrador extends JPanel {
                 pointXs[i] = x;
                 pointYs[i] = paddingTop + graphHeight - (int) ((data[i] / maxVal) * graphHeight);
 
-                // Rejilla vertical suave
+               
+/** rejilla vertical suave. @author RADJ */
                 g2.setColor(new Color(255, 255, 255, 8));
                 g2.drawLine(x, paddingTop, x, paddingTop + graphHeight);
 
-                // Nombre del mes centrado
+               
+/** nombre del mes centrado. @author RADJ */
                 g2.setColor(TEXT_MUTED);
                 String monthName = months[i];
                 int strW = g2.getFontMetrics().stringWidth(monthName);
                 g2.drawString(monthName, x - strW / 2, paddingTop + graphHeight + 18);
             }
 
-            // Dibujar eje X principal
+           
+/** dibujar eje x principal. @author RADJ */
             g2.setColor(new Color(255, 255, 255, 20));
             g2.drawLine(paddingLeft, paddingTop + graphHeight, paddingLeft + graphWidth, paddingTop + graphHeight);
 
-            // Crear el trazado de la línea con curvas
+           
+/** crear el trazado de la línea con curvas. @author RADJ */
             Path2D.Double path = new Path2D.Double();
             path.moveTo(pointXs[0], pointYs[0]);
             for (int i = 1; i < 12; i++) {
@@ -3026,7 +3083,8 @@ public class Administrador extends JPanel {
                 path.curveTo(ctrlX1, ctrlY1, ctrlX2, ctrlY2, currX, currY);
             }
 
-            // Rellenar área inferior del degradado
+           
+/** rellenar área inferior del degradado. @author RADJ */
             Path2D.Double fillPath = (Path2D.Double) path.clone();
             fillPath.lineTo(pointXs[11], paddingTop + graphHeight);
             fillPath.lineTo(pointXs[0], paddingTop + graphHeight);
@@ -3035,12 +3093,14 @@ public class Administrador extends JPanel {
             g2.setPaint(new GradientPaint(0, paddingTop, new Color(99, 102, 241, 45), 0, paddingTop + graphHeight, new Color(99, 102, 241, 0)));
             g2.fill(fillPath);
 
-            // Dibujar la línea principal
+           
+/** dibujar la línea principal. @author RADJ */
             g2.setColor(PRIMARY);
             g2.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.draw(path);
 
-            // Dibujar los puntos resaltados
+           
+/** dibujar los puntos resaltados. @author RADJ */
             for (int i = 0; i < 12; i++) {
                 int x = pointXs[i];
                 int y = pointYs[i];
@@ -3055,7 +3115,8 @@ public class Administrador extends JPanel {
                     g2.setFont(new Font("Inter", Font.BOLD, 9));
                     g2.setColor(new Color(251, 146, 60));
 
-                    // Numeros en la linea. @author RADJ
+                   
+/** numeros en la linea. @author RADJ */
                     java.text.NumberFormat nfPoint = java.text.NumberFormat.getNumberInstance(java.util.Locale.of("es", "COP"));
                     nfPoint.setMaximumFractionDigits(0);
                     String valStr = nfPoint.format(data[i]);

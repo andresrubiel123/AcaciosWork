@@ -1,4 +1,4 @@
-/** Entidad de Usuario. @author RADJ */
+/** entidad de usuario. @author RADJ */
 package com.acacioswork.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa un usuario en el sistema. @author RADJ */
+/** entidad que representa un usuario en el sistema. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

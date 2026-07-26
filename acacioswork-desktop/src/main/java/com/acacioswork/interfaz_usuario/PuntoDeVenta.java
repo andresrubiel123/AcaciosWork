@@ -23,7 +23,7 @@ import com.acacioswork.model.Producto;
 import com.acacioswork.model.Venta;
 import com.acacioswork.util.ApiClient;
 
-/**Interfaz Punto de Venta API REST. @author RADJ */
+/** interfaz punto de venta api rest. @author RADJ */
 public class PuntoDeVenta extends JPanel {
 
     private Venta ventaActual;
@@ -49,7 +49,8 @@ public class PuntoDeVenta extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(15, 23, 42));
 
-        // Panel superior: Búsqueda y Selección
+       
+/** panel superior: búsqueda y selección. @author RADJ */
         JPanel panelSuperior = new JPanel(new GridLayout(2, 1));
         panelSuperior.setOpaque(false);
 
@@ -89,7 +90,8 @@ public class PuntoDeVenta extends JPanel {
         panelSuperior.add(fila2);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Tabla del carrito
+       
+/** tabla del carrito. @author RADJ */
         modeloTabla = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -105,7 +107,8 @@ public class PuntoDeVenta extends JPanel {
         tablaCarrito = new JTable(modeloTabla);
         add(new JScrollPane(tablaCarrito), BorderLayout.CENTER);
 
-        // Panel inferior: Totales
+       
+/** panel inferior: totales. @author RADJ */
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panelInferior.setOpaque(false);
 
@@ -194,12 +197,14 @@ public class PuntoDeVenta extends JPanel {
             if (c != null)
                 ventaActual.setIdCliente(c.getId());
             
-            // Asignar el usuario logueado actualmente
+           
+/** asignar el usuario logueado actualmente. @author RADJ */
             if (com.acacioswork.util.SessionManager.isLoggedIn()) {
                 ventaActual.setIdUsuario(com.acacioswork.util.SessionManager.getUsuario().getId());
             }
 
-            // Enviamos la venta al servidor
+           
+/** enviamos la venta al servidor. @author RADJ */
             Venta guardada = ApiClient.post("/ventas", ventaActual, Venta.class);
 
             if (guardada != null) {

@@ -1,4 +1,4 @@
-/** Entidad JPA para registrar movimientos de inventario. @author RADJ */
+/** entidad jpa para registrar movimientos de inventario. @author RADJ */
 package com.acacioswork.model;
 
 import jakarta.persistence.Column;
@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
-/** Entidad que representa un movimiento en el inventario. @author RADJ */
+/** entidad que representa un movimiento en el inventario. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

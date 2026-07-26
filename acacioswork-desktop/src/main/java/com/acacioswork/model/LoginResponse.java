@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** DTO para la respuesta de inicio de sesión en el cliente Desktop. @author RADJ */
+/** dto para la respuesta de inicio de sesión en el cliente desktop. @author RADJ */
 public class LoginResponse {
     private String token;
     private Usuario usuario;

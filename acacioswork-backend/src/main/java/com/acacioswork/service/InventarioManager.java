@@ -10,7 +10,7 @@ import com.acacioswork.model.AlertaStockMinimo;
 import com.acacioswork.model.Producto;
 import com.acacioswork.repository.ProductoRepository;
 
-/** Servicio para gestionar el inventario de productos. @author RADJ */
+/** servicio para gestionar el inventario de productos. @author RADJ */
 @Service
 @Transactional
 public class InventarioManager {
@@ -25,7 +25,7 @@ private final ProductoRepository productoRepository;
 
     private static final List<AlertaStockMinimo> alertas = new ArrayList<>();
 
-    /** Crea un nuevo producto. @author RADJ */
+    /** crea un nuevo producto. @author RADJ */
     public boolean crearProducto(Producto producto) {
         try {
             productoRepository.save(producto);
@@ -37,22 +37,22 @@ private final ProductoRepository productoRepository;
         }
     }
 
-    /** Lee un producto por ID. @author RADJ */
+    /** lee un producto por id. @author RADJ */
     public Producto leerProducto(Long idProducto) {
         return productoRepository.findById(idProducto).orElse(null);
     }
 
-    /** Lee un producto por código de barras. @author RADJ */
+    /** lee un producto por código de barras. @author RADJ */
     public Producto leerProductoPorCodigo(String codigoBarras) {
         return productoRepository.findByCodigoBarras(codigoBarras).orElse(null);
     }
 
-    /** Lee todos los productos. @author RADJ */
+    /** lee todos los productos. @author RADJ */
     public List<Producto> leerTodosProductos() {
         return productoRepository.findAll();
     }
 
-    /** Actualiza un producto. @author RADJ */
+    /** actualiza un producto. @author RADJ */
     public boolean actualizarProducto(Long idProducto, Producto nuevoProducto) {
         try {
             if (productoRepository.existsById(idProducto)) {
@@ -68,7 +68,7 @@ private final ProductoRepository productoRepository;
         }
     }
 
-    /** Elimina un producto por ID. @author RADJ */
+    /** elimina un producto por id. @author RADJ */
     public boolean eliminarProducto(Long idProducto) {
         try {
             if (productoRepository.existsById(idProducto)) {
@@ -93,12 +93,12 @@ private final ProductoRepository productoRepository;
         }
     }
 
-    /** Obtiene las alertas de stock mínimo. @author RADJ */
+    /** obtiene las alertas de stock mínimo. @author RADJ */
     public List<AlertaStockMinimo> obtenerAlertas() {
         return new ArrayList<>(alertas);
     }
 
-    /** Limpia las alertas acumuladas. @author RADJ */
+    /** limpia las alertas acumuladas. @author RADJ */
     public void limpiarAlertas() {
         alertas.clear();
     }

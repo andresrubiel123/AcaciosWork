@@ -17,7 +17,7 @@ import com.acacioswork.model.Categoria;
 import com.acacioswork.service.CategoriaService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST para la gestión de categorías. @author RADJ */
+/** controlador rest para la gestión de categorías. @author RADJ */
 @RestController
 @RequestMapping("/api/categorias")
 @CrossOrigin(origins = "*")
@@ -31,21 +31,21 @@ public class CategoriaController {
 
 private final CategoriaService categoriaService;
 
-    /** Obtiene el listado de todas las categorías. @author RADJ */
+    /** obtiene el listado de todas las categorías. @author RADJ */
     @GetMapping
     public ResponseEntity<ApiResponse<List<Categoria>>> getAll() {
         List<Categoria> categorias = categoriaService.findAll();
         return ResponseEntity.ok(new ApiResponse<>(true, "Categorías obtenidas con éxito", categorias));
     }
 
-    /** Crea una nueva categoría. @author RADJ */
+    /** crea una nueva categoría. @author RADJ */
     @PostMapping
     public ResponseEntity<ApiResponse<Categoria>> create(@RequestBody Categoria categoria) {
         Categoria saved = categoriaService.save(categoria);
         return ResponseEntity.status(201).body(new ApiResponse<>(true, "Categoría creada con éxito", saved));
     }
 
-    /** Actualiza una categoría existente. @author RADJ */
+    /** actualiza una categoría existente. @author RADJ */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Categoria>> update(@PathVariable Long id, @RequestBody Categoria detalles) {
         return categoriaService.findById(id).map(c -> {
@@ -55,7 +55,7 @@ private final CategoriaService categoriaService;
         }).orElse(ResponseEntity.status(404).body(new ApiResponse<>(false, "Categoría no encontrada", null)));
     }
 
-    /** Elimina una categoría del sistema por su ID. @author RADJ */
+    /** elimina una categoría del sistema por su id. @author RADJ */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         return categoriaService.findById(id).map(c -> {

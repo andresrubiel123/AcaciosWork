@@ -10,7 +10,8 @@ import com.acacioswork.util.ApiClient;
 
 public class ClienteDialog extends JDialog {
     private final Frame owner;
-    private final Cliente cliente; // null means create, non-null means edit
+    private final Cliente cliente;
+/** null means create, non-null means edit. @author RADJ */
     private final Runnable onSuccess;
 
     private JTextField txtNom;
@@ -53,7 +54,8 @@ public class ClienteDialog extends JDialog {
         cbTipo = new JComboBox<>(tipos);
         cbTipo.putClientProperty("JComponent.roundRect", true);
         
-        // Seleccionar por defecto Cédula (id = 1)
+       
+/** seleccionar por defecto cédula (id = 1). @author RADJ */
         for (int i = 0; i < cbTipo.getItemCount(); i++) {
             TipoDocumento td = cbTipo.getItemAt(i);
             if (td.getId().equals(1L) || td.getNombre().toLowerCase().contains("cedula")) {
@@ -169,7 +171,8 @@ public class ClienteDialog extends JDialog {
             protected void paintComponent(java.awt.Graphics g) {
                 java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                 g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                // Degradado naranja a rojo del dashboard activo
+               
+/** degradado naranja a rojo del dashboard activo. @author RADJ */
                 g2.setPaint(new java.awt.GradientPaint(0, 0, new Color(249, 115, 22), 0, getHeight(), new Color(239, 68, 68)));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2.dispose();

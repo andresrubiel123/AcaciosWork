@@ -1,4 +1,4 @@
-/** Controlador REST para movimientos de inventario. @author RADJ */
+/** controlador rest para movimientos de inventario. @author RADJ */
 package com.acacioswork.controller;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import com.acacioswork.model.MovimientoInventario;
 import com.acacioswork.service.MovimientoInventarioService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador para exponer servicios REST relacionados con el registro y visualización de movimientos de inventario. @author RADJ */
+/** controlador para exponer servicios rest relacionados con el registro y visualización de movimientos de inventario. @author RADJ */
 @RestController
 @RequestMapping("/api/movimientos-inventario")
 @CrossOrigin(origins = "*")
@@ -30,7 +30,7 @@ public class MovimientoInventarioController {
 
 private final MovimientoInventarioService movimientoService;
 
-    /** Registra un nuevo movimiento de inventario (Entrada o Salida). @author RADJ */
+    /** registra un nuevo movimiento de inventario (entrada o salida). @author RADJ */
     @PostMapping
     public ResponseEntity<ApiResponse<MovimientoInventario>> registrar(@RequestBody MovimientoInventario movimiento) {
         try {
@@ -41,13 +41,13 @@ private final MovimientoInventarioService movimientoService;
         }
     }
 
-    /** Obtiene la lista total de movimientos de inventario. @author RADJ */
+    /** obtiene la lista total de movimientos de inventario. @author RADJ */
     @GetMapping
     public ResponseEntity<ApiResponse<List<MovimientoInventario>>> getAll() {
         return ResponseEntity.ok(new ApiResponse<>(true, "Movimientos obtenidos con éxito", movimientoService.findAll()));
     }
 
-    /** Obtiene la lista de movimientos para un producto determinado. @author RADJ */
+    /** obtiene la lista de movimientos para un producto determinado. @author RADJ */
     @GetMapping("/producto/{idProducto}")
     public ResponseEntity<ApiResponse<List<MovimientoInventario>>> getByIdProducto(@PathVariable Long idProducto) {
         return ResponseEntity.ok(new ApiResponse<>(true, "Movimientos del producto obtenidos", movimientoService.findByIdProducto(idProducto)));

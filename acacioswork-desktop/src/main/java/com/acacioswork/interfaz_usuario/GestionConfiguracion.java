@@ -70,7 +70,8 @@ public class GestionConfiguracion extends JPanel {
         txtMoneda = new JTextField();
         panel.add(txtMoneda);
 
-        // Fill empty spaces to maintain layout
+       
+/** fill empty spaces to maintain layout. @author RADJ */
         for (int i = 0; i < 10; i++) panel.add(new JLabel());
         
         return panel;
@@ -164,7 +165,8 @@ public class GestionConfiguracion extends JPanel {
 
             ConfiguracionManager.saveConfiguracion(config);
             JOptionPane.showMessageDialog(this, "Configuración guardada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            // Notify other components if needed, or prompt restart for major changes.
+           
+/** notify other components if needed, or prompt restart for major changes. @author RADJ */
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al guardar la configuración: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

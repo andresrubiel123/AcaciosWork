@@ -50,4 +50,47 @@ public class Configuracion {
 
     @Column(name = "ticket_margen_der")
     private Integer ticketMargenDer = 5;
+
+    @Column(name = "barcode_mode")
+    private String barcodeMode = "KEYBOARD";
+
+    @Column(name = "barcode_port")
+    private String barcodePort = "";
+
+    @Column(name = "scale_enabled")
+    private Boolean scaleEnabled = false;
+
+    @Column(name = "scale_protocol")
+    private String scaleProtocol = "CAS";
+
+    @Column(name = "scale_port")
+    private String scalePort = "";
+
+    @Column(name = "scale_baudrate")
+    private Integer scaleBaudrate = 9600;
+
+    @Column(name = "printer_interface")
+    private String printerInterface = "SYSTEM";
+
+    @Column(name = "printer_port")
+    private String printerPort = "";
+
+    @Column(name = "cajon_conectado_impresora")
+    private Boolean cajonConectadoImpresora = true;
+
+    @Column(name = "cajon_comando")
+    private String cajonComando = "27,112,0,25,250";
+
+    @Column(name = "datafono_integracion")
+    private Boolean datafonoIntegracion = false;
+
+    @Column(name = "datafono_proveedor")
+    private String datafonoProveedor = "REDEBAN";
+
+    @Column(name = "datafono_puerto")
+    private String datafonoPuerto = "";
+
+    @Column(name = "datafono_terminal_id")
+    private String datafonoTerminalId = "";
 }
+

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 
-/** Cliente API REST robusto con soporte para JWT y ApiResponse. @author RADJ */
+/** cliente api rest robusto con soporte para jwt y apiresponse. @author RADJ */
 public class ApiClient {
 
     private static final String BASE_URL = "http://localhost:8081/api";
@@ -69,7 +69,8 @@ public class ApiClient {
             if (body == null || body.isBlank()) return null;
             if (responseType == Void.class) return null;
 
-            // Deserializar usando el envoltorio ApiResponse<T>
+           
+/** deserializar usando el envoltorio apiresponse<t>. @author RADJ */
             JavaType type = mapper.getTypeFactory().constructParametricType(ApiResponse.class, responseType);
             ApiResponse<T> apiResponse = mapper.readValue(body, type);
 
@@ -82,7 +83,8 @@ public class ApiClient {
             SessionManager.logout();
             throw new RuntimeException("Sesión expirada o acceso denegado.");
         } else {
-            // Intentar extraer mensaje de error de ApiResponse si existe
+           
+/** intentar extraer mensaje de error de apiresponse si existe. @author RADJ */
             try {
                 ApiResponse<?> errorResp = mapper.readValue(body, ApiResponse.class);
                 throw new RuntimeException("Error (" + response.statusCode() + "): " + errorResp.getMessage());

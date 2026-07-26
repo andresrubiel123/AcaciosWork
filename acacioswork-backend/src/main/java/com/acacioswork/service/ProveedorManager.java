@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acacioswork.model.Proveedor;
 import com.acacioswork.repository.ProveedorRepository;
 
-/** Servicio para gestionar proveedores. @author RADJ */
+/** servicio para gestionar proveedores. @author RADJ */
 @Service
 @Transactional
 public class ProveedorManager {
@@ -21,7 +21,7 @@ public class ProveedorManager {
 
 private final ProveedorRepository proveedorRepository;
 
-    /** Crea un nuevo proveedor. @author RADJ */
+    /** crea un nuevo proveedor. @author RADJ */
     public boolean crearProveedor(Proveedor proveedor) {
         try {
             proveedorRepository.save(proveedor);
@@ -32,17 +32,17 @@ private final ProveedorRepository proveedorRepository;
         }
     }
 
-    /** Lee un proveedor por ID. @author RADJ */
+    /** lee un proveedor por id. @author RADJ */
     public Proveedor leerProveedor(Long idProveedor) {
         return proveedorRepository.findById(idProveedor).orElse(null);
     }
 
-    /** Lee todos los proveedores. @author RADJ */
+    /** lee todos los proveedores. @author RADJ */
     public List<Proveedor> leerTodosProveedores() {
         return proveedorRepository.findAll();
     }
 
-    /** Actualiza un proveedor. @author RADJ */
+    /** actualiza un proveedor. @author RADJ */
     public boolean actualizarProveedor(Long idProveedor, Proveedor nuevoProveedor) {
         try {
             if (proveedorRepository.existsById(idProveedor)) {
@@ -57,7 +57,7 @@ private final ProveedorRepository proveedorRepository;
         }
     }
 
-    /** Elimina un proveedor por ID. @author RADJ */
+    /** elimina un proveedor por id. @author RADJ */
     public boolean eliminarProveedor(Long idProveedor) {
         try {
             if (proveedorRepository.existsById(idProveedor)) {

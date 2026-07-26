@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa una alerta de stock mínimo alcanzado. @author RADJ */
+/** entidad que representa una alerta de stock mínimo alcanzado. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

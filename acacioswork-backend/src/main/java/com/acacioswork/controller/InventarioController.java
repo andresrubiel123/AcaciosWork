@@ -13,7 +13,7 @@ import com.acacioswork.model.AlertaStockMinimo;
 import com.acacioswork.service.InventarioService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST para la gestión de alertas de inventario. @author RADJ */
+/** controlador rest para la gestión de alertas de inventario. @author RADJ */
 @RestController
 @RequestMapping("/api/inventario")
 @CrossOrigin(origins = "*")
@@ -27,13 +27,13 @@ public class InventarioController {
 
 private final InventarioService inventarioService;
 
-    /** Obtiene el listado de alertas por stock mínimo. @author RADJ */
+    /** obtiene el listado de alertas por stock mínimo. @author RADJ */
     @GetMapping("/alertas")
     public ResponseEntity<ApiResponse<List<AlertaStockMinimo>>> getAlertas() {
         return ResponseEntity.ok(new ApiResponse<>(true, "Alertas de inventario obtenidas con éxito", inventarioService.obtenerAlertas()));
     }
 
-    /** Limpia o reinicia las alertas de inventario. @author RADJ */
+    /** limpia o reinicia las alertas de inventario. @author RADJ */
     @DeleteMapping("/alertas")
     public ResponseEntity<ApiResponse<Void>> limpiarAlertas() {
         inventarioService.limpiarAlertas();

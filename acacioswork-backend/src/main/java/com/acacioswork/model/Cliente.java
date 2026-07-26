@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa un cliente de la tienda. @author RADJ */
+/** entidad que representa un cliente de la tienda. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -52,8 +52,9 @@ public class Cliente {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    /** Actualiza la información del cliente. @author RADJ */
+    /** actualiza la información del cliente. @author RADJ */
     public void actualizarInformacion() {
-        // lógica de actualización
+       
+/** lógica de actualización. @author RADJ */
     }
 }

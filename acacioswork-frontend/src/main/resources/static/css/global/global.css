@@ -1,0 +1,164 @@
+/* estilos globales unificados de acacioswork. @author RADJ */
+@import url('variables.css');
+@import url('layout.css');
+@import url('utilities.css');
+
+/* Custom Dropdown Styles for Client Selection */
+.custom-client-dropdown {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1.2rem;
+}
+.client-select-trigger {
+    width: 100%;
+    padding: 0.65rem 2.2rem 0.65rem 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-main, #ffffff);
+    font-size: 0.88rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+}
+
+.client-select-trigger:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.client-select-trigger .dropdown-arrow {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform 0.2s ease;
+    pointer-events: none;
+}
+
+.custom-client-dropdown.open .client-select-trigger .dropdown-arrow {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.custom-client-dropdown.open .client-select-trigger {
+    border-color: var(--primary-color, #10b981);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.client-select-input {
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: inherit !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer;
+}
+
+.client-select-input:not([readonly]) {
+    cursor: text;
+}
+
+.client-dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 280px; /* displays at least 10 items comfortably with scroll */
+    overflow-y: auto;
+    background-color: #000000 !important; /* solid black background */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.5rem;
+    margin-top: 0.4rem;
+    z-index: 1000;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9);
+    display: none;
+    animation: slideDown 0.15s ease-out;
+}
+
+.client-dropdown-item {
+    padding: 0.7rem 1rem;
+    color: #ffffff !important; /* white text */
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.client-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.client-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+}
+
+.client-dropdown-item.selected {
+    background-color: rgba(16, 185, 129, 0.25) !important;
+    border-left: 3px solid var(--primary-color, #10b981);
+}
+
+/* Custom Scrollbar for the list */
+.client-dropdown-list::-webkit-scrollbar {
+    width: 6px;
+}
+.client-dropdown-list::-webkit-scrollbar-track {
+    background: #000000;
+}
+.client-dropdown-list::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+}
+.client-dropdown-list::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-nuevo-cliente {
+    width: 100%;
+    padding: 0.55rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.btn-nuevo-cliente:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.btn-nuevo-cliente:active {
+    transform: translateY(0);
+}

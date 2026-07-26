@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa el inventario y movimientos de productos. @author RADJ */
+/** entidad que representa el inventario y movimientos de productos. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity

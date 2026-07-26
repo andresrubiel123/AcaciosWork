@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-/** Interfaz de gestión de devoluciones (Placeholder). @author RADJ */
+/** interfaz de gestión de devoluciones (placeholder). @author RADJ */
 public class GestionDevoluciones extends JPanel {
     public GestionDevoluciones() {
         setLayout(new BorderLayout());

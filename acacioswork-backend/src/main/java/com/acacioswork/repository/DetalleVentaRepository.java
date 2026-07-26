@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad DetalleVenta. @author RADJ */
+/** repositorio jpa para la entidad detalleventa. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.List;

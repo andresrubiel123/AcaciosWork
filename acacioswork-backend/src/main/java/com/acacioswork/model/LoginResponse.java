@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** DTO para la respuesta de inicio de sesión. @author RADJ */
+/** dto para la respuesta de inicio de sesión. @author RADJ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad TipoDocumento. @author RADJ */
+/** repositorio jpa para la entidad tipodocumento. @author RADJ */
 package com.acacioswork.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

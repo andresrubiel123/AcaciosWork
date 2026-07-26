@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Modelo de Proveedor para el cliente de escritorio. @author RADJ */
+/** modelo de proveedor para el cliente de escritorio. @author RADJ */
 public class Proveedor {
     private Long id;
     private String nombre;

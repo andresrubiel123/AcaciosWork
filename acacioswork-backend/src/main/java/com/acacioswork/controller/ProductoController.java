@@ -17,7 +17,7 @@ import com.acacioswork.model.Producto;
 import com.acacioswork.service.ProductoService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST para la gestión de productos. @author RADJ */
+/** controlador rest para la gestión de productos. @author RADJ */
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(origins = "*")
@@ -31,13 +31,13 @@ public class ProductoController {
 
 private final ProductoService productoService;
 
-    /** Obtiene el listado de todos los productos. @author RADJ */
+    /** obtiene el listado de todos los productos. @author RADJ */
     @GetMapping
     public ResponseEntity<ApiResponse<List<Producto>>> getAll() {
         return ResponseEntity.ok(new ApiResponse<>(true, "Productos obtenidos", productoService.findAll()));
     }
 
-    /** Obtiene un producto por su ID. @author RADJ */
+    /** obtiene un producto por su id. @author RADJ */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Producto>> getById(@PathVariable Long id) {
         return productoService.findById(id)
@@ -45,14 +45,14 @@ private final ProductoService productoService;
                 .orElse(ResponseEntity.status(404).body(new ApiResponse<>(false, "Producto no encontrado", null)));
     }
 
-    /** Registra un nuevo producto. @author RADJ */
+    /** registra un nuevo producto. @author RADJ */
     @PostMapping
     public ResponseEntity<ApiResponse<Producto>> create(@RequestBody Producto producto) {
         Producto saved = productoService.save(producto);
         return ResponseEntity.status(201).body(new ApiResponse<>(true, "Producto creado con éxito", saved));
     }
 
-    /** Actualiza la información de un producto. @author RADJ */
+    /** actualiza la información de un producto. @author RADJ */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Producto>> update(@PathVariable Long id, @RequestBody Producto details) {
         return productoService.findById(id).map(p -> {
@@ -68,12 +68,13 @@ private final ProductoService productoService;
             p.setStockMinimo(details.getStockMinimo());
             p.setStockOptimo(details.getStockOptimo());
             p.setUnidadMedida(details.getUnidadMedida());
+            p.setFechaVencimiento(details.getFechaVencimiento());
             Producto updated = productoService.save(p);
             return ResponseEntity.ok(new ApiResponse<>(true, "Producto actualizado", updated));
         }).orElse(ResponseEntity.status(404).body(new ApiResponse<>(false, "Producto no encontrado", null)));
     }
 
-    /** Elimina un producto del sistema por su ID. @author RADJ */
+    /** elimina un producto del sistema por su id. @author RADJ */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         return productoService.findById(id).map(p -> {

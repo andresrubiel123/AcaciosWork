@@ -27,12 +27,13 @@ import com.acacioswork.model.LoginResponse;
 import com.acacioswork.util.ApiClient;
 import com.acacioswork.util.SessionManager;
 
-/** Panel de inicio de sesión premium para la app de escritorio. @author RADJ */
+/** panel de inicio de sesión premium para la app de escritorio. @author RADJ */
 public class Login extends JPanel {
 
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
-    private final Color ACCENT_COLOR = new Color(16, 185, 129); // Emerald
+    private final Color ACCENT_COLOR = new Color(16, 185, 129);
+/** emerald. @author RADJ */
 
     public Login() {
         setLayout(new BorderLayout());
@@ -41,9 +42,11 @@ public class Login extends JPanel {
 
     private void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(15, 23, 42)); // Slate 900
+        mainPanel.setBackground(new Color(15, 23, 42));
+/** slate 900. @author RADJ */
 
-        // Header
+       
+/** header. @author RADJ */
         JPanel header = new JPanel(new GridBagLayout());
         header.setOpaque(false);
         header.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
@@ -53,16 +56,18 @@ public class Login extends JPanel {
         header.add(lblTitle);
         mainPanel.add(header, BorderLayout.NORTH);
 
-        /** Animación de pulsación de verde neón para el título de inicio de sesión. @author RADJ */
+        /** animación de pulsación de verde neón para el título de inicio de sesión. @author RADJ */
         final Color colorBright = new Color(57, 255, 20);
         final Color colorDim = new Color(20, 90, 7);
         final long startTime = System.currentTimeMillis();
         
         javax.swing.Timer pulseTimer = new javax.swing.Timer(50, e -> {
             long elapsed = System.currentTimeMillis() - startTime;
-            double progress = (elapsed % 2000) / 2000.0; // 2 seconds cycle
+            double progress = (elapsed % 2000) / 2000.0;
+/** 2 seconds cycle. @author RADJ */
             double sinVal = Math.sin(progress * 2.0 * Math.PI);
-            double factor = (sinVal + 1.0) / 2.0; // range 0.0 to 1.0
+            double factor = (sinVal + 1.0) / 2.0;
+/** range 0.0 to 1.0. @author RADJ */
             
             int r = (int) (colorDim.getRed() + factor * (colorBright.getRed() - colorDim.getRed()));
             int g = (int) (colorDim.getGreen() + factor * (colorBright.getGreen() - colorDim.getGreen()));
@@ -72,13 +77,15 @@ public class Login extends JPanel {
         });
         pulseTimer.start();
 
-        // Content
+       
+/** content. @author RADJ */
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
         content.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
 
-        // Logo / Icon
+       
+/** logo / icon. @author RADJ */
         JLabel lblLogo = new JLabel("\uD83D\uDED2", SwingConstants.CENTER);
         lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80));
         lblLogo.setForeground(ACCENT_COLOR);
@@ -86,7 +93,8 @@ public class Login extends JPanel {
         content.add(lblLogo);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Inputs
+       
+/** inputs. @author RADJ */
         content.add(createLabel("Nombre de Usuario"));
         txtUsuario = createStyledTextField("Usuario");
         content.add(txtUsuario);
@@ -97,13 +105,15 @@ public class Login extends JPanel {
         content.add(txtPassword);
         content.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Login Button
+       
+/** login button. @author RADJ */
         JButton btnLogin = new JButton("Iniciar Sesión") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Degradado naranja a rojo del dashboard activo
+               
+/** degradado naranja a rojo del dashboard activo. @author RADJ */
                 g2.setPaint(new GradientPaint(0, 0, new Color(249, 115, 22), 0, getHeight(), new Color(239, 68, 68)));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2.dispose();
@@ -170,7 +180,8 @@ public class Login extends JPanel {
         try {
             com.acacioswork.model.LoginRequest loginReq = new com.acacioswork.model.LoginRequest(username, password);
 
-            // El backend devuelve ApiResponse<LoginResponse> con token y usuario
+           
+/** el backend devuelve apiresponse<loginresponse> con token y usuario. @author RADJ */
             LoginResponse response = ApiClient.post("/usuarios/login", loginReq, LoginResponse.class);
 
             if (response != null) {

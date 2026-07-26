@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acacioswork.model.Categoria;
 import com.acacioswork.repository.CategoriaRepository;
 
-/** Servicio para la gestión de categorías. @author RADJ */
+/** servicio para la gestión de categorías. @author RADJ */
 @Service
 @Transactional
 public class CategoriaService {
@@ -22,22 +22,22 @@ public class CategoriaService {
 
 private final CategoriaRepository categoriaRepository;
 
-    /** Obtiene todas las categorías. @author RADJ */
+    /** obtiene todas las categorías. @author RADJ */
     public List<Categoria> findAll() {
         return categoriaRepository.findAll();
     }
 
-    /** Busca una categoría por ID. @author RADJ */
+    /** busca una categoría por id. @author RADJ */
     public Optional<Categoria> findById(Long id) {
         return categoriaRepository.findById(id);
     }
 
-    /** Guarda una categoría. @author RADJ */
+    /** guarda una categoría. @author RADJ */
     public Categoria save(Categoria categoria) {
         return categoriaRepository.save(categoria);
     }
 
-    /** Elimina una categoría por ID. @author RADJ */
+    /** elimina una categoría por id. @author RADJ */
     public void deleteById(Long id) {
         categoriaRepository.deleteById(id);
     }

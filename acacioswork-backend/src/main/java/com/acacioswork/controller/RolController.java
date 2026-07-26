@@ -12,7 +12,7 @@ import com.acacioswork.model.Rol;
 import com.acacioswork.service.RolService;
 import com.acacioswork.util.ApiResponse;
 
-/** Controlador REST estandarizado para la gestión de roles. @author RADJ */
+/** controlador rest estandarizado para la gestión de roles. @author RADJ */
 @RestController
 @RequestMapping("/api/roles")
 @CrossOrigin(origins = "*")

@@ -1,4 +1,4 @@
-/** Repositorio JPA para la entidad Rol. @author RADJ */
+/** repositorio jpa para la entidad rol. @author RADJ */
 package com.acacioswork.repository;
 
 import java.util.Optional;

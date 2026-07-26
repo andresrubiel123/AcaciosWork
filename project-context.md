@@ -3,7 +3,7 @@
 
 > **ESTADO**: DESARROLLO ACTIVO - FASE DE ESTABILIZACIÓN Y ESCALADO
 > **AUTOR PRINCIPAL**: RADJ - andresrubiel@hotmail.com
-> **ÚLTIMA REVISIÓN**: 22 de Mayo, 2026
+> **ÚLTIMA REVISIÓN**: 04 de Junio de 2026
 
 ---
 
@@ -181,7 +181,9 @@ graph LR
 ### 3. Cliente Web (`acacioswork-frontend/`)
 *   **Plantillas (HTML/Thymeleaf)**: `src/main/resources/templates/` (`login.html`, `administrador-dashboard.html`, `auxiliar-dashboard.html` y fragmentos).
 *   **Estilos (CSS)**: `src/main/resources/static/css/` (`styles.css`, `dashboard.css`).
-*   **Lógica JS**: `src/main/resources/static/js/` (`api.js`, `dashboard.js`).
+*   **Lógica JS Core**: `src/main/resources/static/js/core/` (`api.js`, `auth.js`, `utils.js`).
+*   **Módulos JS (Lógica de Negocio)**: `src/main/resources/static/js/modules/` (`catalogos/`, `configuracion/`, `dashboard/`, `inteligencia/`, `inventario/`, `reportes/`, `ventas/`).
+*   **Componentes Compartidos (Shared)**: `src/main/resources/static/js/shared/` (`buscador.js`, `exportador-pdf.js`, `modal.js`, `notificacion.js`).
 
 ### 4. Cliente Móvil (`acacioswork-android/`)
 *   **UI/ViewModels/Network**: `app/src/main/java/com/acacioswork/`
@@ -203,6 +205,19 @@ Para CSS y MySQL:
 Para HTML:
 "<!-- Descripción breve. @author RADJ -->"
 
+---
+
+## ESTÁNDAR DE NOMENCLATURA (NAMING CONVENTIONS)
+
+Para mantener la coherencia semántica en todo el ecosistema de AcaciosWork, se aplican las siguientes reglas de nomenclatura:
+
+*   **camelCase**: Nombres de variables, atributos, métodos y funciones en Java, Kotlin y JavaScript (ej: `idAlerta`, `registrarVenta()`, `cargarProductos()`).
+*   **PascalCase**: Nombres de clases, interfaces, enums y componentes Spring Boot / JS (ej: `AlertaStockMinimo`, `UsuarioController`).
+*   **snake_case**: Nombres de tablas, columnas y de bases de datos en MySQL (ej: `alertas_stock_minimo`, `id_producto`).
+*   **kebab-case**: Clases CSS, selectores ID y nombres de archivos de plantillas HTML/JS/CSS (ej: `btn-primary`, `administrador-dashboard.html`).
+*   **UPPERCASE_SNAKE_CASE**: Constantes globales e inmutables (ej: `MAX_RETRY_ATTEMPTS`).
+
+
 
 
 ---
@@ -219,14 +234,17 @@ Para HTML:
 
 ### ✅ Finalizado (Producción Ready)
 - **Seguridad**: Autenticación JWT en Backend y Clientes (Web, Desktop, Android).
-- **Gestión Core**: CRUDs de Usuarios, Clientes, Proveedores y Categorías operativos en Backend, Desktop y Android.
+- **Gestión Core**: CRUDs de Usuarios, Clientes, Proveedores y Categorías operativos en Backend, Desktop, Web y Android.
 - **Inventario**: Control de existencias avanzado con stock actual (`stockActual`), stock mínimo (`stockMinimo`), stock óptimo (`stockOptimo`) y unidad de medida (`unidadMedida`) en Backend, Desktop, Web y Android.
 - **Ventas**: Módulo de `Venta` y `DetalleVenta` con persistencia atómica.
 - **Android**: Aplicación móvil funcional en Kotlin / Jetpack Compose con pantallas de Login, Dashboard, Clientes, Inventario y Proveedores operativas.
+- **Frontend Modularizado**: Estructura limpia y desacoplada de JavaScript con módulos específicos y componentes UI en fragmentos Thymeleaf.
+- **Inteligencia de Negocio Web**: Módulo de IA de "Preguntas Inteligentes" y gráficos interactivos completamente integrados en el dashboard web.
+- **Exportación en Web**: Exportación local e impresión directa de comprobantes de ventas y reportes en formato PDF.
 
 ### 🔄 En Proceso (Próximos Hitos)
-- **Reportes**: Implementación de reportes visuales en Frontend y exportación a PDF/Excel. Estructura visual inicial en Desktop y Android.
-- **Alertas**: Sistema de notificaciones para stock crítico.
+- **Reportes Móviles y Escritorio**: Integración de gráficos y estructura visual en Desktop y Android.
+- **Alertas**: Sistema de notificaciones en tiempo real para stock crítico.
 - **Cierre de Caja**: Lógica contable para balance diario.
 
 ---
@@ -247,6 +265,10 @@ Para HTML:
     * Migración e integración completa en recursos de Spring Boot bajo el módulo `acacioswork-frontend`.
     * Implementación de vistas de inicio de sesión y dashboards separados por roles (`administrador-dashboard.html`, `auxiliar-dashboard.html`) estructurados mediante fragmentos Thymeleaf reutilizables.
     * Integración con `ViewController.java` en el backend para el ruteo de vistas y desacoplamiento de la caché de plantillas para desarrollo ágil.
+*   **2026-06-04**: **Estabilización de Frontend y Modularización JS**:
+    * Extracción total de scripts embebidos en el HTML hacia archivos JS externos estructurados en `core`, `modules` y `shared`.
+    * Consolidación de módulos de ventas, inventario, reportes interactivos (gráficos) e inteligencia artificial en la web.
+    * Integración de componentes para exportación a PDF y notificaciones dinámicas.
 
 ---
 

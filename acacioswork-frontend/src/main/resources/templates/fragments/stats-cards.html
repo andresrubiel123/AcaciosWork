@@ -1,8 +1,12 @@
-<!-- Tarjetas de métricas para inventario y clientes. @author RADJ -->
+<!-- tarjetas de métricas para inventario y clientes. @author RADJ -->
 <div th:fragment="stats-cards" class="stats-grid">
     <div class="stat-card">
         <div class="label">Total Productos</div>
         <div class="value" id="inv-total">—</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Próximos a Vencer</div>
+        <div class="value" id="inv-vencimiento" style="color:#ef4444">—</div>
     </div>
     <div class="stat-card">
         <div class="label">Stock Bajo</div>

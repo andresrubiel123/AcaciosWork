@@ -1,4 +1,4 @@
-<!-- Sección de ventas (POS) para el dashboard de administrador. @author RADJ -->
+<!-- sección de ventas (pos) para el dashboard de administrador. @author RADJ -->
 <div th:fragment="vender" id="sec-vender" class="section" style="display:none">
     <div class="section-header">
         <div>
@@ -8,7 +8,7 @@
     </div>
 
     <div class="pos-layout">
-        <!-- Columna izquierda: búsqueda + carrito -->
+        <!-- columna izquierda: búsqueda + carrito. @author RADJ -->
         <div>
             <div class="card" style="margin-bottom: 1rem;">
                 <p
@@ -49,19 +49,19 @@
             </div>
         </div>
 
-        <!-- Columna derecha: resumen y cobro -->
+        <!-- columna derecha: resumen y cobro. @author RADJ -->
         <div>
             <div class="summary-panel">
-                <h3>💳 Resumen de Venta</h3>
-
-                <label
+                <h3>💳 Resumen de Venta</h3>                <label
                     style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.4rem;">Cliente</label>
                 <select id="client-select" class="client-select">
                     <option value="">— Venta sin cliente registrado —</option>
                 </select>
+                <button type="button" class="btn-nuevo-cliente" onclick="abrirNuevoClienteModal()">
+                    ➕ Nuevo Cliente
+                </button>
 
                 <hr class="summary-divider">
-
                 <div class="summary-row">
                     <span class="label">Productos</span>
                     <span class="value" id="summary-items">0</span>

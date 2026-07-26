@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acacioswork.model.Usuario;
 import com.acacioswork.repository.UsuarioRepository;
 
-/** Servicio para gestionar usuarios. @author RADJ */
+/** servicio para gestionar usuarios. @author RADJ */
 @Service
 @Transactional
 public class UsuarioManager {
@@ -25,7 +25,7 @@ private final UsuarioRepository usuarioRepository;
 
 private final BCryptPasswordEncoder passwordEncoder;
 
-    /** Realiza el login de un usuario */
+    /** realiza el login de un usuario. @author RADJ */
     public Usuario login(String usuario, String clave) {
         Usuario user = usuarioRepository.findByUsuario(usuario).orElse(null);
 
@@ -36,10 +36,11 @@ private final BCryptPasswordEncoder passwordEncoder;
         return null;
     }
 
-    /** Crea un nuevo usuario */
+    /** crea un nuevo usuario. @author RADJ */
     public boolean crearUsuario(Usuario usuario) {
         try {
-            // Encriptar contraseña antes de guardar
+           
+/** encriptar contraseña antes de guardar. @author RADJ */
             usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 
             usuarioRepository.save(usuario);
@@ -50,22 +51,23 @@ private final BCryptPasswordEncoder passwordEncoder;
         }
     }
 
-    /** Lee un usuario por ID */
+    /** lee un usuario por id. @author RADJ */
     public Usuario leerUsuario(Long idUsuario) {
         return usuarioRepository.findById(idUsuario).orElse(null);
     }
 
-    /** Lee todos los usuarios */
+    /** lee todos los usuarios. @author RADJ */
     public List<Usuario> leerTodosUsuarios() {
         return usuarioRepository.findAll();
     }
 
-    /** Actualiza un usuario */
+    /** actualiza un usuario. @author RADJ */
     public boolean actualizarUsuario(Long idUsuario, Usuario nuevoUsuario) {
         try {
             if (usuarioRepository.existsById(idUsuario)) {
 
-                // Encriptar si se cambia la clave
+               
+/** encriptar si se cambia la clave. @author RADJ */
                 if (nuevoUsuario.getClave() != null && !nuevoUsuario.getClave().isEmpty()) {
                     nuevoUsuario.setClave(passwordEncoder.encode(nuevoUsuario.getClave()));
                 }
@@ -81,7 +83,7 @@ private final BCryptPasswordEncoder passwordEncoder;
         }
     }
 
-    /** Elimina un usuario por ID */
+    /** elimina un usuario por id. @author RADJ */
     public boolean eliminarUsuario(Long idUsuario) {
         try {
             if (usuarioRepository.existsById(idUsuario)) {

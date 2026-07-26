@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Modelo de Detalle de Venta para el cliente de escritorio. @author RADJ */
+/** modelo de detalle de venta para el cliente de escritorio. @author RADJ */
 public class DetalleVenta {
     private Long id;
     private Long idVenta;

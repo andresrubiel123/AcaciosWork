@@ -1,4 +1,4 @@
-<!-- Orquestador principal del dashboard de administrador usando Thymeleaf. @author RADJ -->
+<!-- administrador uso de thymeleaf. @author RADJ -->
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
@@ -6,41 +6,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcaciosWork - Panel de Control</title>
-    <!-- Google Fonts -->
+    <!-- google fonts. @author RADJ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <!-- Estilos globales y específicos del dashboard -->
+    <!-- estilos globales y específicos del dashboard. @author RADJ -->
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 
 <body style="background: var(--bg-dark); color: var(--text-main);">
     <div class="app-body">
-        <!-- Barra de navegación modular -->
+        <!-- barra de navegación modular. @author RADJ -->
         <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-        <!-- ═══ CONTENIDO PRINCIPAL ═══ -->
+        <!-- ═══ contenido principal ═══. @author RADJ -->
         <div class="content-area">
-            <!-- ─── BIENVENIDA (Vacío) ─── -->
+            <!-- ─── bienvenida (vacío) ───. @author RADJ -->
             <div id="sec-welcome" class="section" style="display: block; padding: 2rem;">
-                <!-- Encabezado de la ventana de inicio. @author RADJ -->
+                <!-- encabezado de la ventana de inicio. @author RADJ -->
                 <div class="section-header">
                     <div>
                         <h1>Resumen de Inventario</h1>
                         <p>Vista rápida del estado de existencias</p>
                     </div>
                 </div>
-                <!-- Tarjetas de estadísticas -->
+                <!-- tarjetas de estadísticas. @author RADJ -->
                 <div th:replace="~{fragments/stats-cards :: stats-cards}"></div>
 
-                <!-- Tabla simplificada de productos en inicio. @author RADJ -->
+                <!-- tabla simplificada de productos en inicio. @author RADJ -->
                 <div th:replace="~{fragments/home-products-table :: home-products-table}"></div>
             </div>
 
-            <!-- ─── INVENTARIO ─── -->
+            <!-- ─── inventario ───. @author RADJ -->
             <div id="sec-inventario" class="section" style="display:none">
                 <div class="section-header">
                     <div>
@@ -49,45 +49,114 @@
                     </div>
                     <button class="btn btn-success" onclick="openModal('inventario')">+ Nuevo Producto</button>
                 </div>
-                <!-- Tabla e Inventario -->
+                <!-- tabla e inventario. @author RADJ -->
                 <div th:replace="~{fragments/products-table :: products-table}"></div>
             </div>
 
-            <!-- ─── VENTAS (POS) ─── -->
+            <!-- ─── ventas (pos) ───. @author RADJ -->
             <div th:replace="~{fragments/vender :: vender}"></div>
 
 
-            <!-- ─── PROVEEDORES ─── -->
+            <!-- ─── proveedores ───. @author RADJ -->
             <div th:replace="~{fragments/proveedores :: proveedores}"></div>
 
-            <!-- ─── CLIENTES ─── -->
+            <!-- ─── clientes ───. @author RADJ -->
             <div th:replace="~{fragments/clientes :: clientes}"></div>
 
-            <!-- ─── USUARIOS ─── -->
+            <!-- ─── usuarios ───. @author RADJ -->
             <div th:replace="~{fragments/usuarios :: usuarios}"></div>
 
-            <!-- ─── REPORTES ─── -->
+            <!-- ─── reportes ───. @author RADJ -->
             <div th:replace="~{fragments/reportes :: reportes}"></div>
 
-            <!-- ─── PREGUNTAS INTELIGENTES ─── -->
+            <!-- ─── analisis grafico ───. @author RADJ -->
+            <div id="sec-graficos" class="section" style="display:none; padding: 2rem;">
+                <div class="section-header">
+                    <div>
+                        <h1>Análisis Gráfico</h1>
+                        <p>Visualización del rendimiento comercial y de inventario</p>
+                    </div>
+                </div>
+                <!-- gráfico de ganancias mensuales. @author RADJ -->
+                <div th:replace="~{fragments/grafico-ventas :: grafico-ventas}"></div>
+
+                <!-- gráfico de barras horizontales: ventas por categoría. @author RADJ -->
+                <div th:replace="~{fragments/grafico-categorias :: grafico-categorias}"></div>
+            </div>
+
+            <!-- ─── historial de ventas ───. @author RADJ -->
+            <div id="sec-historial" class="section" style="display:none; padding: 2rem;">
+                <div class="section-header">
+                    <div>
+                        <h1>📋 Historial de Ventas</h1>
+                        <p>Ventas registradas en el sistema</p>
+                    </div>
+                </div>
+                <div class="stats-row" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="stat-card" style="min-width: 150px; flex: 1;">
+                        <div class="label" style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.4rem;">Total Ventas</div>
+                        <div class="value" id="hist-total" style="font-size: 1.6rem; font-weight: 700; color: white;">—</div>
+                    </div>
+                    <div class="stat-card" style="min-width: 150px; flex: 1;">
+                        <div class="label" style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.4rem;">Total Recaudado</div>
+                        <div class="value" id="hist-valor" style="color:#10b981; font-size: 1.6rem; font-weight: 700;">—</div>
+                    </div>
+                </div>
+                <input type="text" class="search-box" id="hist-search"
+                    oninput="filterTable(this, 'hist-tbody')" placeholder="🔍 Buscar venta...">
+                <div class="table-card" style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 1rem; overflow: hidden;">
+                    <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">#</th>
+                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">Fecha</th>
+                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; min-width: 200px;">Cliente</th>
+                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">Productos</th>
+                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hist-tbody">
+                            <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ─── preguntas inteligentes ───. @author RADJ -->
             <div th:replace="~{fragments/preguntas-inteligentes :: preguntas-inteligentes}"></div>
 
-            <!-- ─── ALERTAS STOCK ─── -->
+            <!-- ─── alertas stock ───. @author RADJ -->
             <div th:replace="~{fragments/alertas :: alertas}"></div>
 
-            <!-- ─── CONFIGURACION ─── -->
+            <!-- ─── configuracion ───. @author RADJ -->
             <div th:replace="~{fragments/configuracion :: configuracion}"></div>
         </div>
     </div>
 
-    <!-- Modales del sistema -->
+    <!-- modales del sistema. @author RADJ -->
     <div th:replace="~{fragments/modals :: modals}"></div>
 
-    <!-- Scripts de API e interactividad -->
-    <script th:src="@{/js/api.js}"></script>
+    <!-- scripts de api e interactividad. @author RADJ -->
+    <script th:src="@{/js/core/utils.js}"></script>
+    <script th:src="@{/js/shared/custom-dropdown.js}"></script>
+    <script th:src="@{/js/core/api.js}"></script>
+    <script th:src="@{/js/core/auth.js}"></script>
+    <script th:src="@{/js/shared/buscador.js}"></script>
+    <script th:src="@{/js/shared/notificacion.js}"></script>
+    <script th:src="@{/js/shared/modal.js}"></script>
+    <script th:src="@{/js/shared/exportador-pdf.js}"></script>
+    <script th:src="@{/js/modules/catalogos/clientes.js}"></script>
+    <script th:src="@{/js/modules/catalogos/proveedores.js}"></script>
+    <script th:src="@{/js/modules/catalogos/usuarios.js}"></script>
+    <script th:src="@{/js/modules/inventario/inventario.js}"></script>
+    <script th:src="@{/js/modules/ventas/ventas.js}"></script>
+    <script th:src="@{/js/modules/reportes/reportes.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script th:src="@{/js/dashboard.js}"></script>
-    <script th:src="@{/js/grafico-categorias.js}"></script>
+    <script th:src="@{/js/modules/reportes/charts/grafico-categorias.js}"></script>
+    <script th:src="@{/js/modules/reportes/charts/ganancias-mensuales.js}"></script>
+    <script th:src="@{/js/modules/inteligencia/inteligencia.js}"></script>
+    <script th:src="@{/js/modules/configuracion/configuracion.js}"></script>
+    <script th:src="@{/js/modules/dashboard/dashboard.js}"></script>
 </body>
 
 </html>

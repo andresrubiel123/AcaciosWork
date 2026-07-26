@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Entidad que representa una categoría de producto. @author RADJ */
+/** entidad que representa una categoría de producto. @author RADJ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -23,13 +23,13 @@ public class Categoria {
     @Column(nullable = false)
     private String nombre;
 
-    /** Constructor con parámetros. @author RADJ */
+    /** constructor con parámetros. @author RADJ */
     public Categoria(Long id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    /** Representación en cadena de la categoría. @author RADJ */
+    /** representación en cadena de la categoría. @author RADJ */
     @Override
     public String toString() {
         return nombre;

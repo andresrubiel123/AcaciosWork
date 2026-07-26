@@ -1,0 +1,45 @@
+/* estilos específicos para la tabla de productos para controlar el layout de columnas. @author RADJ */
+.products-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.col-codigo {
+    width: 100px;
+    min-width: 90px;
+}
+
+.col-nombre {
+    width: 100px;
+    min-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-unidad {
+    width: 100px;
+    min-width: 90px;
+}
+
+.col-precio {
+    width: 110px;
+    min-width: 100px;
+}
+
+.col-iva {
+    width: 80px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.col-estado {
+    width: 100px;
+    min-width: 90px;
+    text-align: center;
+}
+
+.col-acciones {
+    width: 140px;
+    min-width: 130px;
+}

@@ -2,7 +2,7 @@ package com.acacioswork.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/** Envoltorio para las respuestas de la API, coincidiendo con el backend. @author RADJ */
+/** envoltorio para las respuestas de la api, coincidiendo con el backend. @author RADJ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiResponse<T> {
     private boolean success;

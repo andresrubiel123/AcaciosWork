@@ -1,12 +1,12 @@
-<!-- Tabla simplificada de productos para la página de inicio. @author RADJ -->
+<!-- tabla simplificada de productos para la página de inicio. @author RADJ -->
 <div th:fragment="home-products-table" style="margin-top: 2rem;">
-    <!-- Buscador de la tabla de inicio. @author RADJ -->
+    <!-- buscador de la tabla de inicio. @author RADJ -->
     <div class="search-container" style="position: relative; margin-bottom: 1rem;">
         <input type="text" id="home-inv-search-input" oninput="filterTable(this, 'home-inv-tbody')"
             placeholder="🔍 Buscar en la tabla..."
             style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
     </div>
-    <!-- Tabla de Productos -->
+    <!-- tabla de productos. @author RADJ -->
     <div class="card">
         <table class="products-table">
             <thead>

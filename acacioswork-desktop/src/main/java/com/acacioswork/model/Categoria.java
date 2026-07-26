@@ -1,6 +1,6 @@
 package com.acacioswork.model;
 
-/** Entidad que representa una categoría de producto. @author RADJ */
+/** entidad que representa una categoría de producto. @author RADJ */
 public class Categoria {
     private Long id;
     private String nombre;

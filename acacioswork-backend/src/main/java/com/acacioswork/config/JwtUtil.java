@@ -12,7 +12,8 @@ import java.util.function.Function;
 public class JwtUtil {
 
     private final SecretKey key = Jwts.SIG.HS256.key().build();
-    private final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000; // 5 hours
+    private final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000;
+/** 5 hours. @author RADJ */
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);

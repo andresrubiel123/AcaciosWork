@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.acacioswork.model.Cliente;
 import com.acacioswork.repository.ClienteRepository;
 
-/** Servicio para gestionar clientes. @author RADJ */
+/** servicio para gestionar clientes. @author RADJ */
 @Service
 @Transactional
 public class ClienteManager {
@@ -21,7 +21,7 @@ public class ClienteManager {
 
 private final ClienteRepository clienteRepository;
 
-    /** Crea un nuevo cliente. @author RADJ */
+    /** crea un nuevo cliente. @author RADJ */
     public boolean crearCliente(Cliente cliente) {
         try {
             clienteRepository.save(cliente);
@@ -32,17 +32,17 @@ private final ClienteRepository clienteRepository;
         }
     }
 
-    /** Lee un cliente por ID. @author RADJ */
+    /** lee un cliente por id. @author RADJ */
     public Cliente leerCliente(Long idCliente) {
         return clienteRepository.findById(idCliente).orElse(null);
     }
 
-    /** Lee todos los clientes. @author RADJ */
+    /** lee todos los clientes. @author RADJ */
     public List<Cliente> leerTodosClientes() {
         return clienteRepository.findAll();
     }
 
-    /** Actualiza un cliente. @author RADJ */
+    /** actualiza un cliente. @author RADJ */
     public boolean actualizarCliente(Long idCliente, Cliente nuevoCliente) {
         try {
             if (clienteRepository.existsById(idCliente)) {
@@ -57,7 +57,7 @@ private final ClienteRepository clienteRepository;
         }
     }
 
-    /** Elimina un cliente por ID. @author RADJ */
+    /** elimina un cliente por id. @author RADJ */
     public boolean eliminarCliente(Long idCliente) {
         try {
             if (clienteRepository.existsById(idCliente)) {

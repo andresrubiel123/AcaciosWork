@@ -1,4 +1,4 @@
-/** Entidad que representa un tipo de documento. @author RADJ */
+/** entidad que representa un tipo de documento. @author RADJ */
 package com.acacioswork.model;
 
 import jakarta.persistence.Column;

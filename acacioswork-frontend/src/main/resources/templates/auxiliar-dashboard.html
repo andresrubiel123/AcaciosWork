@@ -1,4 +1,4 @@
-<!-- Dashboard Auxiliar AcaciosWork. @author RADJ -->
+<!-- dashboard auxiliar acacioswork. @author RADJ -->
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Sidebar ── */
+        /* ── sidebar ──. @author RADJ */
         .top-toolbar {
             display: flex;
             flex-direction: column;
@@ -119,12 +119,12 @@
             word-break: break-all;
         }
 
-        /* ── Content ── */
+        /* ── content ──. @author RADJ */
         .content-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
         .page-content { flex: 1; padding: 1.5rem 2rem; width: 100%; margin: 0; box-sizing: border-box; }
         .section { display: none; animation: fadeIn 0.25s ease-out; }
 
-        /* ── Section Header ── */
+        /* ── section header ──. @author RADJ */
         .section-header {
             display: flex;
             align-items: center;
@@ -136,7 +136,7 @@
         .section-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem; }
         .section-header p { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* ── Stats ── */
+        /* ── stats ──. @author RADJ */
         .stats-row {
             display: flex;
             gap: 1rem;
@@ -153,7 +153,7 @@
         .stat-mini .label { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.35rem; }
         .stat-mini .value { font-size: 1.6rem; font-weight: 700; color: var(--text-main); }
 
-        /* ── Buttons ── */
+        /* ── buttons ──. @author RADJ */
         .btn-success {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
@@ -177,7 +177,7 @@
         .btn-sm.btn-del { background: rgba(239,68,68,0.10); color: #ef4444; }
         .btn-sm.btn-del:hover { background: #ef4444; color: white; }
 
-        /* ── Badges ── */
+        /* ── badges ──. @author RADJ */
         .badge { padding: 0.2rem 0.55rem; border-radius: 0.25rem; font-size: 0.73rem; font-weight: 600; }
         .badge-success { background: rgba(16,185,129,0.12); color: #10b981; }
         .badge-danger  { background: rgba(239,68,68,0.12); color: #ef4444; }
@@ -185,7 +185,7 @@
         .dot-green { background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,0.6); }
         .dot-red   { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.6); }
 
-        /* ── Search ── */
+        /* ── search ──. @author RADJ */
         .search-box {
             width: 100%;
             padding: 0.7rem 1rem;
@@ -200,7 +200,7 @@
         }
         .search-box:focus { border-color: var(--primary-color); }
 
-        /* ── POS / Nueva Venta ── */
+        /* ── pos / nueva venta ──. @author RADJ */
         .pos-layout { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start; }
         @media (max-width: 900px) { .pos-layout { grid-template-columns: 1fr; } }
 
@@ -230,7 +230,7 @@
         .product-dropdown-item .p-price { color: #10b981; font-weight: 600; white-space: nowrap; }
         .product-dropdown-item.no-stock { opacity: 0.45; cursor: not-allowed; }
 
-        /* Carrito */
+        /* carrito. @author RADJ */
         .cart-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .cart-table th { padding: 0.6rem 0.75rem; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
         .cart-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -240,7 +240,7 @@
         .remove-item-btn:hover { transform: scale(1.2); }
         .cart-empty-msg { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.88rem; }
 
-        /* Panel de resumen de venta */
+        /* panel de resumen de venta. @author RADJ */
         .summary-panel {
             background: var(--bg-card);
             border: 1px solid var(--glass-border);
@@ -271,7 +271,7 @@
         .btn-registrar:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(16,185,129,0.45); }
         .btn-registrar:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        /* ── Modal ── */
+        /* ── modal ──. @author RADJ */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: none; justify-content: center;
@@ -296,7 +296,7 @@
         .btn-cancel { background: #334155; color: white; }
         .btn-cancel:hover { background: #475569; }
 
-        /* ── Table styles ── */
+        /* ── table styles ──. @author RADJ */
         .table-card { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 1rem; overflow: hidden; }
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table th { padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
@@ -304,7 +304,7 @@
         .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
         .data-table tbody tr:last-child td { border-bottom: none; }
 
-        /* Historial ventas */
+        /* historial ventas. @author RADJ */
         .historial-badge {
             display: inline-flex; align-items: center; gap: 0.35rem;
             padding: 0.25rem 0.6rem; border-radius: 2rem;
@@ -312,7 +312,7 @@
             background: rgba(16,185,129,0.12); color: #10b981;
         }
 
-        /* Toast notification */
+        /* toast notification. @author RADJ */
         .toast {
             position: fixed; bottom: 2rem; right: 2rem;
             padding: 1rem 1.5rem; border-radius: 0.75rem;
@@ -337,13 +337,69 @@
                 opacity: 1;
             }
         }
+
+        /* ── stock quantity colors ──. @author RADJ */
+        .stock-qty { font-weight: 700; font-size: 0.95rem; }
+        .stock-qty.red { color: #f87171; }
+        .stock-qty.orange { color: #fb923c; }
+        .stock-qty.green { color: #34d399; }
+
+        /* ── stats-grid and stat-card ──. @author RADJ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.25rem 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 12px 20px -8px rgba(99, 102, 241, 0.25);
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.03) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: 0.75s;
+        }
+        .stat-card:hover::after {
+            left: 120%;
+        }
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+        }
+        .stat-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div style="display:flex; flex-direction:row; min-height:100vh; width:100%;">
 
-        <!-- ═══ TOOLBAR SUPERIOR ═══ -->
+        <!-- ═══ toolbar superior ═══. @author RADJ -->
         <nav class="top-toolbar">
             <div class="toolbar-brand">
                 AcaciosWork <span>Auxiliar</span>
@@ -359,8 +415,14 @@
                 <button id="btn-clientes" class="toolbar-btn" onclick="showSection('clientes', this)">
                     👥 Clientes
                 </button>
+                <button id="btn-inventario" class="toolbar-btn" onclick="showSection('inventario', this)">
+                    📦 Inventario
+                </button>
                 <button id="btn-historial" class="toolbar-btn" onclick="showSection('historial', this)">
                     📋 Historial
+                </button>
+                <button id="btn-alertas" class="toolbar-btn" onclick="showSection('alertas', this)">
+                    ⚠ Alertas
                 </button>
             </div>
             <div class="toolbar-right">
@@ -368,20 +430,37 @@
             </div>
         </nav>
 
-        <!-- ═══ CONTENIDO PRINCIPAL ═══ -->
+        <!-- ═══ contenido principal ═══. @author RADJ -->
         <div class="content-area">
             <div class="page-content">
 
-                <!-- ─── BIENVENIDA (Vacío) ─── -->
-                <div id="sec-welcome" class="section" style="display: block; text-align: center; padding: 5rem 2rem;">
-                    <div class="card" style="max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); padding: 3rem;">
-                        <h2 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 2rem;">Bienvenido a AcaciosWork</h2>
-                        <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem;">Por favor, seleccione una opción del menú lateral para comenzar a registrar ventas o gestionar clientes.</p>
-                        <div style="font-size: 4rem;">🛒</div>
+                <!-- ─── bienvenida (dashboard básico) ───. @author RADJ -->
+                <div id="sec-welcome" class="section" style="display: block; padding-top: 1rem;">
+                    <!-- tarjeta de bienvenida arriba -->
+                    <div class="card" style="margin-bottom: 2rem; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); padding: 2.5rem; text-align: center;">
+                        <h2 style="color: var(--primary-color); margin-bottom: 0.5rem; font-size: 1.6rem;">Bienvenido a AcaciosWork</h2>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Utiliza el menú de navegación lateral para registrar ventas, buscar existencias de productos o gestionar clientes.</p>
+                        <div style="font-size: 3rem;">🛒</div>
+                    </div>
+                    
+                    <!-- tarjetas de estadísticas. @author RADJ -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Total Productos</div>
+                            <div class="value" id="inv-total">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Próximos a Vencer</div>
+                            <div class="value" id="inv-vencimiento" style="color:#ef4444">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Stock Bajo</div>
+                            <div class="value" id="inv-bajo" style="color:#ef4444">—</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ─── NUEVA VENTA (POS) ─── -->
+                <!-- ─── nueva venta (pos) ───. @author RADJ -->
                 <div id="sec-ventas" class="section" style="display:none;">
                     <div class="section-header">
                         <div>
@@ -391,7 +470,7 @@
                     </div>
 
                     <div class="pos-layout">
-                        <!-- Columna izquierda: búsqueda + carrito -->
+                        <!-- columna izquierda: búsqueda + carrito. @author RADJ -->
                         <div>
                             <div class="card" style="margin-bottom:1rem;">
                                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Buscar Producto</p>
@@ -428,7 +507,7 @@
                             </div>
                         </div>
 
-                        <!-- Columna derecha: resumen y cobro -->
+                        <!-- columna derecha: resumen y cobro. @author RADJ -->
                         <div>
                             <div class="summary-panel">
                                 <h3>💳 Resumen de Venta</h3>
@@ -437,6 +516,9 @@
                                 <select id="client-select" class="client-select">
                                     <option value="">— Venta sin cliente registrado —</option>
                                 </select>
+                                <button type="button" class="btn-nuevo-cliente" onclick="abrirNuevoClienteModal()">
+                                    ➕ Nuevo Cliente
+                                </button>
 
                                 <hr class="summary-divider">
 
@@ -471,7 +553,7 @@
                     </div>
                 </div>
 
-                <!-- ─── HISTORIAL DE VENTAS ─── -->
+                <!-- ─── historial de ventas ───. @author RADJ -->
                 <div id="sec-historial" class="section">
                     <div class="section-header">
                         <div>
@@ -497,7 +579,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Fecha</th>
-                                    <th>Cliente</th>
+                                    <th style="min-width: 200px;">Cliente</th>
                                     <th>Productos</th>
                                     <th style="text-align:right;">Total</th>
                                 </tr>
@@ -509,7 +591,7 @@
                     </div>
                 </div>
 
-                <!-- ─── CLIENTES ─── -->
+                <!-- ─── clientes ───. @author RADJ -->
                 <div id="sec-clientes" class="section">
                     <div class="section-header">
                         <div>
@@ -549,11 +631,61 @@
                     </div>
                 </div>
 
+                <!-- ─── inventario ───. @author RADJ -->
+                <div id="sec-inventario" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h1>📦 Inventario de Productos</h1>
+                            <p>Consulta de existencias y precios de venta</p>
+                        </div>
+                    </div>
+                    <input type="text" class="search-box" id="inv-search-input"
+                        oninput="filterTable(this, 'inv-tbody')" placeholder="🔍 Buscar producto por nombre o código...">
+                    <div class="table-card">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Unidad</th>
+                                    <th>Stock</th>
+                                    <th>P. Venta</th>
+                                    <th>Vencimiento</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inv-tbody">
+                                <tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ─── alertas stock ───. @author RADJ -->
+                <div id="sec-alertas" class="section" style="display:none">
+                    <div class="section-header">
+                        <div>
+                            <h1>⚠ Alertas de Inventario</h1>
+                            <p>Productos con stock bajo o próximos a vencer</p>
+                        </div>
+                    </div>
+                    <!-- buscador de alertas. @author RADJ -->
+                    <div class="search-container" id="alertas-search-container"
+                        style="position: relative; margin-bottom: 1rem; display: none;">
+                        <input type="text" id="alertas-search-input" oninput="filterTable(this, 'alertas-tbody'); filterTable(this, 'alertas-vence-tbody')"
+                            placeholder="🔍 Buscar en la tabla..."
+                            style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.08); background: var(--bg-card); color: var(--text-main); font-size: 0.9rem; outline: none; margin-bottom: 0;">
+                    </div>
+                    <div id="alertas-container">
+                        <p style="color:var(--text-muted)">Cargando alertas...</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- ═══ MODAL CLIENTE ═══ -->
+    <!-- ═══ modal cliente ═══. @author RADJ -->
     <div id="clienteModal" class="modal-overlay" onclick="if(event.target===this) closeClienteModal()">
         <div class="modal-box">
             <h2 id="modal-cliente-title">Nuevo Cliente</h2>
@@ -601,20 +733,29 @@
         </div>
     </div>
 
-    <!-- Toast de notificación -->
+    <!-- toast de notificación. @author RADJ -->
     <div id="toast" class="toast"></div>
 
-    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/core/utils.js}"></script>
+    <script th:src="@{/js/shared/custom-dropdown.js}"></script>
+    <script th:src="@{/js/core/api.js}"></script>
+    <script th:src="@{/js/core/auth.js}"></script>
+    <script th:src="@{/js/shared/buscador.js}"></script>
     <script>
-        /** Dashboard Auxiliar AcaciosWork - Ventas y Clientes. @author RADJ */
+        /*** dashboard auxiliar acacioswork - ventas y clientes. @author RADJ */
 
-        // ─── Estado global ───
-        let cart = [];           // [{producto, cantidad}]
-        let allProducts = [];    // Cache de productos cargados
-        let allClientes = [];    // Cache de clientes cargados
+       
+/*** ─── estado global ───. @author RADJ */
+        let cart = [];          
+/*** [{producto, cantidad}]. @author RADJ */
+        let allProducts = [];   
+/*** cache de productos cargados. @author RADJ */
+        let allClientes = [];   
+/*** cache de clientes cargados. @author RADJ */
         let searchTimeout = null;
 
-        // ─── AUTH CHECK ───
+       
+/*** ─── auth check ───. @author RADJ */
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('jwt_token');
             if (!token) { window.location.href = 'login'; return; }
@@ -624,14 +765,16 @@
 
             document.getElementById('userInfo').textContent = '👤 ' + (localStorage.getItem('user_name') || 'Auxiliar');
 
-            // Precargar productos y clientes en paralelo
+           
+/*** precargar productos y clientes en paralelo. @author RADJ */
             await Promise.all([preloadProducts(), loadClientes()]);
             loadClienteSelect();
         });
 
         function logout() { localStorage.clear(); window.location.href = 'login'; }
 
-        // ─── NAVEGACIÓN ───
+       
+/*** ─── navegación ───. @author RADJ */
         function showSection(name, btn) {
             document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
             document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
@@ -639,18 +782,312 @@
             if (btn) btn.classList.add('active');
             if (name === 'clientes') renderClientes();
             if (name === 'historial') loadHistorial();
+            if (name === 'inventario') loadInventarioAuxiliar();
+            if (name === 'alertas') loadAlertasAuxiliar();
         }
 
-        // ─── UTILIDADES ───
-        function filterTable(inputEl, tbodyId) {
-            const filter = inputEl.value.toLowerCase().trim();
-            const tbody = document.getElementById(tbodyId);
-            if (!tbody) return;
-            Array.from(tbody.getElementsByTagName('tr')).forEach(row => {
-                if (row.cells.length === 1 && row.cells[0].colSpan > 1) return;
-                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
-            });
+        async function loadAlertasAuxiliar() {
+            const searchInput = document.getElementById('alertas-search-input');
+            if (searchInput) searchInput.value = '';
+            const container = document.getElementById('alertas-container');
+            if (container) {
+                container.innerHTML = '<p style="color:var(--text-muted)">Cargando alertas...</p>';
+            }
+            try {
+                const products = await apiRequest('/productos') || [];
+                const bajos = products.filter(p => p.stockActual <= (p.stockMinimo || 5));
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const porVencer = products.filter(p => {
+                    if (!p.fechaVencimiento) return false;
+                    const expDate = new Date(p.fechaVencimiento);
+                    if (isNaN(expDate.getTime())) return false;
+                    const diffTime = expDate - today;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    return diffDays <= 5;
+                });
+
+                // Ordenar por fecha de vencimiento ascendente
+                porVencer.sort((a, b) => new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento));
+
+                const searchCont = document.getElementById('alertas-search-container');
+                if (searchCont) searchCont.style.display = 'block';
+
+                let html = '';
+
+                /*** 1. Tabla de Vencimientos (Sin Proveedor ni Acción) ***/
+                html += `
+                    <h3 style="margin: 1.5rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">📅 Productos Próximos a Vencer o Vencidos (Límite: 5 días)</h3>
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th style="text-align:center">Fecha Vencimiento</th>
+                                    <th>Estado / Días Restantes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alertas-vence-tbody">
+                `;
+
+                if (porVencer.length > 0) {
+                    porVencer.forEach(p => {
+                        const expDate = new Date(p.fechaVencimiento);
+                        const diffTime = expDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        let badgeHtml = '';
+                        if (diffDays < 0) {
+                            badgeHtml = `<span style="font-weight:600; color:#ef4444;">Vencido hace ${Math.abs(diffDays)} días</span>`;
+                        } else if (diffDays === 0) {
+                            badgeHtml = `<span style="font-weight:600; color:#ef4444;">Vence HOY</span>`;
+                        } else if (diffDays === 1) {
+                            badgeHtml = `<span style="font-weight:600; color:#f59e0b;">Vence Mañana</span>`;
+                        } else {
+                            badgeHtml = `<span style="font-weight:600; color:#f59e0b;">Vence en ${diffDays} días</span>`;
+                        }
+
+                        html += `
+                            <tr>
+                                <td style="font-weight:500">${p.nombre}</td>
+                                <td style="text-align:center; font-weight:600; font-family:monospace;">${p.fechaVencimiento}</td>
+                                <td>${badgeHtml}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html += `
+                        <tr>
+                            <td colspan="3" style="text-align:center; padding: 2rem; color: #10b981; font-weight: 500;">✓ No hay productos próximos a vencer o vencidos (límite 5 días).</td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                /*** 2. Tabla de Stock Bajo (Sin Proveedor ni Acción) ***/
+                html += `
+                    <h3 style="margin: 2rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">⚠ Productos con Stock Bajo</h3>
+                    <div class="card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th style="text-align:center">Stock Actual</th>
+                                    <th style="text-align:center">Mínimo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alertas-tbody">
+                `;
+
+                if (bajos.length > 0) {
+                    bajos.forEach(p => {
+                        const isAgotado = p.stockActual === 0;
+                        html += `
+                            <tr>
+                                <td style="font-weight:500">${p.nombre}</td>
+                                <td style="text-align:center; font-weight:600; ${isAgotado ? 'color:#ef4444; background:rgba(239, 68, 68, 0.1);' : 'color:#f59e0b; background:rgba(245, 158, 11, 0.1);'}">${p.stockActual} uds</td>
+                                <td style="text-align:center; color:var(--text-muted)">${p.stockMinimo || 5} uds</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    html += `
+                        <tr>
+                            <td colspan="3" style="text-align:center; padding: 2rem; color: #10b981; font-weight: 500;">✓ No hay productos con stock bajo.</td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                if (container) {
+                    container.innerHTML = html;
+                }
+            } catch (e) {
+                if (container) {
+                    container.innerHTML = `<p style="color:#ef4444">Error al cargar alertas: ${e.message}</p>`;
+                }
+                const searchCont = document.getElementById('alertas-search-container');
+                if (searchCont) searchCont.style.display = 'none';
+            }
         }
+
+        async function loadInventarioAuxiliar() {
+            const searchInput = document.getElementById('inv-search-input');
+            if (searchInput) searchInput.value = '';
+            const tbody = document.getElementById('inv-tbody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Cargando...</td></tr>';
+            }
+            try {
+                const products = await apiRequest('/productos') || [];
+                allProducts = products;
+                if (tbody) {
+                    window.setupTablePagination({
+                        tbodyId: 'inv-tbody',
+                        allItems: products,
+                        renderRowFn: (p) => {
+                            const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
+                            const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
+                            const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
+
+                            const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
+                            let colorClass = 'green';
+                            if (pct <= 30) {
+                                colorClass = 'red';
+                            } else if (pct <= 69) {
+                                colorClass = 'orange';
+                            }
+
+                            return `<tr>
+                                <td style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
+                                <td style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
+                                <td>${p.unidadMedida || 'Unidad'}</td>
+                                <td>
+                                    <span class="stock-qty ${colorClass}">${stockActual}</span>
+                                </td>
+                                <td style="font-weight:600; color:#10b981;">${formatCurrency(p.precioVenta)}</td>
+                                <td style="font-size:0.8rem;color:${p.fechaVencimiento ? '#a7f3d0' : 'var(--text-muted)'}">${p.fechaVencimiento || '—'}</td>
+                                <td><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
+                            </tr>`;
+                        }
+                    });
+                }
+            } catch (e) {
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#ef4444;">Error: ${e.message}</td></tr>`;
+                }
+            }
+        }
+
+       
+/*** cache global de buscadores para el panel auxiliar. @author RADJ */
+        const _buscadoresActivos = {};
+        let productSearchBuscador = null;
+
+       
+/*** ─── utilidades ───. @author RADJ */
+        function filterTable(inputEl, tbodyId) {
+            if (!inputEl) return;
+            const inputId = inputEl.id;
+            if (!inputId) return;
+
+            const key = `${inputId}_${tbodyId}`;
+            if (!_buscadoresActivos[key]) {
+                let entidad = 'productos';
+                if (tbodyId.includes('cli')) {
+                    entidad = 'clientes';
+                } else if (tbodyId.includes('prov')) {
+                    entidad = 'proveedores';
+                } else if (tbodyId.includes('usr')) {
+                    entidad = 'usuarios';
+                }
+
+                _buscadoresActivos[key] = new Buscador({
+                    entidad: entidad,
+                    inputId: inputId,
+                    tbodyId: tbodyId,
+                    debounceMs: 0,
+                    onSearchResult: (results) => {
+                        const handler = window._paginationScrollHandlers && window._paginationScrollHandlers[tbodyId];
+                        if (handler) {
+                            handler.updateSearch(results);
+                        } else {
+                            if (_buscadoresActivos[key]) {
+                                _buscadoresActivos[key].filtrarTablaHTML(inputEl.value.toLowerCase().trim());
+                            }
+                        }
+                    }
+                });
+            }
+
+            _buscadoresActivos[key].realizarBusqueda(inputEl.value);
+        }
+
+        /*** setupTablePagination helper for auxiliary dashboard. @author RADJ */
+        window.setupTablePagination = function(config) {
+            const {
+                tbodyId,
+                allItems,
+                renderRowFn,
+                onRenderComplete,
+                itemsPerBlock = 25
+            } = config;
+
+            let currentPage = 0;
+            let filteredItems = allItems;
+
+            function renderPage() {
+                const tbody = document.getElementById(tbodyId);
+                if (!tbody) return;
+
+                if (!filteredItems.length) {
+                    const table = tbody.closest('table');
+                    const cols = table ? (table.querySelectorAll('thead th').length || 5) : 5;
+                    tbody.innerHTML = `<tr><td colspan="${cols}" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin registros.</td></tr>`;
+                    if (onRenderComplete) onRenderComplete([]);
+                    return;
+                }
+
+                const start = currentPage * itemsPerBlock;
+                const end = start + itemsPerBlock;
+                const pageItems = filteredItems.slice(start, end);
+                const html = pageItems.map(item => renderRowFn(item)).join('');
+
+                if (currentPage === 0) {
+                    tbody.innerHTML = html;
+                } else {
+                    tbody.insertAdjacentHTML('beforeend', html);
+                }
+
+                if (onRenderComplete) onRenderComplete(filteredItems);
+            }
+
+            currentPage = 0;
+            filteredItems = allItems;
+            renderPage();
+
+            if (!window._paginationScrollHandlers) {
+                window._paginationScrollHandlers = {};
+                window.addEventListener('scroll', () => {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 150) {
+                        const activeSection = document.querySelector('.section:not([style*="display:none"]):not([style*="display: none"])');
+                        if (!activeSection) return;
+
+                        const tbodies = activeSection.querySelectorAll('tbody[id]');
+                        tbodies.forEach(tb => {
+                            const handler = window._paginationScrollHandlers[tb.id];
+                            if (handler) handler.loadNextPage();
+                        });
+                    }
+                });
+            }
+
+            window._paginationScrollHandlers[tbodyId] = {
+                loadNextPage: () => {
+                    if ((currentPage + 1) * itemsPerBlock < filteredItems.length) {
+                        currentPage++;
+                        renderPage();
+                    }
+                },
+                updateSearch: (results) => {
+                    filteredItems = results;
+                    currentPage = 0;
+                    renderPage();
+                }
+            };
+        };
 
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
@@ -663,55 +1100,89 @@
             return '$' + Number(n).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
 
-        // ─── PRECARGA DE PRODUCTOS ───
+        /*** ─── precarga de productos ───. @author RADJ */
         async function preloadProducts() {
             try {
                 allProducts = await apiRequest('/productos') || [];
+                updateHomeStats(allProducts);
             } catch (e) {
                 console.error('Error al precargar productos:', e);
             }
         }
 
-        // ─── BÚSQUEDA DE PRODUCTOS ───
-        function searchProducts(query) {
-            clearTimeout(searchTimeout);
-            const dropdown = document.getElementById('product-dropdown');
-            if (!query || query.length < 1) { dropdown.style.display = 'none'; return; }
+        function updateHomeStats(products) {
+            const total = products.length;
+            const bajo = products.filter(p => p.stockActual <= (p.stockMinimo || 5)).length;
 
-            searchTimeout = setTimeout(() => {
-                const q = query.toLowerCase();
-                const results = allProducts.filter(p =>
-                    (p.nombre && p.nombre.toLowerCase().includes(q)) ||
-                    (p.codigoBarras && p.codigoBarras.toLowerCase().includes(q))
-                ).slice(0, 12);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const vencimiento = products.filter(p => {
+                if (!p.fechaVencimiento) return false;
+                const expDate = new Date(p.fechaVencimiento);
+                if (isNaN(expDate.getTime())) return false;
+                const diffTime = expDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays <= 5;
+            }).length;
 
-                if (!results.length) {
-                    dropdown.innerHTML = '<div class="product-dropdown-item" style="color:var(--text-muted); cursor:default;">Sin resultados</div>';
-                } else {
-                    dropdown.innerHTML = results.map(p => {
-                        const sinStock = (p.stockActual || 0) <= 0;
-                        return `<div class="product-dropdown-item ${sinStock ? 'no-stock' : ''}"
-                            onclick="${sinStock ? '' : `addToCart(${p.id})`}">
-                            <div>
-                                <div class="p-name">${p.nombre}</div>
-                                <div class="p-meta">Stock: ${p.stockActual || 0} uds${sinStock ? ' — Sin stock' : ''}</div>
-                            </div>
-                            <div class="p-price">${formatCurrency(p.precioVenta)}</div>
-                        </div>`;
-                    }).join('');
-                }
-                dropdown.style.display = 'block';
-            }, 180);
+            const totalEl = document.getElementById('inv-total');
+            if (totalEl) totalEl.textContent = total;
+
+            const bajoEl = document.getElementById('inv-bajo');
+            if (bajoEl) bajoEl.textContent = bajo;
+
+            const vencimientoEl = document.getElementById('inv-vencimiento');
+            if (vencimientoEl) vencimientoEl.textContent = vencimiento;
         }
 
-        // Cerrar dropdown al hacer click fuera
+       
+/*** ─── búsqueda de productos ───. @author RADJ */
+        function searchProducts(query) {
+            if (!productSearchBuscador) {
+                productSearchBuscador = new Buscador({
+                    entidad: 'productos',
+                    inputId: 'product-search',
+                    debounceMs: 180,
+                    camposFiltro: ['nombre', 'codigoBarras'],
+                    onSearchResult: (results, q) => {
+                        const dropdown = document.getElementById('product-dropdown');
+                        if (!q || q.length < 1) { dropdown.style.display = 'none'; return; }
+
+                        const slicedResults = results.slice(0, 12);
+                        if (!slicedResults.length) {
+                            dropdown.innerHTML = '<div class="product-dropdown-item" style="color:var(--text-muted); cursor:default;">Sin resultados</div>';
+                        } else {
+                            dropdown.innerHTML = slicedResults.map(p => {
+                                const sinStock = (p.stockActual || 0) <= 0;
+                                return `<div class="product-dropdown-item ${sinStock ? 'no-stock' : ''}"
+                                    onclick="${sinStock ? '' : `addToCart(${p.id})`}">
+                                    <div>
+                                        <div class="p-name">${p.nombre}</div>
+                                        <div class="p-meta">Stock: ${p.stockActual || 0} uds${sinStock ? ' — Sin stock' : ''}</div>
+                                    </div>
+                                    <div class="p-price">${formatCurrency(p.precioVenta)}</div>
+                                </div>`;
+                            }).join('');
+                        }
+                        dropdown.style.display = 'block';
+                    }
+                });
+            }
+
+            productSearchBuscador.setDatos(allProducts);
+            productSearchBuscador.realizarBusqueda(query);
+        }
+
+       
+/*** cerrar dropdown al hacer click fuera. @author RADJ */
         document.addEventListener('click', e => {
             if (!e.target.closest('.pos-search-wrapper')) {
                 document.getElementById('product-dropdown').style.display = 'none';
             }
         });
 
-        // ─── CARRITO ───
+       
+/*** ─── carrito ───. @author RADJ */
         function addToCart(productId) {
             const producto = allProducts.find(p => p.id === productId);
             if (!producto) return;
@@ -732,7 +1203,8 @@
             renderCart();
         }
 
-        // ─── REMOVER DEL CARRITO ───
+       
+/*** ─── remover del carrito ───. @author RADJ */
         function removeFromCart(productId) {
             cart = cart.filter(item => item.producto.id !== productId);
             renderCart();
@@ -791,7 +1263,8 @@
             document.getElementById('summary-total').textContent = formatCurrency(total);
         }
 
-        // ─── REGISTRAR VENTA ───
+       
+/*** ─── registrar venta ───. @author RADJ */
         async function registrarVenta() {
             if (!cart.length) return;
             const btn = document.getElementById('btn-registrar');
@@ -812,7 +1285,8 @@
                 await apiRequest('/ventas', 'POST', { idUsuario, idCliente, detalles });
                 showToast('✅ Venta registrada con éxito', 'success');
                 limpiarCarrito();
-                // Recargar productos para reflejar el nuevo stock
+               
+/*** recargar productos para reflejar el nuevo stock. @author RADJ */
                 await preloadProducts();
                 document.getElementById('client-select').value = '';
             } catch (e) {
@@ -823,7 +1297,8 @@
             }
         }
 
-        // ─── SELECTOR DE CLIENTES (para la venta) ───
+       
+/*** ─── selector de clientes (para la venta) ───. @author RADJ */
         function loadClienteSelect() {
             const sel = document.getElementById('client-select');
             sel.innerHTML = '<option value="">— Venta sin cliente registrado —</option>';
@@ -835,7 +1310,8 @@
             });
         }
 
-        // ─── CLIENTES ───
+       
+/*** ─── clientes ───. @author RADJ */
         async function loadClientes() {
             try {
                 allClientes = await apiRequest('/clientes') || [];
@@ -852,29 +1328,32 @@
             document.getElementById('cli-activos').textContent = allClientes.filter(c => c.activo === 1).length;
 
             const tbody = document.getElementById('cli-tbody');
-            if (!allClientes.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Sin clientes registrados.</td></tr>';
-                return;
+            if (tbody) {
+                window.setupTablePagination({
+                    tbodyId: 'cli-tbody',
+                    allItems: allClientes,
+                    renderRowFn: (c) => `
+                    <tr>
+                        <td style="font-weight:500;">${c.nombre}</td>
+                        <td style="font-family:monospace; font-size:0.82rem;">${c.numeroDocumento || '—'}</td>
+                        <td>${c.telefono || '—'}</td>
+                        <td>${c.email || '—'}</td>
+                        <td>
+                            <span class="badge ${c.activo === 1 ? 'badge-success' : 'badge-danger'}">
+                                <span class="status-dot ${c.activo === 1 ? 'dot-green' : 'dot-red'}"></span>
+                                ${c.activo === 1 ? 'Activo' : 'Inactivo'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-sm" onclick="editCliente(${c.id})">Editar</button>
+                        </td>
+                    </tr>`
+                });
             }
-            tbody.innerHTML = allClientes.map(c => `
-                <tr>
-                    <td style="font-weight:500;">${c.nombre}</td>
-                    <td style="font-family:monospace; font-size:0.82rem;">${c.numeroDocumento || '—'}</td>
-                    <td>${c.telefono || '—'}</td>
-                    <td>${c.email || '—'}</td>
-                    <td>
-                        <span class="badge ${c.activo === 1 ? 'badge-success' : 'badge-danger'}">
-                            <span class="status-dot ${c.activo === 1 ? 'dot-green' : 'dot-red'}"></span>
-                            ${c.activo === 1 ? 'Activo' : 'Inactivo'}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn-sm" onclick="editCliente(${c.id})">Editar</button>
-                    </td>
-                </tr>`).join('');
         }
 
-        // ─── MODAL CLIENTE ───
+       
+/*** ─── modal cliente ───. @author RADJ */
         function openClienteModal(cliente = null) {
             document.getElementById('modal-cliente-title').textContent = cliente ? 'Editar Cliente' : 'Nuevo Cliente';
             document.getElementById('cliente-id').value = cliente ? cliente.id : '';
@@ -927,7 +1406,8 @@
             }
         }
 
-        // ─── HISTORIAL DE VENTAS ───
+       
+/*** ─── historial de ventas ───. @author RADJ */
         async function loadHistorial() {
             const searchInput = document.getElementById('hist-search');
             if (searchInput) searchInput.value = '';
@@ -936,32 +1416,59 @@
 
             try {
                 const ventas = await apiRequest('/ventas') || [];
-                document.getElementById('hist-total').textContent = ventas.length;
-                const totalVal = ventas.reduce((acc, v) => acc + (v.valorTotal || 0), 0);
-                document.getElementById('hist-valor').textContent = formatCurrency(totalVal);
 
-                if (!ventas.length) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Sin ventas registradas.</td></tr>';
-                    return;
-                }
+                // Obtener ID del usuario auxiliar actual
+                const loggedInUser = JSON.parse(localStorage.getItem('usuario') || '{}');
+                const loggedInUserId = loggedInUser.id;
+
+                // Definir fecha de inicio y fin del día de hoy
+                const today = new Date();
+                const todayYear = today.getFullYear();
+                const todayMonth = today.getMonth();
+                const todayDate = today.getDate();
+
+                // Filtrar ventas para que solo aparezcan las suyas del día de hoy
+                const ventasFiltradas = ventas.filter(v => {
+                    if (v.idUsuario !== loggedInUserId) return false;
+                    if (!v.fechaHora) return false;
+                    const vDate = new Date(v.fechaHora);
+                    return vDate.getFullYear() === todayYear &&
+                           vDate.getMonth() === todayMonth &&
+                           vDate.getDate() === todayDate;
+                });
 
                 // Ordenar por fecha descendente
-                ventas.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
+                ventasFiltradas.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
 
-                tbody.innerHTML = ventas.map(v => {
-                    const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
-                    const nProductos = v.detalles ? v.detalles.length : 0;
-                    const clienteId = v.idCliente ? `Cliente #${v.idCliente}` : '<span style="color:var(--text-muted)">Sin cliente</span>';
-                    return `<tr>
-                        <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#${v.id}</td>
-                        <td style="font-size:0.83rem;">${fecha}</td>
-                        <td>${clienteId}</td>
-                        <td><span class="historial-badge">📦 ${nProductos} producto${nProductos !== 1 ? 's' : ''}</span></td>
-                        <td style="text-align:right; font-weight:700; color:#10b981;">${formatCurrency(v.valorTotal || 0)}</td>
-                    </tr>`;
-                }).join('');
+                document.getElementById('hist-total').textContent = ventasFiltradas.length;
+                const totalVal = ventasFiltradas.reduce((acc, v) => acc + (v.valorTotal || 0), 0);
+                document.getElementById('hist-valor').textContent = formatCurrency(totalVal);
+
+                if (tbody) {
+                    window.setupTablePagination({
+                        tbodyId: 'hist-tbody',
+                        allItems: ventasFiltradas,
+                        renderRowFn: (v) => {
+                            const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
+                            const nProductos = v.detalles ? v.detalles.length : 0;
+                            
+                            const client = allClientes.find(c => c.id === v.idCliente);
+                            const clienteNombre = client ? client.nombre : (v.idCliente ? `Cliente #${v.idCliente}` : '<span style="color:var(--text-muted)">Sin cliente</span>');
+
+                            return `<tr>
+                                <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#${v.id}</td>
+                                <td style="font-size:0.83rem;">${fecha}</td>
+                                <td style="font-weight:500; font-size:0.88rem;" title="${clienteNombre}">${clienteNombre}</td>
+                                <td><span class="historial-badge">📦 ${nProductos} producto${nProductos !== 1 ? 's' : ''}</span></td>
+                                <td style="text-align:right; font-weight:700; color:#10b981;">${formatCurrency(v.valorTotal || 0)}</td>
+                            </tr>`;
+                        }
+                    });
+                }
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error: ${e.message}</td></tr>`;
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error: ${e.message}</td></tr>`;
+                }
             }
         }
     </script>

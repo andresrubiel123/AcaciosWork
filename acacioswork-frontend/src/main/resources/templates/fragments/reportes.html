@@ -1,4 +1,4 @@
-<!-- Sección de reportes para el dashboard. @author RADJ -->
+<!-- sección de reportes para el dashboard. @author RADJ -->
 <div th:fragment="reportes" id="sec-reportes" class="section" style="display:none">
     <div class="section-header">
         <div>
@@ -17,6 +17,12 @@
             <h3>⚠️ Productos con Stock Bajo</h3>
             <p>Listado de artículos por debajo del stock mínimo definido.</p><br><button class="btn btn-pdf"
                 style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('stock-bajo')">Generar
+                PDF</button>
+        </div>
+        <div class="report-card">
+            <h3>📅 Control de Vencimientos</h3>
+            <p>Productos vencidos o próximos a vencer dentro de los siguientes 5 días.</p><br><button class="btn btn-pdf"
+                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('vencimientos')">Generar
                 PDF</button>
         </div>
         <div class="report-card">
@@ -56,11 +62,12 @@
                 onclick="generarReporte('resumen')">Generar
                 PDF</button>
         </div>
+        <!-- Reporte de productos próximos a vencer a 15 días. @author RADJ -->
+        <div class="report-card">
+            <h3>⚠️ Vencimientos a 15 Días</h3>
+            <p>Productos vencidos o próximos a vencer en los siguientes 15 días.</p><br><button
+                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                onclick="generarReporte('vencimientos-15')">Generar PDF</button>
+        </div>
     </div>
-    
-    <!-- Gráfico de ganancias mensuales. @author RADJ -->
-    <div th:replace="~{fragments/grafico-ventas :: grafico-ventas}"></div>
-
-    <!-- Gráfico de barras horizontales: Ventas por Categoría. @author RADJ -->
-    <div th:replace="~{fragments/grafico-categorias :: grafico-categorias}"></div>
 </div>

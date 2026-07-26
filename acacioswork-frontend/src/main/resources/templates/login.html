@@ -1,4 +1,4 @@
-<!-- Interfaz de inicio de sesión premium. @author RADJ -->
+<!-- interfaz de inicio de sesión premium. @author RADJ -->
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
@@ -14,7 +14,7 @@
             align-items: center;
         }
 
-        /* Botón de inicio de sesión con estilo y color del Dashboard */
+        /* botón de inicio de sesión con estilo y color del dashboard. @author RADJ */
         .btn-login {
             background: linear-gradient(135deg, #f97316, #ef4444) !important;
             color: white !important;
@@ -33,7 +33,7 @@
             transform: translateY(0);
         }
 
-        /* Título del sistema animado */
+        /* título del sistema animado. @author RADJ */
         .login-brand {
             font-weight: 700;
             font-size: 2.2rem;
@@ -85,14 +85,15 @@
             </p>
         </div>
 
+        <!-- Copyright e información de contacto del desarrollador. @author RADJ -->
         <p style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.75rem;">
-            &copy; 2026 AcaciosWork - Gestión de Inventario Inteligente
+            Copyright &copy; 2026 Rubiel Andrés Díaz | Contacto: andresrubiel@gmail.com
         </p>
     </div>
 
     <script th:src="@{/js/api.js}"></script>
     <script>
-        /** Maneja el proceso de autenticación. @author RADJ */
+        /*** maneja el proceso de autenticación. @author RADJ */
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const usuario = document.getElementById('username').value;
@@ -100,22 +101,26 @@
             const errorMsg = document.getElementById('errorMsg');
             const loginBtn = document.getElementById('loginBtn');
 
-            // Feedback visual
+           
+/*** feedback visual. @author RADJ */
             loginBtn.innerText = "Verificando...";
             loginBtn.disabled = true;
             errorMsg.style.display = "none";
 
             try {
-                // El backend devuelve { token, usuario } en el campo data
+               
+/*** el backend devuelve { token, usuario } en el campo data. @author RADJ */
                 const result = await apiRequest("/usuarios/login", "POST", { usuario, clave });
 
-                // Guardar información real tras la estandarización del backend
+               
+/*** guardar información real tras la estandarización del backend. @author RADJ */
                 localStorage.setItem("jwt_token", result.token);
                 localStorage.setItem("usuario", JSON.stringify(result.usuario));
                 localStorage.setItem("user_name", result.usuario.nombre + " " + result.usuario.apellido);
                 localStorage.setItem("user_role", result.usuario.idRol || "2");
 
-                // Redirigir según rol: 1=Administrador, 2=Auxiliar
+               
+/*** redirigir según rol: 1=administrador, 2=auxiliar. @author RADJ */
                 if (result.usuario.idRol === 1) {
                     window.location.href = "administrador-dashboard";
                 } else {
@@ -129,7 +134,8 @@
             }
         });
 
-        // Limpiar errores al escribir
+       
+/*** limpiar errores al escribir. @author RADJ */
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('input', () => {
                 document.getElementById('errorMsg').style.display = "none";
