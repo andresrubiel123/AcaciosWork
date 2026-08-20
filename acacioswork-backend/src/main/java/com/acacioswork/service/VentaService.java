@@ -8,25 +8,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.acacioswork.model.DetalleVenta;
-import com.acacioswork.model.Producto;
 import com.acacioswork.model.Venta;
-import com.acacioswork.repository.ProductoRepository;
 import com.acacioswork.repository.VentaRepository;
 
 @Service
 @Transactional
 public class VentaService {
 
-    public VentaService(VentaRepository ventaRepository, ProductoRepository productoRepository) {
+    private final VentaRepository ventaRepository;
+    private final LoteService loteService;
+
+    public VentaService(VentaRepository ventaRepository, LoteService loteService) {
         this.ventaRepository = ventaRepository;
-        this.productoRepository = productoRepository;
+        this.loteService = loteService;
     }
-
-
-
-private final VentaRepository ventaRepository;
-
-private final ProductoRepository productoRepository;
 
     /** recupera todas las ventas. @author RADJ */
     public List<Venta> findAll() {
@@ -38,26 +33,15 @@ private final ProductoRepository productoRepository;
         return ventaRepository.findById(id);
     }
 
-    /** registra una venta, calcula el total, y descuenta el stock de cada producto vendido. lanza illegalstateexception si no hay stock suficiente. @author RADJ */
+    /** registra una venta, calcula el total, y descuenta el stock de cada producto vendido usando FEFO. @author RADJ */
     public Venta save(Venta venta) {
         double totalVenta = 0;
        
-/** validar y descontar stock para cada detalle de la venta. @author RADJ */
+        /** validar y descontar stock para cada detalle de la venta. @author RADJ */
         if (venta.getDetalles() != null) {
             for (DetalleVenta detalle : venta.getDetalles()) {
-                Producto producto = productoRepository.findById(detalle.getIdProducto())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Producto no encontrado con ID: " + detalle.getIdProducto()));
-
-                int nuevoStock = producto.getStockActual() - detalle.getCantidad();
-                if (nuevoStock < 0) {
-                    throw new IllegalStateException(
-                            "Stock insuficiente para el producto \"" + producto.getNombre() +
-                            "\". Stock disponible: " + producto.getStockActual() +
-                            ", solicitado: " + detalle.getCantidad());
-                }
-                producto.setStockActual(nuevoStock);
-                productoRepository.save(producto);
+                // Descontar stock usando la lógica FEFO de lotes
+                loteService.descontarStockFEFO(detalle.getIdProducto(), detalle.getCantidad());
 
                 /** calcular subtotal en el detalle de venta. @author RADJ */
                 detalle.calcularSubtotal();

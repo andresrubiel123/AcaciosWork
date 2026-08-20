@@ -5,4 +5,7 @@
 /*** inicialización o refresco de la sección de reportes. @author RADJ */
 window.initReportes = function() {
     console.log("Módulo de Reportes inicializado.");
+    if (typeof window.showReportSub === 'function') {
+        window.showReportSub('hub');
+    }
 };

@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,7 +23,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 /** configuración de seguridad y cors del sistema. @author RADJ */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     /** define la cadena de filtros de seguridad. @author RADJ */
     @Bean
@@ -29,14 +38,16 @@ public class SecurityConfig {
         http
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
-/** desactivado para facilitar pruebas rest. @author RADJ */
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-/** acceso total: ya no se requiere token. @author RADJ */
+                .requestMatchers("/api/usuarios/login").permitAll() // Login de API libre
+                .requestMatchers("/api/**").authenticated()          // Resto de la API requiere token
+                .anyRequest().permitAll()                            // Vistas y estáticos libres
             )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .httpBasic(h -> h.disable())
-            .formLogin(f -> f.disable());
+            .formLogin(f -> f.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }
@@ -58,7 +69,11 @@ public class SecurityConfig {
         configuration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/** ", configuration); return source; } /** define el codificador de contraseñas (bcrypt). @author RADJ */
+        source.registerCorsConfiguration("/**", configuration); 
+        return source; 
+    } 
+
+    /** define el codificador de contraseñas (bcrypt). @author RADJ */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

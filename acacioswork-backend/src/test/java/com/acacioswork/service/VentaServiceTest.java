@@ -7,13 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +44,9 @@ public class VentaServiceTest {
     @Mock
     private ProductoRepository productoRepository;
 
+    @Mock
+    private LoteService loteService;
+
     @InjectMocks
     private VentaService ventaService;
 
@@ -54,7 +60,7 @@ public class VentaServiceTest {
         producto.setId(10L);
         producto.setNombre("Gaseosa");
         producto.setStockActual(10);
-        producto.setPrecioVenta(2500.0);
+        producto.setPrecioVenta(BigDecimal.valueOf(2500.0));
 
         detalle = new DetalleVenta();
         detalle.setIdProducto(10L);
@@ -88,21 +94,19 @@ public class VentaServiceTest {
 
     @Test
     void testSaveSuccessWithStock() {
-        when(productoRepository.findById(10L)).thenReturn(Optional.of(producto));
-        when(productoRepository.save(any(Producto.class))).thenReturn(producto);
+        doNothing().when(loteService).descontarStockFEFO(10L, 2);
         when(ventaRepository.save(any(Venta.class))).thenReturn(venta);
 
         Venta saved = ventaService.save(venta);
         assertNotNull(saved);
-        assertEquals(8, producto.getStockActual()); // Descontó 2 de 10
-        verify(productoRepository, times(1)).findById(10L);
-        verify(productoRepository, times(1)).save(producto);
+        verify(loteService, times(1)).descontarStockFEFO(10L, 2);
         verify(ventaRepository, times(1)).save(venta);
     }
 
     @Test
     void testSaveFailProductNotFound() {
-        when(productoRepository.findById(10L)).thenReturn(Optional.empty());
+        doThrow(new IllegalArgumentException("Producto no encontrado con ID: 10"))
+                .when(loteService).descontarStockFEFO(10L, 2);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             ventaService.save(venta);
@@ -115,14 +119,14 @@ public class VentaServiceTest {
     @Test
     void testSaveFailInsufficientStock() {
         detalle.setCantidad(12); // Pide 12, solo hay 10
-        when(productoRepository.findById(10L)).thenReturn(Optional.of(producto));
+        doThrow(new IllegalStateException("Stock insuficiente para el producto"))
+                .when(loteService).descontarStockFEFO(10L, 12);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             ventaService.save(venta);
         });
 
         assertTrue(exception.getMessage().contains("Stock insuficiente para el producto"));
-        verify(productoRepository, never()).save(any(Producto.class));
         verify(ventaRepository, never()).save(any(Venta.class));
     }
 
@@ -137,7 +141,7 @@ public class VentaServiceTest {
 
         Venta saved = ventaService.save(ventaSinDetalles);
         assertNotNull(saved);
-        verify(productoRepository, never()).findById(anyLong());
+        verify(loteService, never()).descontarStockFEFO(anyLong(), anyInt());
         verify(ventaRepository, times(1)).save(ventaSinDetalles);
     }
 

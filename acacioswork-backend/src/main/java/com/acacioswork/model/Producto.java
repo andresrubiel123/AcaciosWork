@@ -1,6 +1,8 @@
 /** entidad de producto para persistencia en base de datos. @author RADJ */
 package com.acacioswork.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,10 +31,10 @@ public class Producto {
     private Integer stockActual;
 
     @Column(name = "precio_compra")
-    private double precioCompra;
+    private BigDecimal precioCompra;
 
     @Column(name = "precio_venta")
-    private double precioVenta;
+    private BigDecimal precioVenta;
 
     @Column(nullable = false)
     private double iva;
@@ -65,6 +67,7 @@ public class Producto {
 
     /** calcula el valor total de una cantidad dada basándose en el precio de venta. @author RADJ */
     public double calcularValorTotal(int cantidadCompra) {
-        return precioVenta * cantidadCompra;
+        if (precioVenta == null) return 0.0;
+        return precioVenta.multiply(BigDecimal.valueOf(cantidadCompra)).doubleValue();
     }
 }

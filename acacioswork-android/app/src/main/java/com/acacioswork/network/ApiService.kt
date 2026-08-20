@@ -87,4 +87,17 @@ interface ApiService {
     // Categorías
     @GET("categorias")
     suspend fun getCategorias(): ApiResponse<List<Categoria>>
+
+    // Inteligencia Analítica
+    @GET("inteligencia/analizar")
+    suspend fun analizarPregunta(
+        @Query("pregunta") pregunta: Int,
+        @Query("periodo") periodo: String
+    ): ApiResponse<String>
+
+    // Movimientos de Inventario
+    @POST("movimientos-inventario")
+    suspend fun createMovimiento(
+        @Body req: MovimientoRequest
+    ): ApiResponse<Void>
 }

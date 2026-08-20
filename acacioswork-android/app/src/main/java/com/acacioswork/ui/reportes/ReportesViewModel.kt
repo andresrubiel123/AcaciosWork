@@ -3,6 +3,7 @@ package com.acacioswork.ui.reportes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.acacioswork.model.Venta
+import com.acacioswork.model.Producto
 import com.acacioswork.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +38,7 @@ class ReportesViewModel : ViewModel() {
                 if (responseVentas.success && responseVentas.data != null && responseProductos.success && responseProductos.data != null) {
                     procesarVentas(responseVentas.data, responseProductos.data)
                 } else {
-                    _errorMessage.value = responseVentas.message ?: responseProductos.message
+                    _errorMessage.value = if (!responseVentas.success) responseVentas.message else responseProductos.message
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -3,7 +3,7 @@
 
 > **ESTADO**: DESARROLLO ACTIVO - FASE DE ESTABILIZACIÓN Y ESCALADO
 > **AUTOR PRINCIPAL**: RADJ - andresrubiel@hotmail.com
-> **ÚLTIMA REVISIÓN**: 04 de Junio de 2026
+> **ÚLTIMA REVISIÓN**: 01 de Agosto de 2026
 
 ---
 
@@ -174,7 +174,8 @@ graph LR
 *   **Recursos (Propiedades/Env)**: `src/main/resources/`
 
 ### 2. Cliente de Escritorio (`acacioswork-desktop/`)
-*   **Pantallas y UI (Swing)**: `src/main/java/com/acacioswork/interfaz_usuario/`
+*   **Pantallas y UI (Swing)**: `src/main/java/com/acacioswork/interfaz_usuario/` (contiene las 12 pestañas autónomas e.g. `WelcomeTab`, `InventarioTab`, `GraficosTab` e `HistorialTab`).
+*   **Diálogos Modales**: `src/main/java/com/acacioswork/interfaz_usuario/dialogos/` (e.g. `MovimientoDialog`, `ProductoDialog`, etc.).
 *   **Conectividad API (Util)**: `src/main/java/com/acacioswork/util/`
 *   **Modelos Locales**: `src/main/java/com/acacioswork/model/`
 
@@ -186,7 +187,7 @@ graph LR
 *   **Componentes Compartidos (Shared)**: `src/main/resources/static/js/shared/` (`buscador.js`, `exportador-pdf.js`, `modal.js`, `notificacion.js`).
 
 ### 4. Cliente Móvil (`acacioswork-android/`)
-*   **UI/ViewModels/Network**: `app/src/main/java/com/acacioswork/`
+*   **UI/ViewModels/Network**: `app/src/main/java/com/acacioswork/` (con pantallas Jetpack Compose autónomas under `ui/` e.g. `WelcomeTab.kt`, `AlertasTab.kt`, etc.).
 
 ### 5. Base de Datos (`database/`)
 *   **Esquema Actualizado**: `database/02_tables.sql` (Lectura obligatoria para cambios en modelos).
@@ -227,6 +228,8 @@ Para mantener la coherencia semántica en todo el ecosistema de AcaciosWork, se 
 2.  **REGLA ID STANDARD**: Identificadores en MySQL: `BIGINT UNSIGNED`. En Java: `Long`.
 3.  **ENTORNO**: Desarrollo mandatorio en **Java 25** y **Spring Boot 4.0.6**.
 4.  **COMUNICACIÓN**: Exclusivamente vía **JSON/REST** con tokens **JWT** para autorización.
+5.  **LÍMITE ESTRICTO DE LÍNEAS**: Ninguna clase de Java o Kotlin modificada o nueva puede superar las **300 líneas de código**. Siempre se debe modularizar y delegar lógica a clases pequeñas o helpers.
+6.  **ALINEACIÓN DE NAVEGACIÓN**: Las pestañas de navegación en Desktop Swing y las del menú lateral en Android deben seguir exactamente el orden y la cantidad de la web: Welcome/Inicio, Inventario, Vender, Proveedores, Clientes, Reportes, Alertas, Preguntas Inteligentes, Gráficos, Historial, Usuarios y Configuración.
 
 ---
 
@@ -235,16 +238,17 @@ Para mantener la coherencia semántica en todo el ecosistema de AcaciosWork, se 
 ### ✅ Finalizado (Producción Ready)
 - **Seguridad**: Autenticación JWT en Backend y Clientes (Web, Desktop, Android).
 - **Gestión Core**: CRUDs de Usuarios, Clientes, Proveedores y Categorías operativos en Backend, Desktop, Web y Android.
-- **Inventario**: Control de existencias avanzado con stock actual (`stockActual`), stock mínimo (`stockMinimo`), stock óptimo (`stockOptimo`) y unidad de medida (`unidadMedida`) en Backend, Desktop, Web y Android.
+- **Inventario**: Control de existencias avanzado con stock actual (`stockActual`), stock mínimo (`stockMinimo`), stock óptimo (`stockOptimo`) y unidad de medida (`unidadMedida`) en Backend, Desktop, Web y Android. Con columnas de `Vencimiento` y `Movimientos` de stock (Entradas/Salidas) operativas.
 - **Ventas**: Módulo de `Venta` y `DetalleVenta` con persistencia atómica.
-- **Android**: Aplicación móvil funcional en Kotlin / Jetpack Compose con pantallas de Login, Dashboard, Clientes, Inventario y Proveedores operativas.
+- **Paridad Web/Desktop/Android**: Menú unificado de 12 opciones implementadas en todas las plataformas.
+- **Android**: Aplicación móvil funcional en Kotlin / Jetpack Compose con pantallas Compose autónomas para las 12 secciones, incluyendo soporte para transacciones de inventario, visualización de lotes/vencimiento y compartición nativa de reportes en PDF.
+- **Desktop (Swing)**: 12 pestañas autónomas desacopladas de menos de 300 líneas cada una. Panel e historial de movimientos, diálogos modales CRUD y soporte para 10 tipos de reportes PDF.
 - **Frontend Modularizado**: Estructura limpia y desacoplada de JavaScript con módulos específicos y componentes UI en fragmentos Thymeleaf.
-- **Inteligencia de Negocio Web**: Módulo de IA de "Preguntas Inteligentes" y gráficos interactivos completamente integrados en el dashboard web.
-- **Exportación en Web**: Exportación local e impresión directa de comprobantes de ventas y reportes en formato PDF.
+- **Inteligencia de Negocio Web/Desktop**: Módulo de IA de "Preguntas Inteligentes" alimentado por un motor analítico (`IntelligenceEngine`) y gráficos interactivos vectoriales en ambas plataformas.
+- **Exportación en Web y Desktop**: Exportación local e impresión directa de comprobantes de ventas y reportes en formato PDF.
 
 ### 🔄 En Proceso (Próximos Hitos)
-- **Reportes Móviles y Escritorio**: Integración de gráficos y estructura visual en Desktop y Android.
-- **Alertas**: Sistema de notificaciones en tiempo real para stock crítico.
+- **Alertas**: Notificaciones automáticas y visuales basadas en vencimiento de productos (5 y 15 días) e historial.
 - **Cierre de Caja**: Lógica contable para balance diario.
 
 ---
@@ -269,6 +273,12 @@ Para mantener la coherencia semántica en todo el ecosistema de AcaciosWork, se 
     * Extracción total de scripts embebidos en el HTML hacia archivos JS externos estructurados en `core`, `modules` y `shared`.
     * Consolidación de módulos de ventas, inventario, reportes interactivos (gráficos) e inteligencia artificial en la web.
     * Integración de componentes para exportación a PDF y notificaciones dinámicas.
+*   **2026-08-01**: **Hito de Paridad Web/Desktop/Android y Refactorización Modular Estricta**:
+    * **Refactorización Desktop (Swing)**: Desacoplamiento total del monolito `Administrador.java` en 12 pestañas autónomas (`WelcomeTab`, `InventarioTab`, `ProveedoresTab`, etc.) alineadas exactamente con el orden y menú de la web. Eliminación física de todas las clases legadas obsoletas (`GestionInventario.java`, etc.).
+    * **Mapeo de Inventario y Movimientos**: Adición de columnas `Vencimiento` y `Movimientos` en la tabla de inventario, implementando `MovimientosPanel` y `MovimientoDialog` para registrar entradas/salidas con lotes y vencimiento directamente al endpoint `/movimientos-inventario`.
+    * **Inteligencia y Reportes en Desktop**: Extracción de gráficos vectoriales a `GraficosTab` e historial de ventas a `HistorialTab`. Creación de 10 tarjetas de reportes PDF y separación del motor de preguntas en `IntelligenceEngine` con soporte para vencimientos próximos.
+    * **Paridad en Android (Jetpack Compose)**: Alineamiento total de las 12 opciones del menú lateral. Pantallas Compose autónomas (`WelcomeTab.kt`, `AlertasTab.kt`, `PreguntasIaScreen.kt`, etc.). Soporte nativo para compartir reportes, y visualización de columnas de vencimiento y diálogo de movimientos de stock.
+    * **Estándar de Calidad**: Aplicación estricta de la regla de menos de 300 líneas en todos los archivos nuevos y modificados de Java y Kotlin.
 
 ---
 

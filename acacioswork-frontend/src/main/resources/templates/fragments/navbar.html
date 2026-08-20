@@ -1,6 +1,8 @@
-<!-- barra de navegación modular para el dashboard. @author RADJ -->
 <div th:fragment="navbar" class="top-toolbar">
-    <span class="toolbar-brand">AcaciosWork</span>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <img th:src="@{/images/logo.png}" alt="AcaciosWork Logo" style="height: 32px; border-radius: 6px; object-fit: contain;">
+        <span class="toolbar-brand">AcaciosWork</span>
+    </div>
     <span class="user-info" id="userInfo"></span>
     <div class="toolbar-center">
         <button class="toolbar-btn active" id="btn-welcome" onclick="showSection('welcome', this)"><span
@@ -11,15 +13,15 @@
         <button class="toolbar-btn" id="btn-clientes" onclick="showSection('clientes', this)">Clientes</button>
         <button class="toolbar-btn" id="btn-reportes" onclick="showSection('reportes', this)">Reportes</button>
         <button class="toolbar-btn btn-alert" id="btn-alertas" onclick="showSection('alertas', this)">⚠ Alertas</button>
-        <button class="toolbar-btn" id="btn-preguntas-inteligentes" onclick="showSection('preguntas-inteligentes', this)">Preguntas Inteligentes</button>    
-        <!-- Sección de gráficos estadísticos del sistema. @author RADJ -->
-        <button class="toolbar-btn" id="btn-graficos" onclick="showSection('graficos', this)">📊 Gráficos</button>
+        <!-- <button class="toolbar-btn" id="btn-preguntas-inteligentes" onclick="showSection('preguntas-inteligentes', this)">Preguntas Inteligentes</button> -->
+        <!-- <button class="toolbar-btn" id="btn-graficos" onclick="showSection('graficos', this)">📊 Gráficos</button> -->
         <button class="toolbar-btn" id="btn-historial" onclick="showSection('historial', this)">📋 Historial</button>
         <button class="toolbar-btn" id="btn-usuarios" onclick="showSection('usuarios', this)">Usuarios</button>
+        <button class="toolbar-btn" id="btn-manual" onclick="showSection('manual', this)">📖 Manual Interactivo</button>
         <button class="toolbar-btn" id="btn-configuracion" onclick="showSection('configuracion', this)">⚙ Configuración</button>
     </div>
     <div class="toolbar-right" style="margin-bottom: 3.5rem;">
-        <button class="toolbar-btn btn-exit" onclick="logout()">✕ Salir</button>
+        <button class="toolbar-btn btn-exit" onclick="logout()">Cerrar Sesión</button>
         <span style="font-size: 0.65rem; color: var(--text-muted); text-align: center; display: block; line-height: 1.35; margin-top: 0.4rem; word-break: break-word;">
             Copyright © 2026 Rubiel Andrés Díaz<br>Contacto: andresrubiel@gmail.com
         </span>

@@ -9,7 +9,9 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 
 import javax.swing.BorderFactory;
@@ -50,10 +52,25 @@ public class Login extends JPanel {
         JPanel header = new JPanel(new GridBagLayout());
         header.setOpaque(false);
         header.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 10, 0);
+
+        java.net.URL logoUrl = getClass().getResource("/images/logo.png");
+        if (logoUrl != null) {
+            javax.swing.ImageIcon origIcon = new javax.swing.ImageIcon(logoUrl);
+            java.awt.Image scaledImage = origIcon.getImage().getScaledInstance(140, 112, java.awt.Image.SCALE_SMOOTH);
+            JLabel lblLogo = new JLabel(new javax.swing.ImageIcon(scaledImage));
+            header.add(lblLogo, gbc);
+            gbc.gridy = 1;
+        }
+
         JLabel lblTitle = new JLabel("AcaciosWork");
         lblTitle.setFont(new Font("Inter", Font.BOLD, 32));
         lblTitle.setForeground(new Color(57, 255, 20));
-        header.add(lblTitle);
+        header.add(lblTitle, gbc);
         mainPanel.add(header, BorderLayout.NORTH);
 
         /** animación de pulsación de verde neón para el título de inicio de sesión. @author RADJ */

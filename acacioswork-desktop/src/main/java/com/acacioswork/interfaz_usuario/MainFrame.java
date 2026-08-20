@@ -12,6 +12,12 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 700);
         setLocationRelativeTo(null);
+        try {
+            java.net.URL logoUrl = getClass().getResource("/images/logo.png");
+            if (logoUrl != null) {
+                setIconImage(new javax.swing.ImageIcon(logoUrl).getImage());
+            }
+        } catch (Exception ignored) {}
         instance = this;
     }
 

@@ -272,6 +272,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     /*** cargar y mostrar estadísticas iniciales en la ventana de inicio. @author RADJ */
     await window.loadStats();
+
+    // Habilitar ordenamiento dinámico en la tabla de historial de ventas del administrador. @author RADJ
+    window.enableTableSorting({
+        tableSelector: '#sec-historial table',
+        getDataFn: () => AppState.cache.ventas || [],
+        setDataFn: (sorted) => { AppState.cache.ventas = sorted; },
+        renderFn: (sorted) => {
+            window.renderHistorial(sorted);
+            const searchInput = document.getElementById('hist-search');
+            if (searchInput && searchInput.value) {
+                window.filterTable(searchInput, 'hist-tbody');
+            }
+        }
+    });
 });
 
 /*** carga y visualización del historial de ventas en el panel administrador. @author RADJ */
@@ -290,6 +304,7 @@ window.loadHistorial = async function() {
 
         const queryResult = await apiRequest('/ventas') || [];
         const ventas = Array.isArray(queryResult) ? queryResult : [];
+        AppState.cache.ventas = ventas;
         
         const totalVentasEl = document.getElementById('hist-total');
         if (totalVentasEl) totalVentasEl.textContent = ventas.length;
@@ -309,31 +324,37 @@ window.loadHistorial = async function() {
 
         ventas.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
 
-        if (tbody) {
-            window.setupTablePagination({
-                tbodyId: 'hist-tbody',
-                allItems: ventas,
-                renderRowFn: (v) => {
-                    const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
-                    const nProductos = v.detalles ? v.detalles.length : 0;
-                    
-                    const client = AppState.cache.clientes.find(c => c.id === v.idCliente);
-                    const clienteNombre = client ? client.nombre : (v.idCliente ? `Cliente #${v.idCliente}` : '<span style="color:var(--text-muted)">Sin cliente</span>');
-                    
-                    const totalFormatted = typeof formatCurrency === 'function' ? formatCurrency(v.valorTotal || 0) : '$' + (v.valorTotal || 0).toLocaleString();
-                    return `<tr>
-                        <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#${v.id}</td>
-                        <td style="font-size:0.83rem;">${fecha}</td>
-                        <td style="font-weight:500; font-size:0.88rem;" title="${clienteNombre}">${clienteNombre}</td>
-                        <td><span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; padding: 0.25rem 0.5rem; border-radius: 0.35rem; font-size: 0.78rem;">📦 ${nProductos} producto${nProductos !== 1 ? 's' : ''}</span></td>
-                        <td style="text-align:right; font-weight:700; color:#10b981;">${totalFormatted}</td>
-                    </tr>`;
-                }
-            });
-        }
+        window.renderHistorial(ventas);
     } catch (e) {
         if (tbody) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error: ${e.message}</td></tr>`;
         }
+    }
+};
+
+/*** renderiza la tabla de historial de ventas usando paginación infinita. @author RADJ */
+window.renderHistorial = function(ventas) {
+    const tbody = document.getElementById('hist-tbody');
+    if (tbody) {
+        window.setupTablePagination({
+            tbodyId: 'hist-tbody',
+            allItems: ventas,
+            renderRowFn: (v) => {
+                const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
+                const nProductos = v.detalles ? v.detalles.length : 0;
+                
+                const client = AppState.cache.clientes.find(c => c.id === v.idCliente);
+                const clienteNombre = client ? client.nombre : (v.idCliente ? `Cliente #${v.idCliente}` : '<span style="color:var(--text-muted)">Sin cliente</span>');
+                
+                const totalFormatted = typeof formatCurrency === 'function' ? formatCurrency(v.valorTotal || 0) : '$' + (v.valorTotal || 0).toLocaleString();
+                return `<tr>
+                    <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#${v.id}</td>
+                    <td style="font-size:0.83rem;">${fecha}</td>
+                    <td style="font-weight:500; font-size:0.88rem;" title="${clienteNombre}">${clienteNombre}</td>
+                    <td><span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; padding: 0.25rem 0.5rem; border-radius: 0.35rem; font-size: 0.78rem;">📦 ${nProductos} producto${nProductos !== 1 ? 's' : ''}</span></td>
+                    <td style="text-align:right; font-weight:700; color:#10b981;">${totalFormatted}</td>
+                </tr>`;
+            }
+        });
     }
 };

@@ -26,7 +26,6 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun AcaciosWorkTheme(
-    darkTheme: Boolean = true, // Forzamos por defecto tema oscuro para coincidir con la web
     content: @Composable () -> Unit
 ) {
     val colorScheme = DarkColorScheme

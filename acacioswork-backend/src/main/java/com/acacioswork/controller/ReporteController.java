@@ -1,6 +1,7 @@
 package com.acacioswork.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ private final ReporteService reporteService;
 
     /** obtiene el total de ventas del día actual. @author RADJ */
     @GetMapping("/ventas-diarias")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Double>> getVentasDiarias() {
         double total = reporteService.reporteVentasDiarias();
         return ResponseEntity.ok(new ApiResponse<>(true, "Total de ventas diarias obtenido con éxito", total));
@@ -32,6 +34,7 @@ private final ReporteService reporteService;
 
     /** obtiene el total de ganancias acumuladas. @author RADJ */
     @GetMapping("/ganancias")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Double>> getGanancias() {
         double total = reporteService.reporteGanancias();
         return ResponseEntity.ok(new ApiResponse<>(true, "Total de ganancias obtenido con éxito", total));

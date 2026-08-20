@@ -42,7 +42,7 @@ public class VentaControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(ventaController).build();
-        objectMapper = new ObjectMapper();
+        objectMapper = TestUtils.getObjectMapper();
 
         venta = new Venta();
         venta.setId(1L);

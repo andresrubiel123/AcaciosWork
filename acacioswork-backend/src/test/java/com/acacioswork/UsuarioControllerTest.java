@@ -52,7 +52,7 @@ public class UsuarioControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(usuarioController).build();
-        objectMapper = new ObjectMapper();
+        objectMapper = TestUtils.getObjectMapper();
 
         usuario = new Usuario();
         usuario.setId(1L);

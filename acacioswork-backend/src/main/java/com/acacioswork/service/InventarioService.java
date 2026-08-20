@@ -58,4 +58,9 @@ private final ProductoRepository productoRepository;
     public void limpiarAlertas() {
         alertas.clear();
     }
+
+    /** busca un producto por id en el repositorio. @author RADJ */
+    public Producto findById(Long id) {
+        return productoRepository.findById(id).orElse(null);
+    }
 }

@@ -6,8 +6,6 @@ window.loadClientes = async function() {
     /*** limpiar campo de búsqueda de clientes. @author RADJ */
     const searchInput = document.getElementById('cli-search-input');
     if (searchInput) searchInput.value = '';
-    /*** obtener cuerpo de la tabla de clientes. @author RADJ */
-    const tbody = document.getElementById('cli-tbody');
     try {
         /*** obtener la lista de clientes registrados en el sistema. @author RADJ */
         const data = await apiRequest('/clientes') || [];
@@ -20,29 +18,34 @@ window.loadClientes = async function() {
         const activosEl = document.getElementById('cli-activos');
         if (activosEl) activosEl.textContent = data.filter(c => c.activo === 1).length;
 
-        /*** dibujar filas de clientes en la tabla. @author RADJ */
-        if (tbody) {
-            window.setupTablePagination({
-                tbodyId: 'cli-tbody',
-                allItems: data,
-                renderRowFn: (c) => `
-                <tr>
-                    <td style="font-weight:500">${c.nombre}</td>
-                    <td style="font-family:monospace;font-size:0.82rem">${c.numeroDocumento || '—'}</td>
-                    <td>${c.telefono || '—'}</td>
-                    <td>${c.email || '—'}</td>
-                    <td style="display:flex;gap:0.4rem">
-                        <button class="btn-sm" onclick="openModal('cliente', ${c.id})">Editar</button>
-                        <button class="btn-sm btn-del" onclick="deleteCliente(${c.id})">Borrar</button>
-                    </td>
-                </tr>`
-            });
-        }
+        window.renderClientes(data);
     } catch (e) {
-        /*** mostrar mensaje de error si no se pueden cargar los clientes. @author RADJ */
+        const tbody = document.getElementById('cli-tbody');
         if (tbody) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
         }
+    }
+};
+
+/*** renderiza la tabla de clientes usando paginación infinita. @author RADJ */
+window.renderClientes = function(data) {
+    const tbody = document.getElementById('cli-tbody');
+    if (tbody) {
+        window.setupTablePagination({
+            tbodyId: 'cli-tbody',
+            allItems: data,
+            renderRowFn: (c) => `
+            <tr>
+                <td style="font-weight:500">${c.nombre}</td>
+                <td style="font-family:monospace;font-size:0.82rem">${c.numeroDocumento || '—'}</td>
+                <td>${c.telefono || '—'}</td>
+                <td>${c.email || '—'}</td>
+                <td style="display:flex;gap:0.4rem">
+                    <button class="btn-sm" onclick="openModal('cliente', ${c.id})">Editar</button>
+                    <button class="btn-sm btn-del" onclick="deleteCliente(${c.id})">Borrar</button>
+                </td>
+            </tr>`
+        });
     }
 };
 
@@ -61,3 +64,18 @@ window.deleteCliente = async function(id) {
         alert('Error al eliminar cliente: ' + e.message);
     }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.enableTableSorting({
+        tableSelector: '#sec-clientes table',
+        getDataFn: () => AppState.allClientes || [],
+        setDataFn: (sorted) => { AppState.allClientes = sorted; },
+        renderFn: (sorted) => {
+            window.renderClientes(sorted);
+            const searchInput = document.getElementById('cli-search-input');
+            if (searchInput && searchInput.value) {
+                window.filterTable(searchInput, 'cli-tbody');
+            }
+        }
+    });
+});

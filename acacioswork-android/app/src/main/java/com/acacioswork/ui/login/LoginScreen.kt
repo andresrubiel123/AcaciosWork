@@ -1,8 +1,11 @@
 package com.acacioswork.ui.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
+import com.acacioswork.R
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -75,6 +78,14 @@ fun LoginScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_logo),
+                        contentDescription = "Logo AcaciosWork",
+                        modifier = Modifier
+                            .height(80.dp)
+                            .padding(bottom = 12.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
                     Text(
                         text = "AcaciosWork",
                         fontSize = 32.sp,
@@ -100,10 +111,11 @@ fun LoginScreen(
                         },
                         label = { Text("Usuario", color = TextMuted) },
                         placeholder = { Text("Ingresa tu usuario", color = TextMuted) },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                        colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = BgDark,
-                            containerColor = BgDark,
+                            focusedContainerColor = BgDark,
+                            unfocusedContainerColor = BgDark,
                             focusedLabelColor = Primary,
                             unfocusedLabelColor = TextMuted,
                             focusedTextColor = TextLight,
@@ -125,10 +137,11 @@ fun LoginScreen(
                         label = { Text("Contraseña", color = TextMuted) },
                         placeholder = { Text("••••••••", color = TextMuted) },
                         visualTransformation = PasswordVisualTransformation(),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                        colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = BgDark,
-                            containerColor = BgDark,
+                            focusedContainerColor = BgDark,
+                            unfocusedContainerColor = BgDark,
                             focusedLabelColor = Primary,
                             unfocusedLabelColor = TextMuted,
                             focusedTextColor = TextLight,

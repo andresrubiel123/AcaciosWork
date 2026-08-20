@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS categorias (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     fecha_actualizacion TIMESTAMP NULL DEFAULT NULL
-    ON UPDATE CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT uq_categoria_nombre
         UNIQUE (nombre)
@@ -65,7 +65,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    identificacion VARCHAR(20) NOT NULL,
+    id_tipo_documento BIGINT,
+
+    numero_documento VARCHAR(20) NOT NULL,
 
     nombre VARCHAR(100) NOT NULL,
 
@@ -88,8 +90,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fecha_actualizacion TIMESTAMP NULL DEFAULT NULL
     ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT uq_usuario_identificacion
-        UNIQUE (identificacion),
+    CONSTRAINT uq_usuario_numero_documento
+        UNIQUE (numero_documento),
 
     CONSTRAINT uq_usuario_email
         UNIQUE (email),
@@ -99,7 +101,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
     CONSTRAINT fk_usuario_rol
         FOREIGN KEY (id_rol)
-        REFERENCES roles(id)
+        REFERENCES roles(id),
+
+    CONSTRAINT fk_usuario_tipo_documento
+        FOREIGN KEY (id_tipo_documento)
+        REFERENCES tipos_documentos(id)
 
 ) ENGINE=InnoDB;
 
@@ -110,7 +116,9 @@ CREATE TABLE IF NOT EXISTS clientes (
 
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
-    identificacion VARCHAR(20) NOT NULL,
+    id_tipo_documento BIGINT,
+
+    numero_documento VARCHAR(20) NOT NULL,
 
     nombre VARCHAR(100) NOT NULL,
 
@@ -129,11 +137,15 @@ CREATE TABLE IF NOT EXISTS clientes (
     fecha_actualizacion TIMESTAMP NULL DEFAULT NULL
     ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT uq_cliente_identificacion
-        UNIQUE (identificacion),
+    CONSTRAINT uq_cliente_numero_documento
+        UNIQUE (numero_documento),
 
     CONSTRAINT uq_cliente_email
-        UNIQUE (email)
+        UNIQUE (email),
+
+    CONSTRAINT fk_cliente_tipo_documento
+        FOREIGN KEY (id_tipo_documento)
+        REFERENCES tipos_documentos(id)
 
 ) ENGINE=InnoDB;
 
@@ -379,3 +391,36 @@ CREATE TABLE IF NOT EXISTS detalle_ventas (
         REFERENCES productos(id)
 
 ) ENGINE=InnoDB;
+
+
+/* Tabla de lotes de productos para fechas de vencimiento. @author RADJ */
+
+CREATE TABLE IF NOT EXISTS lotes (
+
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+    id_producto BIGINT NOT NULL,
+
+    codigo_lote VARCHAR(100),
+
+    cantidad_inicial INT NOT NULL,
+
+    cantidad_actual INT NOT NULL,
+
+    fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    fecha_vencimiento VARCHAR(20) NOT NULL,
+
+    activo TINYINT(1) NOT NULL DEFAULT 1,
+
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    fecha_actualizacion TIMESTAMP NULL DEFAULT NULL
+    ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_lote_producto
+        FOREIGN KEY (id_producto)
+        REFERENCES productos(id)
+
+) ENGINE=InnoDB;
+

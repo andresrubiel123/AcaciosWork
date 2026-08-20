@@ -84,10 +84,11 @@ acacioswork-frontend/
 - **Modularización Completa de Lógica**: Extracción total de la lógica JavaScript de los archivos HTML hacia la estructura organizada bajo la carpeta `static/js/` (en subcarpetas `core`, `modules` y `shared`).
 - **Preguntas Inteligentes**: Interfaz de Inteligencia Artificial para consultas operacionales y financieras completamente implementada e integrada en el cliente web.
 - **Exportación e Impresión**: Componentes dinámicos para la exportación de comprobantes y reportes a PDF.
+- **Hub de Reportes Consolidado**: Integración de Reportes PDF, Preguntas IA y Gráficos Estadísticos en un único módulo unificado con botones de navegación internos, simplificando significativamente el menú y navbar principal de la plataforma.
 
 ### 🔄 En Desarrollo / Estabilización
-- **Diseño Responsivo**: Ajustes finos de layouts para dispositivos móviles.
-- **Pruebas de Componentes**: Estabilización de pruebas de integración JS con Jest y JSDOM.
+- **Diseño Responsivo**: Ajustes de layouts web móviles.
+- **Optimización de Animaciones**: Transiciones de micro-interacciones.
 
 ---
 

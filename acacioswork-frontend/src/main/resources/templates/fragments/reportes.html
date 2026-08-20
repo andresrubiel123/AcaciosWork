@@ -1,73 +1,127 @@
 <!-- sección de reportes para el dashboard. @author RADJ -->
 <div th:fragment="reportes" id="sec-reportes" class="section" style="display:none">
-    <div class="section-header">
-        <div>
-            <h1>Reportes</h1>
-            <p>Generación y exportación de informes</p>
+    
+    <!-- 1. Menu Hub de Reportes -->
+    <div id="report-hub">
+        <div class="section-header">
+            <div>
+                <h1>Módulo de Reportes</h1>
+                <p>Selecciona una herramienta para el análisis comercial de tu negocio</p>
+            </div>
+        </div>
+        <div class="report-grid">
+            <div class="report-card" onclick="showReportSub('pdf')" style="cursor:pointer;">
+                <span style="font-size: 2rem;">📄</span>
+                <h3>Generar Reportes PDF</h3>
+                <p>Consolidados de inventario, stock bajo, vencimiento de lotes, ventas y clientes listos para exportación.</p>
+            </div>
+            <div class="report-card" onclick="showReportSub('preguntas')" style="cursor:pointer;">
+                <span style="font-size: 2rem;">💡</span>
+                <h3>Preguntas Inteligentes</h3>
+                <p>Análisis automático mensual para conocer productos más rentables, estancados, pérdidas y stock.</p>
+            </div>
+            <div class="report-card" onclick="showReportSub('graficos')" style="cursor:pointer;">
+                <span style="font-size: 2rem;">📊</span>
+                <h3>Análisis Gráfico</h3>
+                <p>Gráficos de barras y líneas para el control de ganancias mensuales y stock por categorías.</p>
+            </div>
         </div>
     </div>
-    <div class="report-grid">
-        <div class="report-card">
-            <h3>📦 Inventario General</h3>
-            <p>Lista completa de productos con stock y precios actuales.</p><br><button class="btn btn-pdf"
-                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('inventario')">Generar
-                PDF</button>
+
+    <!-- 2. Lista de Tarjetas PDF Originales -->
+    <div id="report-pdf-list" style="display:none;">
+        <div class="section-header" style="display: flex; align-items: center; gap: 1rem;">
+            <button class="btn btn-pdf" style="padding: 0.5rem 1rem; margin-bottom: 0;" onclick="showReportSub('hub')">⬅ Volver</button>
+            <div>
+                <h1>Generación de Reportes</h1>
+                <p>Exportación de informes y estadísticas en formato PDF</p>
+            </div>
         </div>
-        <div class="report-card">
-            <h3>⚠️ Productos con Stock Bajo</h3>
-            <p>Listado de artículos por debajo del stock mínimo definido.</p><br><button class="btn btn-pdf"
-                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('stock-bajo')">Generar
-                PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>📅 Control de Vencimientos</h3>
-            <p>Productos vencidos o próximos a vencer dentro de los siguientes 5 días.</p><br><button class="btn btn-pdf"
-                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('vencimientos')">Generar
-                PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>👥 Reporte de Clientes</h3>
-            <p>Base de clientes registrados con su información de contacto.</p><br><button
-                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
-                onclick="generarReporte('clientes')">Generar PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>🏭 Reporte de Proveedores</h3>
-            <p>Directorio de proveedores con datos de contacto y productos.</p><br><button
-                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
-                onclick="generarReporte('proveedores')">Generar PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>👤 Usuarios del Sistema</h3>
-            <p>Listado de usuarios activos, roles y permisos asignados.</p><br><button class="btn btn-pdf"
-                style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('usuarios')">Generar
-                PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>🛒 Reporte de Ventas</h3>
-            <p>Listado histórico de todas las ventas con fecha, clientes y totales.</p><br><button
-                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
-                onclick="generarReporte('ventas')">Generar PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>📈 Reporte de Ganancias</h3>
-            <p>Análisis de rentabilidad detallando costos, ingresos y margen de ganancia por venta.</p><br><button
-                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
-                onclick="generarReporte('ganancias')">Generar PDF</button>
-        </div>
-        <div class="report-card">
-            <h3>📊 Reporte Ejecutivo</h3>
-            <p>Métricas principales de inventario y estado general de la empresa.</p><br><button
-                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
-                onclick="generarReporte('resumen')">Generar
-                PDF</button>
-        </div>
-        <!-- Reporte de productos próximos a vencer a 15 días. @author RADJ -->
-        <div class="report-card">
-            <h3>⚠️ Vencimientos a 15 Días</h3>
-            <p>Productos vencidos o próximos a vencer en los siguientes 15 días.</p><br><button
-                class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
-                onclick="generarReporte('vencimientos-15')">Generar PDF</button>
+        <div class="report-grid">
+            <div class="report-card">
+                <h3>📦 Inventario General</h3>
+                <p>Lista completa de productos con stock y precios actuales.</p><br><button class="btn btn-pdf"
+                    style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('inventario')">Generar
+                    PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>⚠️ Productos con Stock Bajo</h3>
+                <p>Listado de artículos por debajo del stock mínimo definido.</p><br><button class="btn btn-pdf"
+                    style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('stock-bajo')">Generar
+                    PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>📅 Control de Vencimientos</h3>
+                <p>Productos vencidos o próximos a vencer dentro de los siguientes 5 días.</p><br><button class="btn btn-pdf"
+                    style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('vencimientos')">Generar
+                    PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>👥 Reporte de Clientes</h3>
+                <p>Base de clientes registrados con su información de contacto.</p><br><button
+                    class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                    onclick="generarReporte('clientes')">Generar PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>🏭 Reporte de Proveedores</h3>
+                <p>Directorio de proveedores con datos de contacto y productos.</p><br><button
+                    class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                    onclick="generarReporte('proveedores')">Generar PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>👤 Usuarios del Sistema</h3>
+                <p>Listado de usuarios activos, roles y permisos asignados.</p><br><button class="btn btn-pdf"
+                    style="padding:0.5rem 1rem;font-size:0.82rem" onclick="generarReporte('usuarios')">Generar
+                    PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>🛒 Reporte de Ventas</h3>
+                <p>Listado histórico de todas las ventas con fecha, clientes y totales.</p><br><button
+                    class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                    onclick="generarReporte('ventas')">Generar PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>📈 Reporte de Ganancias</h3>
+                <p>Análisis de rentabilidad detallando costos, ingresos y margen de ganancia por venta.</p><br><button
+                    class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                    onclick="generarReporte('ganancias')">Generar PDF</button>
+            </div>
+            <div class="report-card">
+                <h3>📊 Reporte Ejecutivo</h3>
+                <p>Métricas principales de inventario y estado general de la empresa.</p><br><button
+                    class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                    onclick="generarReporte('resumen')">Generar
+                    PDF</button>
+            </div>
+            <!-- Reporte de productos próximos a vencer a 15 días. @author RADJ -->
+            <div class="report-card">
+                <h3>⚠️ Vencimientos a 15 Días</h3>
+                <p>Productos vencidos o próximos a vencer en los siguientes 15 días.</p><br><button
+                    class="btn btn-pdf" style="padding:0.5rem 1rem;font-size:0.82rem"
+                    onclick="generarReporte('vencimientos-15')">Generar PDF</button>
+            </div>
         </div>
     </div>
+
+    <!-- Script de navegación interna de Reportes -->
+    <script>
+        function showReportSub(type) {
+            if (type === 'hub') {
+                document.getElementById('report-hub').style.display = 'block';
+                document.getElementById('report-pdf-list').style.display = 'none';
+            } else if (type === 'pdf') {
+                document.getElementById('report-hub').style.display = 'none';
+                document.getElementById('report-pdf-list').style.display = 'block';
+            } else if (type === 'preguntas') {
+                showSection('preguntas-inteligentes', document.getElementById('btn-reportes'));
+            } else if (type === 'graficos') {
+                showSection('graficos', document.getElementById('btn-reportes'));
+            }
+        }
+        
+        function showReportSection() {
+            showSection('reportes', document.getElementById('btn-reportes'));
+            showReportSub('hub');
+        }
+    </script>
 </div>

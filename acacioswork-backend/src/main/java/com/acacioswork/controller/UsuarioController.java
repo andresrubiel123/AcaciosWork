@@ -3,6 +3,7 @@ package com.acacioswork.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,19 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.acacioswork.model.Usuario;
 import com.acacioswork.service.UsuarioService;
 import com.acacioswork.util.ApiResponse;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 /** controlador para la gestión de usuarios. @author RADJ */
 @RestController
 @RequestMapping("/api/usuarios")
-@Tag(name = "Usuarios", description = "Endpoints para la gestión de usuarios")
 @CrossOrigin(origins = "*")
 public class UsuarioController {
 
@@ -38,6 +36,7 @@ private final UsuarioService usuarioService;
 
     /** obtiene el listado de todos los usuarios. @author RADJ */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<Usuario>>> getAll() {
         List<Usuario> usuarios = usuarioService.findAll();
         return ResponseEntity.ok(new ApiResponse<>(true, "Usuarios obtenidos con éxito", usuarios));
@@ -45,21 +44,17 @@ private final UsuarioService usuarioService;
 
     /** crea un nuevo usuario en el sistema. @author RADJ */
     @PostMapping
-    public ResponseEntity<ApiResponse<Usuario>> create(@RequestBody Usuario usuario) {
-        try {
-            Usuario saved = usuarioService.save(usuario);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Usuario creado", saved));
-        } catch (Exception e) {
-            return ResponseEntity.status(409)
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Usuario>> create(@Valid @RequestBody Usuario usuario) {
+        Usuario saved = usuarioService.save(usuario);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Usuario creado", saved));
     }
 
     /** actualiza la información de un usuario por identificación. @author RADJ */
     @PutMapping("/{numeroDocumento}")
-    @Operation(summary = "Actualizar usuario por número de documento", description = "Busca al usuario por su número de documento para editarlo")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Usuario>> update(@PathVariable String numeroDocumento,
-            @RequestBody Usuario details) {
+            @Valid @RequestBody Usuario details) {
         return usuarioService.findByNumeroDocumento(numeroDocumento.trim()).map(u -> {
             u.setNumeroDocumento(details.getNumeroDocumento());
             u.setNombre(details.getNombre());
@@ -80,7 +75,7 @@ private final UsuarioService usuarioService;
 
     /** elimina un usuario por su número de documento. @author RADJ */
     @DeleteMapping("/{numeroDocumento}")
-    @Operation(summary = "Eliminar usuario por número de documento", description = "Busca al usuario por su número de documento para borrarlo")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<String>> delete(@PathVariable String numeroDocumento) {
         return usuarioService.findByNumeroDocumento(numeroDocumento.trim()).map(u -> {
             usuarioService.deleteById(u.getId());
@@ -94,9 +89,8 @@ private final com.acacioswork.config.JwtUtil jwtUtil;
 
     /** endpoint para la autenticación de usuarios. @author RADJ */
     @PostMapping("/login")
-    @Operation(summary = "Login de usuario", description = "Valida las credenciales del usuario y retorna un token JWT")
     public ResponseEntity<ApiResponse<com.acacioswork.model.LoginResponse>> login(
-            @RequestBody com.acacioswork.model.LoginRequest req) {
+            @Valid @RequestBody com.acacioswork.model.LoginRequest req) {
         return usuarioService.findByUsuario(req.getUsuario())
                 .filter(u -> usuarioService.login(req.getUsuario(), req.getClave()).isPresent())
                 .map(u -> {

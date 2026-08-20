@@ -1,6 +1,7 @@
 <!-- módulo de preguntas inteligentes para análisis automático de datos del negocio. @author RADJ -->
 <div th:fragment="preguntas-inteligentes" id="sec-preguntas-inteligentes" class="section" style="display:none">
-    <div class="section-header">
+    <div class="section-header" style="display: flex; align-items: center; gap: 1rem;">
+        <button class="btn btn-pdf" style="padding: 0.5rem 1rem; margin-bottom: 0;" onclick="showReportSection()">⬅ Volver a Reportes</button>
         <div>
             <h1>Preguntas Inteligentes</h1>
             <p>Análisis automático de tu negocio — selecciona un mes y haz clic en cada pregunta</p>
@@ -13,13 +14,13 @@
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                 <label>📅 Desde:</label>
                 <div style="position: relative; display: inline-block; width: 140px; vertical-align: middle;">
-                    <input id="iq-date-from" type="text" placeholder="AAAA-MM-DD" readonly style="cursor:pointer; padding-right:2.2rem; width: 100%; box-sizing: border-box; margin-bottom: 0;" onclick="SmartCalendar.toggle('iq-date-from')">
+                    <input id="iq-date-from" type="text" placeholder="AAAA-MM-DD" style="cursor:text; padding-right:2.2rem; width: 100%; box-sizing: border-box; margin-bottom: 0;">
                     <span id="smart-calendar-icon-iq-date-from" onclick="SmartCalendar.toggle('iq-date-from')" style="position:absolute; right:0.6rem; top: 50%; transform: translateY(-50%); cursor:pointer; font-size:1rem; user-select:none;">📅</span>
                 </div>
 
                 <label style="margin-left: 0.75rem;">Hasta:</label>
                 <div style="position: relative; display: inline-block; width: 140px; vertical-align: middle;">
-                    <input id="iq-date-to" type="text" placeholder="AAAA-MM-DD" readonly style="cursor:pointer; padding-right:2.2rem; width: 100%; box-sizing: border-box; margin-bottom: 0;" onclick="SmartCalendar.toggle('iq-date-to')">
+                    <input id="iq-date-to" type="text" placeholder="AAAA-MM-DD" style="cursor:text; padding-right:2.2rem; width: 100%; box-sizing: border-box; margin-bottom: 0;">
                     <span id="smart-calendar-icon-iq-date-to" onclick="SmartCalendar.toggle('iq-date-to')" style="position:absolute; right:0.6rem; top: 50%; transform: translateY(-50%); cursor:pointer; font-size:1rem; user-select:none;">📅</span>
                 </div>
             </div>

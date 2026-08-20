@@ -12,7 +12,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>acacioswork-frontend</module>
         <module>acacioswork-desktop</module>
         <module>acacioswork-backend</module>
     </modules>

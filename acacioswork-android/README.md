@@ -5,48 +5,52 @@ Este es el cliente móvil nativo del ecosistema **AcaciosWork**, desarrollado en
 
 La aplicación está diseñada bajo el patrón de arquitectura **MVVM (Model-View-ViewModel)** para garantizar un código limpio, testeable y mantenible.
 
-### Funcionalidades Planificadas:
-- **Consulta de Stock**: Verificación rápida de existencias mediante escaneo de códigos.
-- **Alertas en Tiempo Real**: Notificaciones push para productos con stock bajo o vencimientos.
-- **Gestión de Ventas Móvil**: Registro de transacciones básicas desde cualquier lugar de la tienda.
-- **Sincronización Inteligente**: Funcionamiento offline con sincronización automática al recuperar conexión.
+### Funcionalidades Implementadas (Paridad 100% con Web):
+- **Inventario Completo (`ui/inventario/`)**: LazyColumn con barra de búsqueda, catálogo de productos con columnas detalladas (incluyendo vencimiento y lote) y diálogo emergente de confirmación de eliminación con validaciones.
+- **Punto de Venta POS Móvil (`ui/vender/`)**: Flujo completo de ventas, carrito de compras responsivo, buscador de productos con dropdown de sugerencias y selector de cliente.
+- **Directorio de Proveedores y Clientes (`ui/proveedores/`, `ui/clientes/`)**: Formularios de creación y filtros de búsqueda en tiempo real.
+- **Hub de Reportes (`ui/reportes/`)**: Coordinador de navegación que integra acceso a Reportes PDF, Preguntas Inteligentes y Gráficos Estadísticos con botones de regreso internos.
+- **Alertas de Stock y Vencimiento (`ui/alertas/`)**: Filtros rápidos para productos con stock crítico, bajo o fechas de vencimiento próximas.
+- **Preguntas IA Screen (`ui/preguntas_ia/`)**: 9 tarjetas en grid de 2 columnas para consultas de inteligencia de negocio con DatePicker nativo Material3 para filtrado de fechas.
+- **Historial de Ventas (`ui/historial/`)**: Lista ordenada descendentemente por fecha con filas expandibles para detalles de venta y subtotales por producto.
+- **Gestión de Usuarios (`ui/usuarios/`)**: CRUD completo integrado con la base de datos (con badges para roles y estados) y diálogos de creación/borrado real.
+- **Configuración Completa (`ui/configuracion/`)**: 3 sub-pantallas (General, Hardware, Ticket) y botón de cierre de sesión.
 
 ## Tecnologías
-- **Kotlin 2.x**: Lenguaje moderno y seguro para el desarrollo Android.
-- **Android SDK (Min SDK 26)**: Para garantizar compatibilidad con dispositivos modernos.
-- **Retrofit 2**: Cliente HTTP para el consumo eficiente de la API REST.
-- **Jetpack Compose / XML**: Interfaces modernas y responsivas.
-- **Coroutines & Flow**: Manejo de tareas asíncronas de manera estructurada.
+- **Kotlin 2.x**: Lenguaje moderno y seguro.
+- **Jetpack Compose**: UI declarativa nativa para interfaces fluidas y animadas.
+- **Android SDK (Min SDK 26)**: Para compatibilidad con dispositivos Android 8.0+.
+- **Retrofit 2**: Consumo eficiente de la API REST del backend.
+- **Material Design 3**: Uso de directrices modernas de Google (DatePicker, chips, grids, etc.).
+- **Material Icons Extended**: Biblioteca completa de iconos vectoriales integrados.
 
-## Estructura de Carpetas
-- `ui/`: Pantallas (Activities/Fragments) y componentes visuales.
-- `network/`: Configuración de Retrofit y definiciones de la API.
-- `viewmodel/`: Lógica de estado y puente entre datos y UI.
-- `model/`: Clases de datos (POJOs) sincronizadas con el Backend.
-- `repository/`: Capa de abstracción para el manejo de fuentes de datos (API/Local).
+## Estructura de Carpetas (Modular)
+- `ui/`: Subcarpetas por módulo (`welcome`, `inventario`, `vender`, `proveedores`, `clientes`, `reportes`, `alertas`, `preguntas_ia`, `historial`, `usuarios`, `configuracion`, `theme`).
+- `network/`: Cliente Retrofit configurado para autenticación mediante token JWT.
+- `model/` / `viewmodel/`: Lógica de negocio y persistencia de estados de interfaz.
 
 ---
 
 # Estado del Proyecto (Avance)
 
 ### ✅ Finalizado y Estabilizado
-- **Estructura Base**: Configuración inicial del proyecto con soporte para Gradle y Kotlin.
-- **Integración de Modelos**: Mapeo inicial de entidades `Producto` y `Usuario`.
-- **Capa de Red**: Configuración base de Retrofit para conectar con el servidor.
+- **Reescritura en Jetpack Compose**: Reconstrucción de las 10 pantallas principales desde cero con paridad total de funcionalidades frente a la versión web.
+- **Navegación Modularizada**: Estructura de código limpia y archivos por debajo del límite estricto de **300 líneas de código**.
+- **Exportación en Gráficos**: Botones "Generar PDF" implementados en ambos gráficos para compartir resúmenes textuales de ventas y ganancias usando `ReportSharing.kt`.
+- **Botones PDF Homogéneos**: Todos los botones de exportación de las 10 tarjetas de reportes PDF unificados con el color naranja (`AccentOrange`).
+- **Confirmación de Eliminación**: Diálogo emergente integrado en el inventario con feedback no intrusivo mediante toasts.
 
 ### 🔄 En Desarrollo / Estabilización
-- **Módulo de Login**: Implementación de la pantalla de acceso y persistencia de token.
-- **Diseño UI**: Creación de los primeros prototipos de la interfaz de dashboard móvil.
+- **Pantallas Restantes**: Asegurar la paridad final de `GraficosTab` y `WelcomeTab` de la app móvil.
+- **Caché y Sincronización Offline**: Implementación inicial de persistencia local.
 
 ---
 
-# Sugerencias y Próximos Pasos (Lo que falta)
+# Próximos Pasos (Hoja de Ruta Móvil)
 
-1.  **Escaneo de Códigos**: Integrar la librería **ZXing** o **ML Kit** para el uso de la cámara como escáner de productos.
-2.  **Persistencia Local**: Implementar **Room Database** para permitir que la aplicación funcione sin internet de manera temporal.
-3.  **Sistema de Notificaciones**: Configurar Firebase Cloud Messaging (FCM) para recibir alertas del sistema.
-4.  **Seguridad Biométrica**: Añadir soporte para desbloqueo por huella o rostro para acceso rápido al dashboard.
-5.  **Temas Dinámicos**: Implementar soporte para modo oscuro basado en la configuración del sistema Android.
+1.  **Notificación y Persistencia de Alertas**: Módulo de notificaciones push de stock crítico y vencimiento en tiempo real.
+2.  **Cierre de Caja Contable**: Lógica y formularios en la app móvil para balance de facturación diario.
+3.  **Compilación del APK Final**: Exportación automática de `acacioswork.apk` estable.
 
 ---
 

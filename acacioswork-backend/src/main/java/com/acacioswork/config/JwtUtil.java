@@ -5,22 +5,34 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
-    private final SecretKey key = Jwts.SIG.HS256.key().build();
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private SecretKey key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
     private final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000;
 /** 5 hours. @author RADJ */
 
     public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+        return getClaimFromToken(token, claims -> claims.getSubject());
     }
 
     public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
+        return getClaimFromToken(token, claims -> claims.getExpiration());
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {

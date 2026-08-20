@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
     // 10.0.2.2 es el alias del host local de desarrollo (localhost) en el emulador de Android.
     // Cambiar por la IP local del computador (ej. 192.168.1.X) si se despliega en dispositivo físico.
-    private const val BASE_URL = "http://10.0.2.2:8081/api/"
+    private const val BASE_URL = "http://192.168.1.170:8081/api/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

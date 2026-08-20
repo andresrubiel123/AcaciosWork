@@ -32,25 +32,25 @@ Este es el núcleo central (Core API) del ecosistema **AcaciosWork**, diseñado 
 
 ### ✅ Finalizado y Estabilizado
 - **Arquitectura Base**: Configuración de Spring Boot 4 y JDK 25.
-- **Seguridad**: Sistema de Login, generación/validación de JWT y filtros de seguridad.
+- **Seguridad**: Sistema de Login, generación/validación de JWT y filtros de seguridad (autenticación JWT y roles RBAC activos).
 - **CRUDs Core**: Usuarios, Roles, Clientes, Proveedores, Categorías y Productos.
 - **Ventas**: Implementación de `Venta` y `DetalleVenta` con persistencia atómica.
+- **Lotes y Vencimiento**: Control de inventario en base a lotes y vencimiento mediante el endpoint `/api/movimientos-inventario`.
+- **Módulo de Reportes**: Cálculos reales de rentabilidad y reportes de ganancias restando costo de compra.
 - **Documentación**: Swagger UI totalmente funcional para pruebas de endpoints.
+- **Calidad de Código**: Limpieza integral de advertencias de compilación del IDE (null type safety, imports no utilizados, dependencias inactivas).
 
 ### 🔄 En Desarrollo / Estabilización
-- **Alertas de Stock**: Refinamiento del sistema de alertas para productos mínimos.
-- **Cierre de Caja**: Lógica para el balance diario y reportes de facturación.
-- **Módulo de Reportes**: Estructuración de consultas complejas para estadísticas de ventas.
+- **Cierre de Caja Contable**: API REST para balance de facturación diario por turno.
+- **Notificaciones Push**: Endpoint para alertas de vencimientos y stock crítico.
 
 ---
 
 # Sugerencias y Próximos Pasos (Lo que falta)
 
 1.  **Pruebas Automatizadas**: Implementar cobertura de tests unitarios y de integración (JUnit 5 + Mockito).
-2.  **Exportación de Datos**: Añadir soporte para generar reportes en formatos PDF y Excel (Apache POI / iText).
-3.  **Sincronización Android**: Validar y optimizar todos los endpoints para el consumo desde la app móvil nativa.
-4.  **Dockerización**: Crear `Dockerfile` y `docker-compose.yml` para facilitar el despliegue en entornos de producción.
-5.  **Notificaciones**: Integrar un sistema de notificaciones (Push o Email) para alertas críticas de inventario.
+2.  **Dockerización**: Crear `Dockerfile` y `docker-compose.yml` para facilitar el despliegue en entornos de producción.
+3.  **WebSocket/Notificaciones**: Integrar alertas de stock en tiempo real y notificaciones automáticas.
 
 ---
 

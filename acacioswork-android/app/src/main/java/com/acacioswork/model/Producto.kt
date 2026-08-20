@@ -13,5 +13,6 @@ data class Producto(
     val estado: Int = 1,
     val stockMinimo: Int,
     val stockOptimo: Int = 200,
-    val unidadMedida: String = "Unidad"
+    val unidadMedida: String = "Unidad",
+    val fechaVencimiento: String? = null
 )

@@ -1,0 +1,156 @@
+/* ==========================================================================
+   Estilos específicos para el Manual Interactivo (Estilo "My English Blog")
+   ========================================================================== */
+
+/* Grid contenedor de las tarjetas */
+.manual-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    margin-top: 2rem;
+}
+
+/* Tarjeta individual (Post Card) */
+.manual-card {
+    width: 100%;
+    max-width: 850px;
+    background-color: var(--bg-card, #1a1a2e); /* Fondo de tarjeta de AcaciosWork */
+    border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Efecto hover: Rayo de poder azul puro */
+.manual-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 162, 255, 0.8);
+    animation: neonPowerRay 1.5s infinite alternate;
+}
+
+/* Animación de resplandor azul puro */
+@keyframes neonPowerRay {
+    0% {
+        box-shadow: 0 0 5px rgba(0, 162, 255, 0.5), 
+                    0 0 10px rgba(0, 162, 255, 0.3),
+                    0 0 15px rgba(0, 162, 255, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(0, 162, 255, 0.8), 
+                    0 0 20px rgba(0, 162, 255, 0.6), 
+                    0 0 30px rgba(0, 162, 255, 0.4),
+                    0 0 40px rgba(0, 162, 255, 0.2);
+    }
+}
+
+/* Encabezado de la tarjeta */
+.manual-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 1rem;
+}
+
+.manual-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-main, #ffffff);
+    margin: 0;
+}
+
+/* Etiqueta (Tag) */
+.manual-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background-color: rgba(0, 162, 255, 0.15);
+    color: #00a2ff;
+    border: 1px solid rgba(0, 162, 255, 0.3);
+}
+
+.manual-tag.video {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Contenido */
+.manual-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.manual-description {
+    font-size: 0.95rem;
+    color: var(--text-muted, #94a3b8);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* Contenedor multimedia */
+.manual-media-container {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #000;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.manual-media-container video {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    border: none;
+}
+
+.manual-media-container iframe,
+.manual-media-container embed {
+    width: 100%;
+    height: 700px;
+    border: none;
+    background-color: #fff;
+}
+
+/* Botones de acción */
+.manual-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.btn-manual-action {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-main, #ffffff);
+    border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+    transition: all 0.2s ease;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-manual-action:hover {
+    background-color: rgba(0, 162, 255, 0.1);
+    border-color: rgba(0, 162, 255, 0.5);
+    color: #00a2ff;
+    animation: neonPowerRay 1.5s infinite alternate;
+}

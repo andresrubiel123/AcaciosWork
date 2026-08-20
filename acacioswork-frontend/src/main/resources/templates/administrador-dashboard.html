@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcaciosWork - Panel de Control</title>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
     <!-- google fonts. @author RADJ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +16,7 @@
     <!-- estilos globales y específicos del dashboard. @author RADJ -->
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/manual.css}">
 </head>
 
 <body style="background: var(--bg-dark); color: var(--text-main);">
@@ -71,7 +73,8 @@
 
             <!-- ─── analisis grafico ───. @author RADJ -->
             <div id="sec-graficos" class="section" style="display:none; padding: 2rem;">
-                <div class="section-header">
+                <div class="section-header" style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="btn btn-pdf" style="padding: 0.5rem 1rem; margin-bottom: 0;" onclick="showReportSection()">⬅ Volver a Reportes</button>
                     <div>
                         <h1>Análisis Gráfico</h1>
                         <p>Visualización del rendimiento comercial y de inventario</p>
@@ -108,11 +111,11 @@
                     <table class="data-table" style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr>
-                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">#</th>
-                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">Fecha</th>
-                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; min-width: 200px;">Cliente</th>
+                                <th class="sortable" data-sort="id" style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">#</th>
+                                <th class="sortable" data-sort="fechaHora" style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">Fecha</th>
+                                <th class="sortable" data-sort="idCliente" style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; min-width: 200px;">Cliente</th>
                                 <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;">Productos</th>
-                                <th style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: right;">Total</th>
+                                <th class="sortable" data-sort="valorTotal" style="padding: 0.9rem 1rem; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: right;">Total</th>
                             </tr>
                         </thead>
                         <tbody id="hist-tbody">
@@ -130,6 +133,9 @@
 
             <!-- ─── configuracion ───. @author RADJ -->
             <div th:replace="~{fragments/configuracion :: configuracion}"></div>
+
+            <!-- ─── manual interactivo ───. @author RADJ -->
+            <div th:replace="~{fragments/manual-interactivo :: manual-interactivo}"></div>
         </div>
     </div>
 

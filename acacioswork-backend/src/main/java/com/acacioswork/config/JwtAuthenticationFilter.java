@@ -34,12 +34,6 @@ private final UserDetailsService userDetailsService;
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        String path = request.getServletPath();
-        if (path.contains("v3/api-docs") || path.contains("swagger-ui")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;

@@ -1,0 +1,69 @@
+<!-- manual-interactivo.html. Fragmento para el Manual Interactivo. @author RADJ -->
+<div th:fragment="manual-interactivo" id="sec-manual" class="section" style="display:none; padding: 2rem; max-width: 1200px; margin: 0 auto;">
+    
+    <div class="section-header" style="margin-bottom: 2rem;">
+        <div>
+            <h1 style="color: var(--text-main, #fff); font-size: 2rem; margin-bottom: 0.5rem;">📖 Manual Interactivo</h1>
+            <p style="color: var(--text-muted, #9ca3af); font-size: 1.1rem;">Aprende a usar AcaciosWork con nuestra documentación técnica y tutoriales en video.</p>
+        </div>
+    </div>
+
+    <div class="manual-grid">
+        <!-- Tarjeta de Video Tutorial -->
+        <article class="manual-card">
+            <div class="manual-header">
+                <h3 class="manual-title">Video Tutorial</h3>
+                <span class="manual-tag video">Video / MP4</span>
+            </div>
+            <div class="manual-content">
+                <p class="manual-description">Aprende paso a paso cómo utilizar AcaciosWork. Una guía visual completa para dominar todas las funciones del sistema.</p>
+                <div class="manual-media-container">
+                    <video controls preload="metadata" aria-label="Video Tutorial AcaciosWork">
+                        <source th:src="@{/manual/aprende_a_usar.mp4}" type="video/mp4">
+                        Tu navegador no soporta el formato de video.
+                    </video>
+                </div>
+                <div class="manual-actions">
+                    <a th:href="@{/manual/aprende_a_usar.mp4}" target="_blank" class="btn-manual-action">Ver en Pantalla Completa</a>
+                    <a th:href="@{/manual/aprende_a_usar.mp4}" download="Aprende_a_Usar_AcaciosWork.mp4" class="btn-manual-action">📥 Descargar Video</a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Tarjeta de Manual de Usuario (Movido a la segunda posición) -->
+        <article class="manual-card">
+            <div class="manual-header">
+                <h3 class="manual-title">Manual de Usuario</h3>
+                <span class="manual-tag">PDF / Guía</span>
+            </div>
+            <div class="manual-content">
+                <p class="manual-description">Guía paso a paso para el usuario final. Encuentra respuestas rápidas sobre cómo gestionar inventarios, ventas, clientes y más.</p>
+                <div class="manual-media-container">
+                    <embed th:src="@{/manual/manual_usuario.pdf}" type="application/pdf" width="100%" height="700px">
+                </div>
+                <div class="manual-actions">
+                    <a th:href="@{/manual/manual_usuario.pdf}" target="_blank" class="btn-manual-action">Abrir Manual PDF</a>
+                    <a th:href="@{/manual/manual_usuario.pdf}" download="Manual_Usuario_AcaciosWork.pdf" class="btn-manual-action">📥 Descargar PDF</a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Tarjeta de Documentación Técnica (Movido a la última posición) -->
+        <article class="manual-card">
+            <div class="manual-header">
+                <h3 class="manual-title">Documentos Técnicos</h3>
+                <span class="manual-tag">PDF / Técnico</span>
+            </div>
+            <div class="manual-content">
+                <p class="manual-description">Información técnica detallada sobre la arquitectura, funcionamiento interno y especificaciones de la plataforma AcaciosWork.</p>
+                <div class="manual-media-container">
+                    <embed th:src="@{/manual/documentos_tecnicos.pdf}" type="application/pdf" width="100%" height="700px">
+                </div>
+                <div class="manual-actions">
+                    <a th:href="@{/manual/documentos_tecnicos.pdf}" target="_blank" class="btn-manual-action">Abrir Documento PDF</a>
+                    <a th:href="@{/manual/documentos_tecnicos.pdf}" download="Documentos_Tecnicos_AcaciosWork.pdf" class="btn-manual-action">📥 Descargar PDF</a>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>

@@ -51,9 +51,20 @@ private final InventarioManager inventarioManager;
         return total;
     }
 
-    /** reporte de ganancias brutas. @author RADJ */
+    /** reporte de ganancias netas (ganancia real: precioVenta - precioCompra). @author RADJ */
     public double reporteGanancias() {
-        return reporteVentasDiarias();
+        List<Venta> ventas = ventaRepository.findAll();
+        double gananciaTotal = 0;
+        for (Venta v : ventas) {
+            if (v.getDetalles() != null) {
+                for (com.acacioswork.model.DetalleVenta d : v.getDetalles()) {
+                    Producto p = inventarioManager.leerProducto(d.getIdProducto());
+                    double precioCompra = (p != null && p.getPrecioCompra() != null) ? p.getPrecioCompra().doubleValue() : 0.0;
+                    gananciaTotal += (d.getPrecioUnitario() - precioCompra) * d.getCantidad();
+                }
+            }
+        }
+        return gananciaTotal;
     }
 
     /** lista de productos con stock por debajo del mínimo. @author RADJ */

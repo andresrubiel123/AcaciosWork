@@ -38,12 +38,23 @@ private final InventarioService inventarioService;
     /** calcula el total de ventas realizadas. @author RADJ */
     public double reporteVentasDiarias() {
         List<Venta> ventas = ventaRepository.findAll();
-        return ventas.stream().mapToDouble(Venta::getValorTotal).sum();
+        return ventas.stream().mapToDouble(v -> v.getValorTotal()).sum();
     }
 
-    /** reporte de ganancias brutas. @author RADJ */
+    /** reporte de ganancias netas (ganancia real: precioVenta - precioCompra). @author RADJ */
     public double reporteGanancias() {
-        return reporteVentasDiarias();
+        List<Venta> ventas = ventaRepository.findAll();
+        double gananciaTotal = 0;
+        for (Venta v : ventas) {
+            if (v.getDetalles() != null) {
+                for (com.acacioswork.model.DetalleVenta d : v.getDetalles()) {
+                    Producto p = inventarioService.findById(d.getIdProducto());
+                    double precioCompra = (p != null && p.getPrecioCompra() != null) ? p.getPrecioCompra().doubleValue() : 0.0;
+                    gananciaTotal += (d.getPrecioUnitario() - precioCompra) * d.getCantidad();
+                }
+            }
+        }
+        return gananciaTotal;
     }
 
     /** lista de productos con stock por debajo del mínimo. @author RADJ */

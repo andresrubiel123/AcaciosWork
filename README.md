@@ -6,22 +6,24 @@ AcaciosWork es una **plataforma inteligente de gestión empresarial para negocio
 
 ## 🏗 Arquitectura del Sistema
 
-### [Core API (Backend)](file:///c:/AcaciosWork/acacioswork-backend)
+### [Core API (Backend)](file:///C:/Andres/Proyectos%20Sofware/AcaciosWork/acacioswork-backend)
 El "cerebro" del sistema. Gestiona la persistencia de datos en MySQL, la lógica de negocio y la seguridad JWT.
 - **Stack**: Java 25, Spring Boot 4.0.6, JPA, JWT, MySQL 8.0.
+- **Ciclo de Vida de Stock**: Gestión de lotes, vencimiento y movimientos de inventario.
 
-### [Administración Desktop](file:///c:/AcaciosWork/acacioswork-desktop)
-Interfaz robusta para la gestión pesada de inventarios, usuarios y Punto de Venta (POS).
+### [Administración Desktop](file:///C:/Andres/Proyectos%20Sofware/AcaciosWork/acacioswork-desktop)
+Interfaz robusta para la gestión de inventarios, usuarios, historial de movimientos y Punto de Venta (POS). Estructura modularizada en pestañas autónomas.
 - **Stack**: Java 25, Swing, FlatLaf (UI Moderna), Jackson (JSON).
 
-### [Dashboard Web](file:///c:/AcaciosWork/acacioswork-frontend)
+### [Dashboard Web](file:///C:/Andres/Proyectos%20Sofware/AcaciosWork/acacioswork-frontend)
 Acceso ligero y universal para supervisión, consultas rápidas e **inteligencia de negocio** desde cualquier navegador.
-- **Stack**: HTML5, CSS3, JavaScript (Vanilla ES6+).
-- **Módulo IA**: Preguntas Inteligentes — análisis automático de rentabilidad, rotación, proveedores, clientes y tendencias.
+- **Stack**: HTML5, CSS3 (Vanilla), JavaScript (Vanilla ES6+), Thymeleaf.
+- **Módulo de Reportes**: Hub de reportes centralizado que unifica Reportes PDF, Preguntas Inteligentes y Gráficos Estadísticos.
 
-### [App Móvil](file:///c:/AcaciosWork/acacioswork-android)
-Gestión en movimiento para control de stock y alertas mediante dispositivos móviles.
-- **Stack**: Kotlin 2.x, Android SDK, MVVM, Retrofit.
+### [App Móvil](file:///C:/Andres/Proyectos%20Sofware/AcaciosWork/acacioswork-android)
+Gestión en movimiento con paridad total del ecosistema, reescrita al 100% en Jetpack Compose.
+- **Stack**: Kotlin 2.x, Jetpack Compose, Retrofit, MVVM, Material 3, Android SDK.
+- **Características**: Gráficos interactivos de rentabilidad mensual y ventas, exportación de reportes vía Share Intent, y confirmación de eliminación segura.
 
 ---
 
@@ -63,6 +65,8 @@ AcaciosWork/
 2.  **Identidad Única**: Todos los IDs deben ser `Long` (Java) y `BIGINT UNSIGNED` (MySQL).
 3.  **Seguridad JWT**: Toda petición privada debe incluir el `Authorization: Bearer <token>`.
 4.  **Estándar de Código**: Todo bloque de código debe incluir descripción funcional y firma de autor.
+5.  **Límite de 300 Líneas**: Ningún archivo fuente (Java, Kotlin) nuevo o modificado en los clientes debe superar las 300 líneas de código para asegurar la modularización estricta.
+6.  **Paridad de 12 Secciones**: El menú lateral y el orden de navegación es idéntico en las tres plataformas (Web → Desktop → Android), ordenados del 1 (Inicio) al 12 (Configuración).
 
 ---
 

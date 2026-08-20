@@ -119,7 +119,7 @@ graph TD
     
     Root --> BE["acacioswork-backend (Core API)"]
     Root --> DE["acacioswork-desktop (Admin Swing)"]
-    Root --> FE["acacioswork-frontend (Web Dash)"]
+    Root --> FE["acacioswork-frontend (Thymeleaf/JS)"]
     Root --> AN["acacioswork-android (Mobile App)"]
     Root --> DB_S["database (SQL Scripts)"]
     Root --> CTX["project-context.md (AI/Docs)"]
@@ -128,11 +128,15 @@ graph TD
     BE --> BE_SRV["Servicios (Business)"]
     BE --> BE_MOD["Modelos (JPA Entities)"]
 
-    DE --> DE_UI["Interfaz (Swing JPanels)"]
+    DE --> DE_TABS["Tabs Autónomas (Swing)"]
+    DE --> DE_DLG["Diálogos (CRUD/Stock)"]
     DE --> DE_MOD["Modelos Locales"]
 
-    FE --> FE_HTML["Vistas (HTML/CSS)"]
-    FE --> FE_JS["Lógica API (JS Fetch)"]
+    FE --> FE_TMPL["Plantillas (Thymeleaf)"]
+    FE --> FE_JS["Módulos JS (Core/Modules)"]
+
+    AN --> AN_UI["Pantallas Compose (Welcome, Alertas...)"]
+    AN --> AN_VM["ViewModels & Models"]
 ```
 
 ### 5. Flujo de Datos (Data Flow)
@@ -165,7 +169,8 @@ graph LR
         INV[Inventario]
         PROD[Productos]
         CAT[Categorías]
-        ALERT[Alertas de Stock]
+        ALERT[Alertas de Stock & Vencimiento]
+        MOV[Movimientos Lote/Vencimiento]
     end
 
     subgraph Operaciones ["Operaciones de Venta"]
@@ -176,7 +181,7 @@ graph LR
 
     subgraph Inteligencia ["Inteligencia de Negocio"]
         REP[Reportes & Estadísticas]
-        HIST[Historial de Accesos]
+        HIST[Historial de Ventas]
     end
 
     Gestion_Core --> Logistica
@@ -196,6 +201,9 @@ erDiagram
     PROVEEDOR ||--o{ PRODUCTO : "provee"
     PRODUCTO ||--|| INVENTARIO : "se almacena"
     PRODUCTO ||--o{ ALERTA_STOCK : "genera"
+    PRODUCTO ||--o{ LOTE : "tiene"
+    PRODUCTO ||--o{ MOVIMIENTO_INVENTARIO : "registra"
+    USUARIO ||--o{ MOVIMIENTO_INVENTARIO : "ejecuta"
 ```
 
 ### 8. API Map (Integraciones)
@@ -206,31 +214,38 @@ graph LR
         USR_API["/api/usuarios (Gestión)"]
         PROD_API["/api/productos (Catálogo)"]
         INV_API["/api/inventario (Stock)"]
+        MOV_API["/api/movimientos-inventario (Movimientos)"]
+        LOTE_API["/api/lotes (Lotes y Vencimientos)"]
         VENT_API["/api/ventas (POS)"]
         REP_API["/api/reportes (BI)"]
     end
 
-    subgraph Desktop_App ["Desktop (Admin/POS)"]
+    subgraph Desktop_App ["Desktop (Admin/POS/Tabs)"]
         D_AUTH["Login/JWT"]
-        D_CRUD["CRUD Completo"]
-        D_POS["Ventas POS"]
+        D_CRUD["CRUD Completo & Tabs"]
+        D_POS["Ventas POS & Movimientos"]
     end
 
     subgraph Web_Dashboard ["Web (Supervisión)"]
         W_AUTH["Login/JWT"]
         W_REP["Visualización BI"]
-        W_INV["Consulta Stock"]
+        W_INV["Consulta Stock & Movimientos"]
     end
 
     Desktop_App --> AUTH
     Desktop_App --> USR_API
     Desktop_App --> PROD_API
     Desktop_App --> INV_API
+    Desktop_App --> MOV_API
+    Desktop_App --> LOTE_API
     Desktop_App --> VENT_API
+    Desktop_App --> REP_API
 
     Web_Dashboard --> AUTH
     Web_Dashboard --> REP_API
     Web_Dashboard --> INV_API
+    Web_Dashboard --> MOV_API
+    Web_Dashboard --> LOTE_API
 ```
 ### Notas Clave de la Arquitectura:
 *   **Multi-Cliente:** El backend está diseñado para servir a una aplicación de escritorio (Swing), móvil (Android) y web simultáneamente.
@@ -238,3 +253,7 @@ graph LR
 *   **Estandarización:** Identificadores `BIGINT UNSIGNED` en base de datos mapeados como `Long` en Java para consistencia y escalabilidad.
 *   **Seguridad:** Implementación de seguridad centralizada para manejar CORS y autenticación para diferentes orígenes.
 *   **Modelo de Datos Homogéneo:** Coherencia en la denominación de campos de inventario (ej: `stockActual`, `stockMinimo`, `stockOptimo` y `unidadMedida`) en todas las capas y lenguajes del ecosistema (Java, Kotlin, JavaScript, MySQL).
+*   **Control del Ciclo de Vida de Stock (Lotes y Vencimientos):** Incorporación nativa de lotes y fechas de vencimiento vinculando transacciones directas de entradas/salidas de inventario con un endpoint unificado `/api/movimientos-inventario` para todas las plataformas clientes.
+*   **Desacoplamiento Modular Estricto:** La interfaz del escritorio Swing (`acacioswork-desktop`) y la app móvil Android (`acacioswork-android`) implementan componentes visuales autónomos (Tabs de Swing y pantallas Compose respectivamente) con un límite rígido de **300 líneas de código por archivo** para garantizar la mantenibilidad y evitar clases monolíticas (ej. `AcaciosToolbarButton.java` en Desktop).
+*   **Hub de Reportes Consolidado:** Centralización del módulo de reportes, IA y gráficos interactivos dentro de un coordinador o Hub de Reportes único en Web y Android, optimizando la navegación y unificando el estilo visual (como el color `AccentOrange` para exportación en Android).
+*   **Compartición e Interoperabilidad en Móvil:** Implementación de exportación de datos enriquecidos y resúmenes textuales de gráficos directamente a canales externos mediante el mecanismo nativo Android Share Intent administrado por `ReportSharing.kt`.

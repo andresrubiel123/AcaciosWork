@@ -1,0 +1,12 @@
+Nombre de usuario: "andresrubiel@hotmail.com"
+Contraseña: "andyfaceboock"
+
+
+Número de prueba:
++1 (555) 151-8709
+Phone Number ID:
+1219572274578929
+WhatsApp Business Account ID:
+1914766132536884
+
+token: "EAAPbZAGHZCFaMBSO1oKIFGu7WF7uF5VMsHbb5bXsxHNts5kjq8A7CLHYotVg38ZAgJ9YK7vCmRt5MdOOr1ItSVSX3lnlQZCIfzu22Mp0QuIOKFHtuDVfNudjEM7bWZAIDqMZBQ0h8vaudMlyVBbQlGMQHmuPGz0Ky5Cuncx02qzjFmRGxel9obLJdaOTGZC87yHA9F1OtDZAK2a5I3afHPl7Ip773qa7fD18b7ZAi3go5ZBcZCrTZAKSRhbH5m1qOOlwWUlR87HnjlDjSGDex1FcBJMZD"

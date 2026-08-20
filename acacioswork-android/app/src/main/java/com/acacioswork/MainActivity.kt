@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Inicializar SessionManager de forma bloqueante antes de renderizar para saber si hay sesión
-        val sessionManager = SessionManager.getInstance(applicationContext)
+        SessionManager.getInstance(applicationContext)
 
         setContent {
             AcaciosWorkTheme {

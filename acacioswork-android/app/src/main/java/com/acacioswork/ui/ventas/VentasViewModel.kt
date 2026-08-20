@@ -143,4 +143,32 @@ class VentasViewModel : ViewModel() {
             }
         }
     }
+
+    fun agregarClienteRapido(cliente: Cliente, onResult: (Cliente?) -> Unit) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            try {
+                val response = RetrofitClient.apiService.createCliente(cliente)
+                if (response.success && response.data != null) {
+                    val nuevoCliente = response.data
+                    // Recargar lista de clientes
+                    val cliResponse = RetrofitClient.apiService.getClientes()
+                    if (cliResponse.success && cliResponse.data != null) {
+                        _clientes.value = cliResponse.data.filter { it.activo == 1 }
+                    }
+                    onResult(nuevoCliente)
+                } else {
+                    _errorMessage.value = response.message
+                    onResult(null)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _errorMessage.value = "Error al registrar cliente: ${e.message}"
+                onResult(null)
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }

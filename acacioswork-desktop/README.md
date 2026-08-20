@@ -31,23 +31,23 @@ A diferencia de la interfaz web, el cliente desktop está optimizado para flujos
 
 ### ✅ Finalizado y Estabilizado
 - **Sistema de Login**: Autenticación funcional contra el backend y persistencia temporal del token.
-- **Dashboard Principal**: Estructura de `Administrador.java` con barra lateral y cambio dinámico de paneles.
-- **Módulos CRUD**: Interfaces completas para Gestión de Usuarios, Clientes, Proveedores y Categorías.
-- **Inventario**: Visualización y edición de productos con integración total a la API.
+- **Dashboard Principal**: Barra lateral unificada y cambio dinámico de paneles mediante `AcaciosToolbarButton.java` (reduciendo `Administrador.java` por debajo del límite estricto de **300 líneas**).
+- **Módulos CRUD**: Interfaces y pestañas autónomas (`WelcomeTab`, `InventarioTab`, `ProveedoresTab`, `ClientesTab`, `UsuariosTab`, `AlertasTab`, `GraficosTab` e `HistorialTab`).
+- **Punto de Venta (POS)**: Interfaz de venta ágil con carrito, búsqueda de productos y cálculo en tiempo real.
+- **Ciclo de Vida de Stock**: Gestión de entradas y salidas de stock con lotes y vencimiento mediante `MovimientosPanel` y `MovimientoDialog`.
+- **Análisis Estadístico**: `GraficosTab` completamente implementada para visualización de métricas de ventas y ganancias del negocio.
 - **Estética**: Aplicación global del tema FlatLaf para una apariencia uniforme.
 
 ### 🔄 En Desarrollo / Estabilización
-- **Punto de Venta (POS)**: Refinamiento de la lógica de carrito y cálculo de cambios en tiempo real.
-- **Gestión de Devoluciones**: Implementación inicial de la lógica para revertir transacciones.
-- **Alertas Visuales**: Notificaciones emergentes para stock bajo y errores de red.
+- **Impresión de Tickets**: Perfeccionamiento del formato de salida física para ticket térmico.
+- **Modo Offline Resiliente**: Caché local para resiliencia temporal ante fallas de red.
 
 ---
 
 # Sugerencias y Próximos Pasos (Lo que falta)
 
-1.  **Módulo de Estadísticas**: Implementar gráficos (JFreeChart) en el panel principal para visualizar ventas y ganancias.
-2.  **Impresión de Tickets**: Desarrollar la lógica para impresión térmica (ESC/POS) de comprobantes de venta.
-3.  **Atajos de Teclado**: Añadir hotkeys (ej. F5 para cobrar, F1 para buscar) para agilizar la operación en el POS.
+1.  **Atajos de Teclado**: Añadir hotkeys (ej. F5 para cobrar, F1 para buscar) en el POS Desktop.
+2.  **Lector de Código de Barras**: Integración nativa de hardware para lectura automática.
 4.  **Modo Offline Parcial**: Implementar un sistema de caché para permitir consultas básicas si el servidor no está disponible.
 5.  **Validaciones de Entrada**: Mejorar la validación visual en tiempo real de los formularios (campos obligatorios, formatos de correo, etc.).
 

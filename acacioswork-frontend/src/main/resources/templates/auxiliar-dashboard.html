@@ -6,8 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcaciosWork - Auxiliar</title>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
     <meta name="description" content="Panel de gestión para auxiliares de AcaciosWork. Registra ventas y gestiona clientes.">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/manual.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ── sidebar ──. @author RADJ */
@@ -84,14 +86,14 @@
             box-sizing: border-box;
         }
         .toolbar-btn:hover {
-            background: rgba(99,102,241,0.1);
+            background: rgba(99, 102, 241, 0.1);
             color: var(--primary-color);
             transform: translateX(4px);
         }
         .toolbar-btn.active {
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            background: linear-gradient(135deg, #f97316, #ef4444);
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .toolbar-btn.btn-exit {
@@ -103,6 +105,45 @@
             background: linear-gradient(135deg, #ff3b30, #ff2d55);
             color: white;
             box-shadow: 0 4px 12px rgba(255, 45, 85, 0.25);
+        }
+        .toolbar-btn.btn-alert {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .toolbar-btn.btn-alert:hover {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+        .toolbar-btn.btn-alert.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+        .toolbar-btn.btn-alert.pulsing {
+            background: linear-gradient(135deg, #ff3b30, #ff2d55);
+            border: 1px solid #ff6b6b;
+            color: white;
+            box-shadow: 0 4px 14px rgba(255, 45, 85, 0.4);
+            animation: pulse-red 1.5s infinite;
+        }
+        .toolbar-btn.btn-alert.pulsing:hover {
+            background: linear-gradient(135deg, #ff6b6b, #ff3b30);
+            box-shadow: 0 6px 20px rgba(255, 45, 85, 0.7);
+        }
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.6);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 45, 85, 0);
+                transform: scale(1.02);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 45, 85, 0);
+                transform: scale(1);
+            }
         }
         .user-info {
             font-size: 0.9rem;
@@ -393,6 +434,108 @@
             font-weight: 700;
             color: white;
         }
+
+        /* ── products-table y stock-bar (inicio) ──. @author RADJ */
+        .products-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-codigo {
+            width: 100px;
+            min-width: 90px;
+        }
+
+        .col-nombre {
+            width: 100px;
+            min-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .col-unidad {
+            width: 100px;
+            min-width: 90px;
+        }
+
+        .col-estado {
+            width: 100px;
+            min-width: 90px;
+            text-align: center;
+        }
+
+        #sec-welcome .col-stock {
+            width: auto;
+            min-width: 280px;
+            text-align: left;
+        }
+
+        .stock-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0.2rem 0;
+        }
+
+        .stock-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stock-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stock-bar-fill.red {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .stock-bar-fill.orange {
+            background: linear-gradient(90deg, #fb923c, #f97316);
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+        }
+
+        .stock-bar-fill.green {
+            background: linear-gradient(90deg, #34d399, #10b981);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .stock-bar-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .stock-bar-qty {
+            color: #e2e8f0;
+        }
+
+        .stock-bar-pct {
+            font-weight: 600;
+        }
+
+        .stock-bar-pct.red {
+            color: #f87171;
+        }
+
+        .stock-bar-pct.orange {
+            color: #fb923c;
+        }
+
+        .stock-bar-pct.green {
+            color: #34d399;
+        }
     </style>
 </head>
 
@@ -421,18 +564,27 @@
                 <button id="btn-historial" class="toolbar-btn" onclick="showSection('historial', this)">
                     📋 Historial
                 </button>
-                <button id="btn-alertas" class="toolbar-btn" onclick="showSection('alertas', this)">
+                <button id="btn-alertas" class="toolbar-btn btn-alert" onclick="showSection('alertas', this)">
                     ⚠ Alertas
                 </button>
+                <button id="btn-manual" class="toolbar-btn" onclick="showSection('manual', this)">
+                    📖 Manual Interactivo
+                </button>
             </div>
-            <div class="toolbar-right">
+            <div class="toolbar-right" style="margin-bottom: 3.5rem;">
                 <button class="toolbar-btn btn-exit" onclick="logout()">Cerrar Sesión</button>
+                <span style="font-size: 0.65rem; color: var(--text-muted); text-align: center; display: block; line-height: 1.35; margin-top: 0.4rem; word-break: break-word;">
+                    Copyright © 2026 Rubiel Andrés Díaz<br>Contacto: andresrubiel@gmail.com
+                </span>
             </div>
         </nav>
 
         <!-- ═══ contenido principal ═══. @author RADJ -->
         <div class="content-area">
             <div class="page-content">
+
+                <!-- ─── manual interactivo ───. @author RADJ -->
+                <div th:replace="~{fragments/manual-interactivo :: manual-interactivo}"></div>
 
                 <!-- ─── bienvenida (dashboard básico) ───. @author RADJ -->
                 <div id="sec-welcome" class="section" style="display: block; padding-top: 1rem;">
@@ -458,6 +610,9 @@
                             <div class="value" id="inv-bajo" style="color:#ef4444">—</div>
                         </div>
                     </div>
+
+                    <!-- tabla simplificada de productos en inicio. @author RADJ -->
+                    <div th:replace="~{fragments/home-products-table :: home-products-table}"></div>
                 </div>
 
                 <!-- ─── nueva venta (pos) ───. @author RADJ -->
@@ -577,11 +732,11 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Fecha</th>
-                                    <th style="min-width: 200px;">Cliente</th>
+                                    <th class="sortable" data-sort="id">#</th>
+                                    <th class="sortable" data-sort="fechaHora">Fecha</th>
+                                    <th class="sortable" data-sort="idCliente" style="min-width: 200px;">Cliente</th>
                                     <th>Productos</th>
-                                    <th style="text-align:right;">Total</th>
+                                    <th class="sortable" data-sort="valorTotal" style="text-align:right;">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="hist-tbody">
@@ -616,11 +771,11 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
-                                    <th>Documento</th>
-                                    <th>Teléfono</th>
-                                    <th>Email</th>
-                                    <th>Estado</th>
+                                    <th class="sortable" data-sort="nombre">Nombre</th>
+                                    <th class="sortable" data-sort="numeroDocumento">Documento</th>
+                                    <th class="sortable" data-sort="telefono">Teléfono</th>
+                                    <th class="sortable" data-sort="email">Email</th>
+                                    <th class="sortable" data-sort="activo">Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -645,13 +800,13 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Código</th>
-                                    <th>Nombre</th>
+                                    <th class="sortable" data-sort="codigoBarras">Código</th>
+                                    <th class="sortable" data-sort="nombre">Nombre</th>
                                     <th>Unidad</th>
-                                    <th>Stock</th>
-                                    <th>P. Venta</th>
-                                    <th>Vencimiento</th>
-                                    <th>Estado</th>
+                                    <th class="sortable" data-sort="stockActual">Stock</th>
+                                    <th class="sortable" data-sort="precioVenta">P. Venta</th>
+                                    <th class="sortable" data-sort="fechaVencimiento">Vencimiento</th>
+                                    <th class="sortable" data-sort="estado">Estado</th>
                                 </tr>
                             </thead>
                             <tbody id="inv-tbody">
@@ -752,6 +907,8 @@
 /*** cache de productos cargados. @author RADJ */
         let allClientes = [];   
 /*** cache de clientes cargados. @author RADJ */
+        let allVentasFiltradas = [];
+/*** cache de ventas filtradas del día. @author RADJ */
         let searchTimeout = null;
 
        
@@ -769,6 +926,48 @@
 /*** precargar productos y clientes en paralelo. @author RADJ */
             await Promise.all([preloadProducts(), loadClientes()]);
             loadClienteSelect();
+
+            // Inicializar ordenamiento dinámico en la tabla de inventario del auxiliar. @author RADJ
+            window.enableTableSorting({
+                tableSelector: '#sec-inventario table',
+                getDataFn: () => allProducts,
+                setDataFn: (sorted) => { allProducts = sorted; },
+                renderFn: (sorted) => {
+                    renderInventarioAuxiliar(sorted);
+                    const searchInput = document.getElementById('inv-search-input');
+                    if (searchInput && searchInput.value) {
+                        filterTable(searchInput, 'inv-tbody');
+                    }
+                }
+            });
+
+            // Inicializar ordenamiento dinámico en la tabla de clientes del auxiliar. @author RADJ
+            window.enableTableSorting({
+                tableSelector: '#sec-clientes table',
+                getDataFn: () => allClientes || [],
+                setDataFn: (sorted) => { allClientes = sorted; },
+                renderFn: (sorted) => {
+                    renderClientes();
+                    const searchInput = document.getElementById('cli-search');
+                    if (searchInput && searchInput.value) {
+                        filterTable(searchInput, 'cli-tbody');
+                    }
+                }
+            });
+
+            // Inicializar ordenamiento dinámico en la tabla de historial de ventas del auxiliar. @author RADJ
+            window.enableTableSorting({
+                tableSelector: '#sec-historial table',
+                getDataFn: () => allVentasFiltradas || [],
+                setDataFn: (sorted) => { allVentasFiltradas = sorted; },
+                renderFn: (sorted) => {
+                    renderHistorialAuxiliar(sorted);
+                    const searchInput = document.getElementById('hist-search');
+                    if (searchInput && searchInput.value) {
+                        filterTable(searchInput, 'hist-tbody');
+                    }
+                }
+            });
         });
 
         function logout() { localStorage.clear(); window.location.href = 'login'; }
@@ -933,41 +1132,47 @@
             try {
                 const products = await apiRequest('/productos') || [];
                 allProducts = products;
-                if (tbody) {
-                    window.setupTablePagination({
-                        tbodyId: 'inv-tbody',
-                        allItems: products,
-                        renderRowFn: (p) => {
-                            const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
-                            const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
-                            const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
-
-                            const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
-                            let colorClass = 'green';
-                            if (pct <= 30) {
-                                colorClass = 'red';
-                            } else if (pct <= 69) {
-                                colorClass = 'orange';
-                            }
-
-                            return `<tr>
-                                <td style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
-                                <td style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
-                                <td>${p.unidadMedida || 'Unidad'}</td>
-                                <td>
-                                    <span class="stock-qty ${colorClass}">${stockActual}</span>
-                                </td>
-                                <td style="font-weight:600; color:#10b981;">${formatCurrency(p.precioVenta)}</td>
-                                <td style="font-size:0.8rem;color:${p.fechaVencimiento ? '#a7f3d0' : 'var(--text-muted)'}">${p.fechaVencimiento || '—'}</td>
-                                <td><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
-                            </tr>`;
-                        }
-                    });
-                }
+                renderInventarioAuxiliar(products);
             } catch (e) {
                 if (tbody) {
                     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#ef4444;">Error: ${e.message}</td></tr>`;
                 }
+            }
+        }
+
+        /*** renderiza la tabla de inventario del auxiliar usando paginación infinita. @author RADJ */
+        function renderInventarioAuxiliar(products) {
+            const tbody = document.getElementById('inv-tbody');
+            if (tbody) {
+                window.setupTablePagination({
+                    tbodyId: 'inv-tbody',
+                    allItems: products,
+                    renderRowFn: (p) => {
+                        const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
+                        const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
+                        const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
+
+                        const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
+                        let colorClass = 'green';
+                        if (pct <= 30) {
+                            colorClass = 'red';
+                        } else if (pct <= 69) {
+                            colorClass = 'orange';
+                        }
+
+                        return `<tr>
+                            <td style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
+                            <td style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
+                            <td>${p.unidadMedida || 'Unidad'}</td>
+                            <td>
+                                <span class="stock-qty ${colorClass}">${stockActual}</span>
+                            </td>
+                            <td style="font-weight:600; color:#10b981;">${formatCurrency(p.precioVenta)}</td>
+                            <td>${window.renderVencimientoCell ? window.renderVencimientoCell(p) : (p.fechaVencimiento || '—')}</td>
+                            <td><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
+                        </tr>`;
+                    }
+                });
             }
         }
 
@@ -1105,8 +1310,75 @@
             try {
                 allProducts = await apiRequest('/productos') || [];
                 updateHomeStats(allProducts);
+                renderHomeProductsTable(allProducts);
             } catch (e) {
                 console.error('Error al precargar productos:', e);
+            }
+        }
+
+        /*** renderiza la tabla simplificada de productos en la sección de inicio (resumen de 10 productos ordenados por porcentaje de stock de menor a mayor). @author RADJ */
+        function renderHomeProductsTable(products) {
+            const tbody = document.getElementById('home-inv-tbody');
+            if (!tbody) return;
+            try {
+                if (!products || !products.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin productos registrados.</td></tr>';
+                    return;
+                }
+
+                /*** calcular porcentaje real de stock relativo al nivel óptimo @author RADJ */
+                const getPct = (p) => {
+                    const actual = p.stockActual !== undefined ? p.stockActual : 0;
+                    const optimo = p.stockOptimo ? p.stockOptimo : 200;
+                    return optimo > 0 ? (actual / optimo) * 100 : 0;
+                };
+
+                /*** 1. 5 productos con menor porcentaje de stock (los más bajos / críticos) @author RADJ */
+                const sortedAsc = [...products].sort((a, b) => getPct(a) - getPct(b));
+                const lowest5 = sortedAsc.slice(0, 5);
+
+                /*** 2. 5 productos con mayor porcentaje de stock (los más altos, evitando duplicados) @author RADJ */
+                const sortedDesc = [...products].sort((a, b) => getPct(b) - getPct(a));
+                const highest5 = sortedDesc.filter(p => !lowest5.some(l => l.id === p.id)).slice(0, 5);
+
+                /*** 3. lista combinada ordenada estrictamente de menor a mayor porcentaje (%) @author RADJ */
+                const summaryProducts = [...lowest5, ...highest5].sort((a, b) => getPct(a) - getPct(b));
+
+                tbody.innerHTML = summaryProducts.map(p => {
+                    const stockActual = p.stockActual !== undefined ? p.stockActual : 0;
+                    const stockMinimo = p.stockMinimo !== undefined ? p.stockMinimo : 5;
+                    const stockOptimo = p.stockOptimo ? p.stockOptimo : 200;
+
+                    const pct = stockOptimo > 0 ? Math.round((stockActual / stockOptimo) * 100) : 0;
+                    let colorClass = 'green';
+                    if (pct <= 30) {
+                        colorClass = 'red';
+                    } else if (pct <= 69) {
+                        colorClass = 'orange';
+                    }
+                    const barWidth = Math.min(pct, 100);
+
+                    return `
+                    <tr>
+                        <td class="col-codigo" style="font-family:monospace;font-size:0.8rem">${p.codigoBarras || 'N/A'}</td>
+                        <td class="col-nombre" style="font-weight:500" title="${p.nombre}">${p.nombre}</td>
+                        <td class="col-unidad">${p.unidadMedida || 'Unidad'}</td>
+                        <td class="col-stock">
+                            <div class="stock-bar-wrapper">
+                                <div class="stock-bar-info">
+                                    <span class="stock-bar-qty">${stockActual} / ${stockOptimo} uds</span>
+                                    <span class="stock-bar-pct ${colorClass}">${pct}%</span>
+                                </div>
+                                <div class="stock-bar-container">
+                                    <div class="stock-bar-fill ${colorClass}" style="width: ${barWidth}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-estado" style="text-align: center;"><span class="badge ${p.estado === 1 ? 'badge-success' : 'badge-danger'}">${p.estado === 1 ? 'Activo' : 'Inactivo'}</span></td>
+                    </tr>`;
+                }).join('');
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444">Error: ${e.message}</td></tr>`;
             }
         }
 
@@ -1133,6 +1405,15 @@
 
             const vencimientoEl = document.getElementById('inv-vencimiento');
             if (vencimientoEl) vencimientoEl.textContent = vencimiento;
+
+            const btnAlertas = document.getElementById('btn-alertas');
+            if (btnAlertas) {
+                if (bajo > 0 || vencimiento > 0) {
+                    btnAlertas.classList.add('pulsing');
+                } else {
+                    btnAlertas.classList.remove('pulsing');
+                }
+            }
         }
 
        
@@ -1440,35 +1721,43 @@
                 // Ordenar por fecha descendente
                 ventasFiltradas.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
 
+                allVentasFiltradas = ventasFiltradas;
+
                 document.getElementById('hist-total').textContent = ventasFiltradas.length;
                 const totalVal = ventasFiltradas.reduce((acc, v) => acc + (v.valorTotal || 0), 0);
                 document.getElementById('hist-valor').textContent = formatCurrency(totalVal);
 
-                if (tbody) {
-                    window.setupTablePagination({
-                        tbodyId: 'hist-tbody',
-                        allItems: ventasFiltradas,
-                        renderRowFn: (v) => {
-                            const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
-                            const nProductos = v.detalles ? v.detalles.length : 0;
-                            
-                            const client = allClientes.find(c => c.id === v.idCliente);
-                            const clienteNombre = client ? client.nombre : (v.idCliente ? `Cliente #${v.idCliente}` : '<span style="color:var(--text-muted)">Sin cliente</span>');
-
-                            return `<tr>
-                                <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#${v.id}</td>
-                                <td style="font-size:0.83rem;">${fecha}</td>
-                                <td style="font-weight:500; font-size:0.88rem;" title="${clienteNombre}">${clienteNombre}</td>
-                                <td><span class="historial-badge">📦 ${nProductos} producto${nProductos !== 1 ? 's' : ''}</span></td>
-                                <td style="text-align:right; font-weight:700; color:#10b981;">${formatCurrency(v.valorTotal || 0)}</td>
-                            </tr>`;
-                        }
-                    });
-                }
+                renderHistorialAuxiliar(ventasFiltradas);
             } catch (e) {
                 if (tbody) {
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#ef4444;">Error: ${e.message}</td></tr>`;
                 }
+            }
+        }
+
+        /*** renderiza la tabla de historial de ventas del auxiliar usando paginación infinita. @author RADJ */
+        function renderHistorialAuxiliar(ventasFiltradas) {
+            const tbody = document.getElementById('hist-tbody');
+            if (tbody) {
+                window.setupTablePagination({
+                    tbodyId: 'hist-tbody',
+                    allItems: ventasFiltradas,
+                    renderRowFn: (v) => {
+                        const fecha = v.fechaHora ? new Date(v.fechaHora).toLocaleString('es-CO') : '—';
+                        const nProductos = v.detalles ? v.detalles.length : 0;
+                        
+                        const client = allClientes.find(c => c.id === v.idCliente);
+                        const clienteNombre = client ? client.nombre : (v.idCliente ? `Cliente #${v.idCliente}` : '<span style="color:var(--text-muted)">Sin cliente</span>');
+
+                        return `<tr>
+                            <td style="font-family:monospace; font-size:0.8rem; color:var(--text-muted);">#${v.id}</td>
+                            <td style="font-size:0.83rem;">${fecha}</td>
+                            <td style="font-weight:500; font-size:0.88rem;" title="${clienteNombre}">${clienteNombre}</td>
+                            <td><span class="historial-badge">📦 ${nProductos} producto${nProductos !== 1 ? 's' : ''}</span></td>
+                            <td style="text-align:right; font-weight:700; color:#10b981;">${formatCurrency(v.valorTotal || 0)}</td>
+                        </tr>`;
+                    }
+                });
             }
         }
     </script>

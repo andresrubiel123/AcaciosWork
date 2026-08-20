@@ -15,11 +15,15 @@ public class Producto {
     private Integer stockMinimo;
     private Integer stockOptimo;
     private String unidadMedida = "Unidad";
+    private String fechaVencimiento;
 
     public Producto() {}
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getFechaVencimiento() { return fechaVencimiento; }
+    public void setFechaVencimiento(String fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
 
     public String getCodigoBarras() { return codigoBarras; }
     public void setCodigoBarras(String codigoBarras) { this.codigoBarras = codigoBarras; }

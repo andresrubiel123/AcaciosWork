@@ -1,13 +1,14 @@
 /** entidad de usuario. @author RADJ */
 package com.acacioswork.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,28 +21,33 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Column(name = "id_tipo_documento")
     private Long idTipoDocumento;
 
     @Column(name = "numero_documento", nullable = false, unique = true)
+    @NotBlank(message = "El número de documento es obligatorio")
     private String numeroDocumento;
 
     @Column(nullable = false)
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     @Column(nullable = false)
+    @NotBlank(message = "El apellido es obligatorio")
     private String apellido;
 
     @Column
     private String telefono;
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "El formato del email no es válido")
     private String email;
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "El usuario es obligatorio")
     private String usuario;
 
     @com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
@@ -52,6 +58,5 @@ public class Usuario {
     private Integer activo;
 
     @Column(name = "id_rol")
-    @Schema(description = "ID del rol (1 para ADMIN, 2 para USER)")
     private Long idRol;
 }

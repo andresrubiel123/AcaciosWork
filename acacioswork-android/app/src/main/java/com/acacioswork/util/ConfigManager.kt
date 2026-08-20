@@ -28,7 +28,7 @@ object ConfigManager {
         if (response.success && response.data != null) {
             globalConfig = response.data
         } else {
-            throw Exception(response.message ?: "Error al guardar configuración")
+            throw Exception(response.message)
         }
     }
 

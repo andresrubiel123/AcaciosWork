@@ -21,6 +21,23 @@ window.SmartCalendar = {
                 this.close();
             }
         });
+
+        /** Escuchar entradas tipeadas manualmente para auto-formatear y refrescar calendario si está abierto. @author RADJ / Antigravity */
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.id && (e.target.id.includes('vencimiento') || e.target.id.includes('date') || e.target.id.includes('fecha'))) {
+                let val = e.target.value.replace(/[^0-9-]/g, '');
+                if (/^\d{8}$/.test(val)) {
+                    e.target.value = `${val.slice(0,4)}-${val.slice(4,6)}-${val.slice(6,8)}`;
+                    e.target.dispatchEvent(new Event('change'));
+                }
+                if (this.activeInputId === e.target.id && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) {
+                    const parts = e.target.value.split('-');
+                    this.currentYear = parseInt(parts[0]);
+                    this.currentMonth = parseInt(parts[1]) - 1;
+                    this.render(this.activeInputId);
+                }
+            }
+        });
     },
 
     toggle(inputId) {
@@ -172,13 +189,6 @@ window.SmartCalendar = {
                 <span class="smart-calendar-title">${monthNames[this.currentMonth]} ${this.currentYear}</span>
                 <button type="button" class="smart-calendar-nav-btn" onclick="SmartCalendar.changeMonth(1)">▶</button>
             </div>
-            <div class="smart-calendar-shortcuts">
-                <button type="button" class="smart-calendar-shortcut-btn" onclick="SmartCalendar.selectShortcut('today')">Hoy</button>
-                <button type="button" class="smart-calendar-shortcut-btn" onclick="SmartCalendar.selectShortcut('1m')">+1 Mes</button>
-                <button type="button" class="smart-calendar-shortcut-btn" onclick="SmartCalendar.selectShortcut('6m')">+6 Meses</button>
-                <button type="button" class="smart-calendar-shortcut-btn" onclick="SmartCalendar.selectShortcut('1y')">+1 Año</button>
-                <button type="button" class="smart-calendar-shortcut-btn" style="background:rgba(239,68,68,0.15);color:#f87171;border-color:rgba(239,68,68,0.3);" onclick="SmartCalendar.selectShortcut('clear')">Sin Venc.</button>
-            </div>
             <div class="smart-calendar-grid">
                 ${dayHeaders.map(h => `<div class="smart-calendar-day-header">${h}</div>`).join('')}
                 ${daysHtml}
@@ -235,7 +245,7 @@ window.getModalFields = function(type) {
             <div style="position:relative;">
                 <label>Fecha de Vencimiento</label>
                 <div style="position:relative; display:flex; align-items:center;">
-                    <input id="prod-fechaVencimiento" type="text" placeholder="AAAA-MM-DD (Opcional)" readonly style="cursor:pointer; padding-right:2.5rem;" onclick="SmartCalendar.toggle('prod-fechaVencimiento')">
+                    <input id="prod-fechaVencimiento" type="text" placeholder="AAAA-MM-DD (Opcional)" style="cursor:text; padding-right:2.5rem;">
                     <span id="smart-calendar-icon-prod-fechaVencimiento" onclick="SmartCalendar.toggle('prod-fechaVencimiento')" style="position:absolute; right:0.75rem; cursor:pointer; font-size:1.1rem; user-select:none;">📅</span>
                 </div>
             </div>

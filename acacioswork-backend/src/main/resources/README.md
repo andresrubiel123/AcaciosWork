@@ -42,12 +42,12 @@ Ejecutar los archivos en el siguiente orden:
 
 # Características
 
-- Arquitectura normalizada
-- Control de inventario
-- Gestión de compras
-- Gestión de ventas
-- Historial de movimientos
-- Auditoría básica
+- Arquitectura normalizada (MySQL 8.0)
+- Control de inventario con lotes y vencimiento (`LOTE`, `MOVIMIENTO_INVENTARIO`)
+- Gestión de proveedores e inventario
+- Gestión de ventas y Punto de Venta (POS)
+- Historial completo de movimientos (Entradas / Salidas)
+- Auditoría básica y seguridad
 - Escalable
 
 ---
