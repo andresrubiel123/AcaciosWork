@@ -19,6 +19,7 @@ reporte_diario.csv
 **/build/
 local.properties
 *.apk
+!AcaciosWork.apk
 *.aar
 *.ap_
 *.dex
