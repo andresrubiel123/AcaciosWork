@@ -90,3 +90,17 @@ __pycache__/
 # =========================================================================
 graphify-out/
 .graphify.env
+
+# =========================================================================
+# Raíz del proyecto
+# =========================================================================
+.agents
+project-context.md
+starter
+manual usuario auxiliar
+manual de usuario administrador
+infografia
+chatbot
+arbol de problema
+
+
